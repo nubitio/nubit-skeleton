@@ -11,8 +11,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@nubitio/react-admin": "^0.1.0",
-    "@nubitio/ui": "^0.1.0",
+    "@fontsource/inter": "^5.2.8",
+    "@fontsource/syne": "^5.2.7",
+    "@nubitio/react-admin": "^0.2.0",
+    "@nubitio/ui": "^0.2.0",
     "@phosphor-icons/web": "^2.1.2",
     "@tanstack/react-query": "^5.0.0",
     "i18next": "^23.16.8",
