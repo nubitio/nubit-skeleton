@@ -1,0 +1,13 @@
+nubit_admin:
+    auth:
+        secret: '%env(APP_SECRET)%' # >= 32 bytes
+        access_token_ttl: 3600
+        refresh_token_ttl: 1209600
+        # Secure cookies require HTTPS. The local docker stack runs plain HTTP,
+        # so dev disables the flag below — keep it true in production.
+        cookie_secure: true
+
+when@dev:
+    nubit_admin:
+        auth:
+            cookie_secure: false

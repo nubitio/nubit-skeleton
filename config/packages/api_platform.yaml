@@ -1,0 +1,18 @@
+api_platform:
+    title: Nubit Admin API
+    version: 1.0.0
+    # The Nubit HTTP client posts plain application/json; keep jsonld for
+    # Hydra collections and docs.
+    formats:
+        json: ['application/json']
+        jsonld: ['application/ld+json']
+    docs_formats:
+        jsonld: ['application/ld+json']
+        jsonopenapi: ['application/vnd.openapi+json']
+        json: ['application/json']
+        html: ['text/html']
+    defaults:
+        stateless: true
+        pagination_client_items_per_page: true
+        cache_headers:
+            vary: ['Content-Type', 'Authorization', 'Origin']

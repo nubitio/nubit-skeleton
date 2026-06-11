@@ -1,0 +1,2 @@
+nubit_admin:
+    resource: '@NubitAdminBundle/config/routes.php'
