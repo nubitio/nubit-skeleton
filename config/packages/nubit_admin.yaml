@@ -6,6 +6,11 @@ nubit_admin:
         # Secure cookies require HTTPS. The local docker stack runs plain HTTP,
         # so dev disables the flag below — keep it true in production.
         cookie_secure: true
+    # Mercure subscriber cookie: the React grids (mercure: true resources)
+    # receive live updates through the hub in compose.yaml.
+    mercure:
+        enabled: true
+        secret: '%env(MERCURE_JWT_SECRET)%'
 
 when@dev:
     nubit_admin:
