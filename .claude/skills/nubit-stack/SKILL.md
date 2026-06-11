@@ -99,6 +99,12 @@ After changing entities: `docker compose exec app php bin/console cache:clear`.
 - **Computed/joined grid columns** (no ORM mapping): implement
   `Nubit\ApiPlatform\Doctrine\Filter\GridVirtualFieldInterface` (autoconfigured
   by the bundle). Use `GridFilterHelper::dqlOperator/valueForOperator/uniqueParameterName`.
+- **Soft delete**: add `#[Nubit\ApiPlatform\Attribute\SoftDeletable]` to the entity (plus a
+  `deleted_at` nullable datetime column) — HTTP queries hide deleted rows automatically;
+  console commands see everything.
+- **Change password**: `POST /api/auth/change-password` ships with the bundle
+  (`currentPassword`/`newPassword`); it rotates all sessions. Purge old refresh tokens with
+  `bin/console nubit:auth:purge-refresh-tokens`.
 - **Roles per operation**: standard API Platform `security: "is_granted('ROLE_ADMIN')"`
   on the operation. Routes under `/api` already require `ROLE_USER` (see
   `config/packages/security.yaml` `access_control`).

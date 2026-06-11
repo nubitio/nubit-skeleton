@@ -1234,6 +1234,13 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         translated_docs?: bool|Param, // Decorate the Hydra docs normalizer to translate labels and forward x-crud hints. // Default: true
  *         docs_locale?: scalar|Param|null, // Locale used when translating API docs. Reads APP_API_LOCALE, falling back to "en". // Default: "%env(default:nubit_admin.api.default_docs_locale:APP_API_LOCALE)%"
  *     },
+ *     mercure?: array{
+ *         enabled?: bool|Param, // Issue a Mercure subscriber JWT cookie on login/refresh. // Default: false
+ *         secret?: scalar|Param|null, // Mercure hub subscriber JWT secret. // Default: "%env(MERCURE_JWT_SECRET)%"
+ *         topics?: list<scalar|Param|null>,
+ *         hub_path?: scalar|Param|null, // Default: "/.well-known/mercure"
+ *     },
+ *     soft_delete?: bool|Param, // Register the Doctrine filter hiding #[SoftDeletable] rows. // Default: true
  *     single_tenant_defaults?: bool|Param, // Bind noop single-tenant implementations of the Nubit\Platform contracts. // Default: true
  * }
  * @psalm-type SecurityConfig = array{
