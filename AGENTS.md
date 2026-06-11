@@ -4,8 +4,11 @@ Full-stack admin starter: Symfony 7.4 + API Platform 4 (backend) and React 19
 + `@nubitio/react-admin` (frontend). CRUD screens are **generated from the API
 docs** — adding a feature means defining a PHP entity, not building UI.
 
-> Detailed workflow, templates and gotchas: `.claude/skills/nubit-stack/SKILL.md`.
-> Read it before adding resources or touching auth.
+> Detailed workflow, templates and gotchas: the **nubit-stack skill**
+> (`.claude/skills/nubit-stack/SKILL.md`, also exposed at
+> `.agents/skills/nubit-stack/` for tools following the
+> [Agent Skills](https://agentskills.io) convention). Read it before adding
+> resources or touching auth.
 
 ## Commands
 
