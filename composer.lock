@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7ff4573bcde5c95615b05b0e59196d36",
+    "content-hash": "363b048f4f20fee5c95518bf7ef90530",
     "packages": [
         {
             "name": "api-platform/core",
@@ -1620,16 +1620,16 @@
         },
         {
             "name": "nubitio/admin-bundle",
-            "version": "v0.2.1",
+            "version": "v0.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nubitio/admin-bundle.git",
-                "reference": "badbace7e70a278d9b6cc9c4eea0667b19054afd"
+                "reference": "d3271b91cec36911d9ebecbeb9d57649f4852dae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nubitio/admin-bundle/zipball/badbace7e70a278d9b6cc9c4eea0667b19054afd",
-                "reference": "badbace7e70a278d9b6cc9c4eea0667b19054afd",
+                "url": "https://api.github.com/repos/nubitio/admin-bundle/zipball/d3271b91cec36911d9ebecbeb9d57649f4852dae",
+                "reference": "d3271b91cec36911d9ebecbeb9d57649f4852dae",
                 "shasum": ""
             },
             "require": {
@@ -1656,11 +1656,7 @@
                     "Nubit\\AdminBundle\\": "src/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Nubit\\AdminBundle\\Tests\\": "tests/"
-                }
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -1679,7 +1675,7 @@
                 "issues": "https://github.com/nubitio/nubit-symfony/issues",
                 "source": "https://github.com/nubitio/nubit-symfony"
             },
-            "time": "2026-06-11T04:51:37+00:00"
+            "time": "2026-06-11T05:09:21+00:00"
         },
         {
             "name": "nubitio/api-platform",
@@ -1720,21 +1716,17 @@
                     "Nubit\\ApiPlatform\\": "src/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Nubit\\ApiPlatform\\Tests\\": "tests/"
-                }
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
             "description": "API Platform bridge for the Nubit admin stack: data-grid filter (sort/filter/searchValue), translated OpenAPI docs with x-crud hints for @nubitio/hydra, pagination headers, and entity traits.",
             "homepage": "https://github.com/nubitio/nubit-symfony/tree/main/packages/api-platform",
             "keywords": [
+                "Hydra",
                 "api-platform",
                 "crud",
                 "datagrid",
-                "hydra",
                 "nubit",
                 "symfony"
             ],
@@ -1749,7 +1741,7 @@
             "version": "v0.1.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/nubitio/platform.git",
+                "url": "https://github.com/nubitio/platform",
                 "reference": "36c7556d0995d6413ff1e33dfc1c39bc36983bd8"
             },
             "dist": {
@@ -1793,11 +1785,7 @@
                     "Nubit\\Platform\\": "src/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Nubit\\Platform\\Tests\\": "tests/"
-                }
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],

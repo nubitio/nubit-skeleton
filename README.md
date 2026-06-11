@@ -4,10 +4,23 @@ Full-stack starter for the Nubit admin stack: **Symfony 7.4 + API Platform 4** b
 
 Annotate an entity → get a datagrid with filters/sorting/search, create/edit forms with validation, auth, and real-time refresh. Build vertical systems (ERP, POS, industry SaaS) in hours.
 
-## Quick start
+## Start a new project
+
+Three ways to get a copy (it's a [template repository](https://github.com/nubitio/nubit-skeleton)):
 
 ```bash
-git clone https://github.com/nubitio/nubit-skeleton my-app && cd my-app
+# a) GitHub CLI — new repo under your account, no shared history
+gh repo create my-app --template nubitio/nubit-skeleton --private --clone && cd my-app
+
+# b) Web UI — the "Use this template" button on GitHub
+
+# c) Composer
+composer create-project nubitio/nubit-skeleton my-app && cd my-app
+```
+
+Then boot it:
+
+```bash
 docker compose up -d --build
 docker compose exec app php bin/console doctrine:migrations:migrate --no-interaction
 docker compose exec app php bin/console app:seed
