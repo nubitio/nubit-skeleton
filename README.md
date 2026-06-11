@@ -71,6 +71,15 @@ The bundle ships dual web/mobile JWT auth (see the [admin-bundle README](https:/
 
 Refresh tokens rotate and are stored hashed (`nubit_refresh_token` table).
 
+## AI-agent ready
+
+The template ships agent knowledge so coding agents can build features correctly from the first prompt:
+
+- **`.claude/skills/nubit-stack/`** — Claude Code skill: the add-a-resource workflow, field-type mapping, extension points, verification steps and known gotchas.
+- **`AGENTS.md` / `CLAUDE.md`** — project map, commands and conventions for any agent.
+
+Try it: open the project with your agent and ask *"add a Customers CRUD with name, email and an active flag"*.
+
 ## Project layout
 
 ```
