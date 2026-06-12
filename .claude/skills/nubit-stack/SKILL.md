@@ -198,6 +198,28 @@ Diffs skip `ignored_fields` (createdAt/updatedAt/password by default) and
 collection contents; relations collapse to their id. Schedule
 `bin/console nubit:audit:purge` — the log grows with every audited write.
 
+## Timelines (document lifecycles and event logs)
+
+`Timeline` / `TimelineItem` from `@nubitio/react-admin` — one primitive, two
+variants, fully token-themed:
+
+- `variant="stepper"`: workflow stages (e.g. a document lifecycle: draft →
+  sent → accepted/rejected). `status` per item: `complete` (check), `current`
+  (ring), `pending`, `error` (red ✗). Use this instead of alert()s or ad-hoc
+  status text when a row has a state machine.
+- `variant="log"`: chronological events with tone-colored dot markers
+  (`tone: success|info|danger|warning`) + `timestamp`/`dateTime`. The
+  AuditTrailPanel renders change history with it automatically — reach for it
+  directly when building custom activity feeds.
+
+```tsx
+<Timeline variant="stepper" title="F001-672" description="SUNAT status">
+  <TimelineItem status="complete" title="Draft created" />
+  <TimelineItem status="current" title="Awaiting CDR" />
+  <TimelineItem status="error" title="Rejected · code 2017" />
+</Timeline>
+```
+
 ## Summaries (grid footers and line totals)
 
 - `formDetail.summary: { sticky: true, items: [...] }` adds a footer to the
