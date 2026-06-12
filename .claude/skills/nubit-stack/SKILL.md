@@ -158,6 +158,26 @@ To keep an embedded collection out of the auto-generated form, use
 `x-crud: ['visibleOnForm' => false]` hint (column stays in the grid).
 Plain `x-crud: hidden` only hides grid columns.
 
+## Uploads / media library
+
+`nubit_admin.media.enabled: true` (already on in this skeleton) gives you the
+full pipeline. To add an image/file to an entity:
+
+```php
+#[ORM\ManyToOne(targetEntity: \Nubit\AdminBundle\Media\Entity\Media::class)]
+#[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+#[ApiProperty(openapiContext: ['x-crud' => ['format' => 'image', 'hidden' => true]])]
+private ?Media $photo = null;   // see src/Entity/Product.php
+```
+
+`format: 'image'` (or `'file'` for documents) renders a dropzone that uploads
+**instantly** to `POST /api/media` (multipart, field `file`) and submits only
+the media IRI with the form. The serialized `path` is always a public URL
+(default: the bundle streaming route `/api/media/{id}/file`). Storage is
+local `var/uploads` by default; S3 = point `media.storage.filesystem` at a
+FilesystemOperator service. Schedule `bin/console nubit:media:purge` — deletes
+are soft and abandoned-form uploads orphan files.
+
 ## Summaries (grid footers and line totals)
 
 - `formDetail.summary: { sticky: true, items: [...] }` adds a footer to the

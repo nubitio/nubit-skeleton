@@ -11,6 +11,11 @@ nubit_admin:
     mercure:
         enabled: true
         secret: '%env(MERCURE_JWT_SECRET)%'
+    # Media library: POST /api/media multipart uploads, local storage in
+    # var/uploads by default. Pair with x-crud format:'image'|'file' hints
+    # (see Product::$photo). Swap to S3 via media.storage.filesystem.
+    media:
+        enabled: true
 
 when@dev:
     nubit_admin:

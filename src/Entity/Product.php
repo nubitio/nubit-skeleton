@@ -14,6 +14,7 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Nubit\AdminBundle\Media\Entity\Media;
 use Nubit\ApiPlatform\Doctrine\Filter\DataGridFilter;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -66,6 +67,17 @@ class Product
     )]
     private bool $active = true;
 
+    // Instant upload: the form POSTs the file to /api/media on selection and
+    // submits only the resulting IRI here. format:'image' renders the upload
+    // control automatically (use 'file' for non-image attachments).
+    #[ORM\ManyToOne(targetEntity: Media::class)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    #[ApiProperty(
+        description: 'Photo',
+        openapiContext: ['x-crud' => ['order' => 4, 'format' => 'image', 'hidden' => true]],
+    )]
+    private ?Media $photo = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -103,6 +115,18 @@ class Product
     public function setPrice(string $price): static
     {
         $this->price = $price;
+
+        return $this;
+    }
+
+    public function getPhoto(): ?Media
+    {
+        return $this->photo;
+    }
+
+    public function setPhoto(?Media $photo): static
+    {
+        $this->photo = $photo;
 
         return $this;
     }
