@@ -258,10 +258,13 @@ are soft and abandoned-form uploads orphan files.
    Don't add CORS config for the SPA; it's not cross-origin.
 8. New vendor service classes are NOT autodiscovered — bundle registers its
    own; app services go in `config/services.yaml` as usual.
-9. Resources with `mercure: true` publish **after** the flush: if the hub is
-   down, the row IS persisted but the request returns 500 ("Failed to send an
-   update"). A broken hub shows as 502 on `/.well-known/mercure`. If host
-   port 3000 is taken, start the stack with `MERCURE_PORT=3001 docker compose up -d`.
+9. Resources with `mercure: true` publish **after** the flush. Since bundle
+   0.7 a dead hub no longer 500s the request: the write returns 2xx and the
+   failure is logged as a warning ("Mercure publish failed") — live refresh
+   degrades to manual. In messenger workers the error is rethrown so async
+   `Update` routing keeps retrying. A broken hub shows as 502 on
+   `/.well-known/mercure`; if host port 3000 is taken, start the stack with
+   `MERCURE_PORT=3001 docker compose up -d`.
 
 ## Library source (for deeper digging)
 

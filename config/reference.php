@@ -1239,6 +1239,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         secret?: scalar|Param|null, // Mercure hub subscriber JWT secret. // Default: "%env(MERCURE_JWT_SECRET)%"
  *         topics?: list<scalar|Param|null>,
  *         hub_path?: scalar|Param|null, // Default: "/.well-known/mercure"
+ *         fail_safe?: bool|Param, // Decorate the default hub so a dead Mercure never turns a successful write into a 500. HTTP requests log-and-continue; workers/console rethrow so async retries still work. Applies whenever MercureBundle is installed, regardless of "enabled". // Default: true
  *     },
  *     media?: array{
  *         enabled?: bool|Param, // Expose the media library: POST /api/media (multipart), Media entity, streaming route, purge command. // Default: false
