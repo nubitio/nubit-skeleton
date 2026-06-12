@@ -100,7 +100,86 @@ curl -s -b /tmp/cj 'http://localhost:8000/api/customers?filter%5B0%5D%5B0%5D=nam
 ```
 
 Then check the browser at http://localhost:5173 (grid renders, create works).
-After changing entities: `docker compose exec app php bin/console cache:clear`.
+After changing entities: `docker compose exec app php bin/console cache:clear`
+**and then `docker compose restart app`** — the FrankenPHP worker keeps API
+Platform property metadata in process memory, so new fields won't appear in
+/api/docs.jsonld until the worker restarts (clear first, then restart).
+
+## Resource naming (URL discovery)
+
+Since @nubitio 0.3.0 the frontend reads the **real** collection URLs from the
+API entrypoint (`GET /api`) and only falls back to a dash-case + pluralize
+heuristic when that fetch fails. Consequences:
+
+- `defineResource` paths must match the **backend's actual routes** (whatever
+  the configured path generator produces — e.g. `/api/sales-documents` with
+  the dash generator).
+- A `No schema found for <url>` error lists the known URLs and suggests the
+  closest match — follow the suggestion.
+- Entity names with irregular plurals are no longer fatal, but the heuristic
+  fallback still mangles them; prefer regular names for resilience.
+
+## Master-detail (lines inside a form), drawer and page modes
+
+`defineResource` accepts far more than `title` — use the engine:
+
+- `viewMode: 'drawer' | 'page' | { mode: 'drawer', drawerSize: 'md' }`.
+  Page mode needs BOTH routes (`/sales` and `/sales/:id`) pointing at the same
+  page component plus `routing: { routeParam: 'id' }` — or use the
+  `crudRoute('/sales', <SalesPage />)` helper which returns both routes.
+- `formDetail: { propertyName: 'lines', url: '/api/sales-document-lines?document={id}', fields: [...] }`
+  renders an editable detail grid inside the form. Rows are submitted
+  **embedded** in the parent payload under `propertyName`; on edit they are
+  reloaded from `url` (the `{id}` placeholder is required — without it the
+  edit form shows an empty detail grid). The "add row" button has aria-label
+  `Add item` and no visible text.
+- `gridDetail: { url: '...?document={id}', fields: [...] }` adds an expandable
+  row panel to the main grid (read-only). Expose an API Platform
+  `SearchFilter` on the child's parent property so `?document=<id>` works.
+- Detail `fields` accept builder instances directly (`entityField(...)
+  .name('product')`) — `.build()` is called for you (also valid to call it
+  yourself).
+- `entityField(url, valueField, textField)`: use `valueField: '_iri'` — that
+  is what the Hydra data source injects on option rows. `'@id'` will not
+  resolve labels (plain-JSON option payloads have no `@id`).
+- `onDetailRowsChanged(formRef)` lets you recompute header fields live from
+  `formRef.current?.getDetailData()`.
+
+Backend side for embedded detail rows: serialization groups on parent and
+line fields, `cascade: ['persist','remove']` + `orphanRemoval: true` on the
+collection, and a state processor that sets the back-reference and computes
+amounts on every save. Detail rows are sent without ids → treat saves as full
+replace. Don't put groups on the line's back-reference property (circular).
+Compute totals in the parent's processor; the line's own processor never runs
+for embedded writes.
+
+To keep an embedded collection out of the auto-generated form, use
+`#[ApiProperty(readable: false)]` (excluded from reads entirely) or the
+`x-crud: ['visibleOnForm' => false]` hint (column stays in the grid).
+Plain `x-crud: hidden` only hides grid columns.
+
+## Summaries (grid footers and line totals)
+
+- `formDetail.summary: { sticky: true, items: [...] }` adds a footer to the
+  lines grid inside the form (e.g. running tax + total while editing). Safe
+  there: the form always loads ALL lines of the document.
+- `summaryFields: [...]` adds the same footer to the MAIN grid, but it is
+  computed client-side over the **loaded page only** — on paginated grids the
+  number lies once there is more than one page. **Don't use it on paginated
+  resources** until server-side summaries exist. The currency preset reads
+  the app-wide currency from `<CoreConfigProvider currency="USD">`; per-item
+  `currency` overrides it, and with neither set it falls back to plain
+  fixed-point formatting.
+
+## Workflow actions and row locking
+
+- `rowActions: (row) => [...]` adds per-row menu actions (confirm + PATCH
+  state transitions work well; grids with `mercure: true` refresh themselves).
+- `permissions.canEditRow / canDeleteRow: (row) => boolean` hide Edit/Delete
+  per row and make row-click open read-only. **Set `canView: true` alongside
+  them** — it defaults to false, and a fully locked row would otherwise have
+  no actions at all.
+- Menu items render as `[role=menuitem]` buttons (useful for E2E selectors).
 
 ## Customizations
 
@@ -114,8 +193,14 @@ After changing entities: `docker compose exec app php bin/console cache:clear`.
   (`currentPassword`/`newPassword`); it rotates all sessions. Purge old refresh tokens with
   `bin/console nubit:auth:purge-refresh-tokens`.
 - **Roles per operation**: standard API Platform `security: "is_granted('ROLE_ADMIN')"`
-  on the operation. Routes under `/api` already require `ROLE_USER` (see
-  `config/packages/security.yaml` `access_control`).
+  on the operation (needs symfony/expression-language). Routes under `/api`
+  already require `ROLE_USER` (see `config/packages/security.yaml`
+  `access_control`).
+- **Role-aware UI**: cookies are HttpOnly, so the SPA can't read the JWT —
+  expose a small `GET /api/me` endpoint returning the session roles, fetch it
+  on boot, and mirror the role as UX only (filter menu groups, build
+  permission presets passed to `defineResource`). The backend `security:`
+  expressions remain the real gate.
 - **Extra JWT claims / login payload**: implement `TokenClaimsProviderInterface`
   and alias it over `DefaultTokenClaimsProvider` in `config/services.yaml`.
 - **Extra login cookies** (e.g. Mercure subscriber JWT): implement
@@ -129,9 +214,6 @@ After changing entities: `docker compose exec app php bin/console cache:clear`.
   `<CoreConfigProvider currency="USD">` (`frontend/src/App.tsx`). With neither,
   values render as plain fixed-point numbers — the library defaults to no
   country's currency.
-- **Per-row permissions**: `defineResource(..., { permissions: { canEditRow,
-  canDeleteRow } })` predicates lock rows (Edit/Delete hidden, row click opens
-  read-only).
 - **Theming**: tokens are CSS custom properties from `@nubitio/ui`
   (`--surface-*`, `--text-*`, `--accent-color`, `--font-family-{sans,display}`).
   Style custom pages with tokens, never hardcoded colors — dark mode is free.
@@ -156,6 +238,10 @@ After changing entities: `docker compose exec app php bin/console cache:clear`.
    Don't add CORS config for the SPA; it's not cross-origin.
 8. New vendor service classes are NOT autodiscovered — bundle registers its
    own; app services go in `config/services.yaml` as usual.
+9. Resources with `mercure: true` publish **after** the flush: if the hub is
+   down, the row IS persisted but the request returns 500 ("Failed to send an
+   update"). A broken hub shows as 502 on `/.well-known/mercure`. If host
+   port 3000 is taken, start the stack with `MERCURE_PORT=3001 docker compose up -d`.
 
 ## Library source (for deeper digging)
 
