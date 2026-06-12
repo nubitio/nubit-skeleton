@@ -16,6 +16,10 @@ nubit_admin:
     # (see Product::$photo). Swap to S3 via media.storage.filesystem.
     media:
         enabled: true
+    # Audit trail: #[Auditable] entities get field-level before/after diffs
+    # served at /api/audit-trail/{resource}/{id} (see Product + ProductsPage).
+    audit:
+        enabled: true
 
 when@dev:
     nubit_admin:

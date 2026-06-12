@@ -15,6 +15,7 @@ use ApiPlatform\Metadata\Post;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Nubit\AdminBundle\Media\Entity\Media;
+use Nubit\ApiPlatform\Attribute\Auditable;
 use Nubit\ApiPlatform\Doctrine\Filter\DataGridFilter;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -23,6 +24,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * that @nubitio/react-admin generates from /api/docs.jsonld — no frontend
  * field definitions needed.
  */
+#[Auditable]
 #[ORM\Entity]
 #[ApiResource(
     operations: [new GetCollection(), new Post(), new Get(), new Patch(), new Delete()],

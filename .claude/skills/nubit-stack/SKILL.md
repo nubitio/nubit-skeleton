@@ -178,6 +178,26 @@ local `var/uploads` by default; S3 = point `media.storage.filesystem` at a
 FilesystemOperator service. Schedule `bin/console nubit:media:purge` — deletes
 are soft and abandoned-form uploads orphan files.
 
+## Audit trail (change history per row)
+
+`nubit_admin.audit.enabled: true` (already on here) + `#[Auditable]`
+(`Nubit\ApiPlatform\Attribute\Auditable`) on the entity records field-level
+before/after diffs of every create/update/delete, attributed to the logged-in
+user. Wire the panel per resource:
+
+```ts
+defineResource('/api/products', {
+  auditTrail: { enabled: true, apiUrl: (id) => `/api/audit-trail/product/${id}` },
+})
+```
+
+The grid gains a History toolbar button acting on the selected row (see
+`ProductsPage.tsx` + `src/Entity/Product.php`). The `{resource}` URL segment
+is the lowercased class short name, or `#[Auditable(resource: '...')]`.
+Diffs skip `ignored_fields` (createdAt/updatedAt/password by default) and
+collection contents; relations collapse to their id. Schedule
+`bin/console nubit:audit:purge` — the log grows with every audited write.
+
 ## Summaries (grid footers and line totals)
 
 - `formDetail.summary: { sticky: true, items: [...] }` adds a footer to the

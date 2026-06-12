@@ -1241,6 +1241,11 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         hub_path?: scalar|Param|null, // Default: "/.well-known/mercure"
  *         fail_safe?: bool|Param, // Decorate the default hub so a dead Mercure never turns a successful write into a 500. HTTP requests log-and-continue; workers/console rethrow so async retries still work. Applies whenever MercureBundle is installed, regardless of "enabled". // Default: true
  *     },
+ *     audit?: array{
+ *         enabled?: bool|Param, // Record field-level diffs of #[Auditable] entities and expose GET /api/audit-trail/{resource}/{id}. // Default: false
+ *         ignored_fields?: list<scalar|Param|null>,
+ *         purge_retention_days?: int|Param, // nubit:audit:purge removes entries older than this. // Default: 365
+ *     },
  *     media?: array{
  *         enabled?: bool|Param, // Expose the media library: POST /api/media (multipart), Media entity, streaming route, purge command. // Default: false
  *         storage?: array{
