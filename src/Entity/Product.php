@@ -73,6 +73,7 @@ class Product
     #[ORM\ManyToOne(targetEntity: Media::class)]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     #[ApiProperty(
+        readableLink: true,
         description: 'Photo',
         openapiContext: ['x-crud' => ['order' => 4, 'format' => 'image', 'hidden' => true]],
     )]
