@@ -206,7 +206,9 @@ variants, fully token-themed:
 - `variant="stepper"`: workflow stages (e.g. a document lifecycle: draft →
   sent → accepted/rejected). `status` per item: `complete` (check), `current`
   (ring), `pending`, `error` (red ✗). Use this instead of alert()s or ad-hoc
-  status text when a row has a state machine.
+  status text when a row has a state machine. Add
+  `orientation="horizontal"` for wizard/checkout layouts (1 → 2 → 3, labels
+  under the markers).
 - `variant="log"`: chronological events with tone-colored dot markers
   (`tone: success|info|danger|warning`) + `timestamp`/`dateTime`. The
   AuditTrailPanel renders change history with it automatically — reach for it
