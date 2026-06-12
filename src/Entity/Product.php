@@ -55,7 +55,7 @@ class Product
     #[Assert\PositiveOrZero]
     #[ApiProperty(
         description: 'Price',
-        openapiContext: ['x-crud' => ['filterable' => true, 'sortable' => true, 'order' => 2]],
+        openapiContext: ['x-crud' => ['filterable' => true, 'sortable' => true, 'order' => 2, 'format' => 'currency']],
     )]
     private string $price = '0.00';
 

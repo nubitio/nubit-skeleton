@@ -10,7 +10,7 @@ services:
     environment:
       DATABASE_URL: postgresql://app:!ChangeMe!@database:5432/app?serverVersion=16&charset=utf8
       MERCURE_URL: http://mercure/.well-known/mercure
-      MERCURE_PUBLIC_URL: http://localhost:3000/.well-known/mercure
+      MERCURE_PUBLIC_URL: http://localhost:${MERCURE_PORT:-3000}/.well-known/mercure
       MERCURE_JWT_SECRET: '!ChangeThisMercureHubJWTSecretKey!'
     depends_on:
       database:
@@ -54,7 +54,8 @@ services:
         cors_origins http://localhost:5173 http://localhost:8000
         anonymous
     ports:
-      - '3000:80'
+      # Override with MERCURE_PORT if 3000 is taken on your machine.
+      - '${MERCURE_PORT:-3000}:80'
 ###< symfony/mercure-bundle ###
 
 volumes:

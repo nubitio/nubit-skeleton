@@ -47,7 +47,15 @@ class Customer
 ```
 
 `x-crud` hints (all optional): `filterable`, `sortable`, `order` (column order),
-`width` (px), `hidden: true` (exclude from grid, keep in form).
+`width` (px), `hidden: true` (exclude from grid, keep in form),
+`visibleOnForm: false` (exclude from form, keep in grid — for computed/server-set
+fields), `format: 'currency'` (decimal renders as money: right-aligned,
+locale-aware thousands separators, 2 decimals — see `price` in
+`src/Entity/Product.php`).
+
+Closed value sets: add `'enum' => ['draft', 'sent', 'paid']` to the
+`openapiContext` and the form renders a select with humanized labels
+('credit_note' → "Credit Note") instead of free text.
 
 Column labels: humanized from the property name (`firstName` → "First Name").
 For custom/translated labels set `description: 'app.customer.name'` (an i18n
@@ -113,8 +121,17 @@ After changing entities: `docker compose exec app php bin/console cache:clear`.
 - **Extra login cookies** (e.g. Mercure subscriber JWT): implement
   `LoginResponseDecoratorInterface` (autoconfigured).
 - **Manual field control on the frontend** (rare): pass `fields: [...]` built
-  with `textField()/numberField()/entityField()…` to `defineResource`, plus
+  with `textField()/numberField()/entityField()…` to `defineResource` (builder
+  instances are accepted directly — calling `.build()` is optional), plus
   `adapter: RestAdapter` for non-Hydra backends.
+- **App-wide currency**: `currency` formatting takes the ISO 4217 code from
+  `item.currency` row data when present, else from
+  `<CoreConfigProvider currency="USD">` (`frontend/src/App.tsx`). With neither,
+  values render as plain fixed-point numbers — the library defaults to no
+  country's currency.
+- **Per-row permissions**: `defineResource(..., { permissions: { canEditRow,
+  canDeleteRow } })` predicates lock rows (Edit/Delete hidden, row click opens
+  read-only).
 - **Theming**: tokens are CSS custom properties from `@nubitio/ui`
   (`--surface-*`, `--text-*`, `--accent-color`, `--font-family-{sans,display}`).
   Style custom pages with tokens, never hardcoded colors — dark mode is free.

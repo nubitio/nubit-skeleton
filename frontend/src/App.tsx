@@ -84,7 +84,7 @@ export function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <CoreProvider http={{ baseUrl: API_BASE_URL, refreshPath: 'auth/refresh', loginPath: 'auth/login' }}>
-          <CoreConfigProvider apiBaseUrl={API_BASE_URL} locale="en" timezone="UTC">
+          <CoreConfigProvider apiBaseUrl={API_BASE_URL} locale="en" timezone="UTC" currency="USD">
             <BrowserRouter>
               {authenticated ? (
                 <Shell onLogout={handleLogout} />
