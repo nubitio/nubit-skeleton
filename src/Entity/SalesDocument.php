@@ -77,6 +77,9 @@ class SalesDocument
     /** @var Collection<int, SalesDocumentLine> */
     #[ORM\OneToMany(targetEntity: SalesDocumentLine::class, mappedBy: 'document', cascade: ['persist', 'remove'], orphanRemoval: true)]
     #[Groups(['document:read', 'document:write'])]
+    #[ApiProperty(
+        openapiContext: ['x-crud' => ['visibleOnForm' => false, 'hidden' => true]],
+    )]
     private Collection $lines;
 
     public function __construct()

@@ -1,0 +1,25 @@
+{
+  "findings": [
+    {
+      "status": "pass",
+      "area": "auth",
+      "note": "Login succeeds and redirects to Products grid with seeded data"
+    },
+    {
+      "status": "pass",
+      "area": "sales",
+      "note": "Edit drawer hides raw collection field and loads line items"
+    },
+    {
+      "status": "pass",
+      "area": "sales",
+      "note": "Line items summary shows correct total"
+    },
+    {
+      "status": "pass",
+      "area": "auth",
+      "note": "Unauthenticated deep links fall back to login"
+    }
+  ],
+  "auditedAt": "2026-06-17T17:18:53.329Z"
+}
