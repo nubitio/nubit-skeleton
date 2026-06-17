@@ -20,9 +20,9 @@ services:
   frontend:
     image: node:22-alpine
     working_dir: /app/frontend
-    command: sh -c "corepack enable && pnpm install && pnpm dev --host"
+    command: sh -c "corepack enable && pnpm install --no-frozen-lockfile && pnpm dev --host"
     ports:
-      - '5173:5173'
+      - '${FRONTEND_PORT:-5173}:5173'
     environment:
       API_PROXY_TARGET: http://app
       MERCURE_PROXY_TARGET: http://mercure
