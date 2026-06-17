@@ -32,8 +32,11 @@ URLs: app/API http://localhost:8000 · React http://localhost:5173 · Mercure ht
 | `src/Command/SeedCommand.php` | Demo data |
 | `config/packages/security.yaml` | Firewall + access control (JWT authenticator from the bundle) |
 | `config/packages/nubit_admin.yaml` | Auth TTLs, cookie flags, docs locale |
-| `frontend/src/App.tsx` | Providers, menu, routes, session gate |
-| `frontend/src/pages/ProductsPage.tsx` | Reference page — `defineResource` + `SmartCrudPage` |
+| `frontend/src/App.tsx` | Providers, Mercure, toast runtime, menu, routes, `/api/me` session |
+| `src/Controller/MeController.php` | `GET /api/me` — username + roles for `SmartCrudRolesProvider` |
+| `frontend/src/pages/ProductsPage.tsx` | Reference page — `defineResource` + `SmartCrudPage` + audit trail |
+| `frontend/src/pages/SalesDocumentsPage.tsx` | Master-detail — `formDetail`, drawer, `canEditRow` |
+| `src/Entity/SalesDocument.php` | Embedded lines collection + processor totals |
 
 ## Conventions
 

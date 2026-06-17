@@ -119,6 +119,17 @@ heuristic when that fetch fails. Consequences:
 - Entity names with irregular plurals are no longer fatal, but the heuristic
   fallback still mangles them; prefer regular names for resilience.
 
+## Integration wiring (already in this skeleton)
+
+- **Mercure**: `MercureProvider` in `frontend/src/App.tsx` with hub URL
+  `/.well-known/mercure` (Vite proxies to the hub in dev — see `vite.config.ts`).
+  Set `VITE_MERCURE_TOPIC_ORIGIN` to the API public origin (`http://localhost:8000`
+  in Docker) so SSE topics match API Platform `@id` IRIs; backend uses
+  `DEFAULT_URI` for the same value.
+- **Toasts**: `useAppRuntime()` + `ToastHost` feed `CoreProvider.runtime.notify`.
+- **Session**: `GET /api/me` on boot; logout calls `POST /api/auth/logout`.
+- **Master-detail demo**: `SalesDocumentsPage.tsx` + `SalesDocument` entity.
+
 ## Master-detail (lines inside a form), drawer and page modes
 
 `defineResource` accepts far more than `title` — use the engine:
@@ -260,11 +271,11 @@ variants, fully token-themed:
   on the operation (needs symfony/expression-language). Routes under `/api`
   already require `ROLE_USER` (see `config/packages/security.yaml`
   `access_control`).
-- **Role-aware UI**: cookies are HttpOnly, so the SPA can't read the JWT —
-  expose a small `GET /api/me` endpoint returning the session roles, fetch it
-  on boot, and mirror the role as UX only (filter menu groups, build
-  permission presets passed to `defineResource`). The backend `security:`
-  expressions remain the real gate.
+- **Role-aware UI**: cookies are HttpOnly, so the SPA can't read the JWT.
+  This skeleton ships `GET /api/me` (`src/Controller/MeController.php`) and
+  wires the response into `SmartCrudRolesProvider` via `frontend/src/hooks/useSession.ts`.
+  Mirror roles as UX only (menu filtering, `defineResource` permission presets).
+  Symfony `security:` expressions remain the real gate.
 - **Extra JWT claims / login payload**: implement `TokenClaimsProviderInterface`
   and alias it over `DefaultTokenClaimsProvider` in `config/services.yaml`.
 - **Extra login cookies** (e.g. Mercure subscriber JWT): implement

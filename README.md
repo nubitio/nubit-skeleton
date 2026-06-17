@@ -32,7 +32,8 @@ Open **http://localhost:5173** and sign in with `admin@example.com` / `admin1234
 | --- | --- |
 | React admin (Vite dev) | http://localhost:5173 |
 | API + docs | http://localhost:8000/api |
-| Mercure hub | http://localhost:3000/.well-known/mercure |
+| Mercure hub (proxied in dev) | http://localhost:5173/.well-known/mercure |
+| Session profile | `GET /api/me` |
 
 > Before anything real: change `APP_SECRET` in `.env` (≥ 32 bytes — it signs the auth JWTs) and the database/Mercure passwords in `compose.yaml`.
 
@@ -61,6 +62,8 @@ export const CustomersPage = () => <SmartCrudPage resource={customers} />;
 ```
 
 4. Register the route + menu item in [`frontend/src/App.tsx`](frontend/src/App.tsx). Done — full CRUD.
+
+See [`frontend/src/pages/SalesDocumentsPage.tsx`](frontend/src/pages/SalesDocumentsPage.tsx) for a **master-detail** example (line items inside the form, drawer view mode, row locking by status).
 
 ## Auth
 

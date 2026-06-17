@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Command;
 
 use App\Entity\Product;
+use App\Entity\SalesDocument;
+use App\Entity\SalesDocumentLine;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -57,6 +59,33 @@ final class SeedCommand extends Command
             $io->success('5 sample products created.');
         } else {
             $io->note('Products already seeded.');
+        }
+
+        $salesRepo = $this->entityManager->getRepository(SalesDocument::class);
+        if (0 === $salesRepo->count([])) {
+            $products = $productRepo->findBy([], ['id' => 'ASC'], 2);
+            if (\count($products) >= 2) {
+                $document = new SalesDocument()
+                    ->setNumber('SD-0001')
+                    ->setStatus('confirmed');
+                $document->addLine(
+                    (new SalesDocumentLine())
+                        ->setProduct($products[0])
+                        ->setQuantity('2.00')
+                        ->setUnitPrice($products[0]->getPrice()),
+                );
+                $document->addLine(
+                    (new SalesDocumentLine())
+                        ->setProduct($products[1])
+                        ->setQuantity('1.00')
+                        ->setUnitPrice($products[1]->getPrice()),
+                );
+                $document->recalculateTotal();
+                $this->entityManager->persist($document);
+                $io->success('Sample sales document SD-0001 created.');
+            }
+        } else {
+            $io->note('Sales documents already seeded.');
         }
 
         $this->entityManager->flush();

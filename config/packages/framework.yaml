@@ -1,6 +1,9 @@
 # see https://symfony.com/doc/current/reference/configuration/framework.html
 framework:
     secret: '%env(APP_SECRET)%'
+    router:
+        # IRIs / Mercure topics when no HTTP request is active (CLI, workers).
+        default_uri: '%env(DEFAULT_URI)%'
 
     # Note that the session will be started ONLY if you read or write from it.
     session: true

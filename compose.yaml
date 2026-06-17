@@ -9,6 +9,7 @@ services:
       - caddy_config:/config
     environment:
       DATABASE_URL: postgresql://app:!ChangeMe!@database:5432/app?serverVersion=16&charset=utf8
+      DEFAULT_URI: http://localhost:8000
       MERCURE_URL: http://mercure/.well-known/mercure
       MERCURE_PUBLIC_URL: http://localhost:${MERCURE_PORT:-3000}/.well-known/mercure
       MERCURE_JWT_SECRET: '!ChangeThisMercureHubJWTSecretKey!'
@@ -22,6 +23,11 @@ services:
     command: sh -c "corepack enable && pnpm install && pnpm dev --host"
     ports:
       - '5173:5173'
+    environment:
+      API_PROXY_TARGET: http://app
+      MERCURE_PROXY_TARGET: http://mercure
+      VITE_MERCURE_HUB_URL: /.well-known/mercure
+      VITE_MERCURE_TOPIC_ORIGIN: http://localhost:8000
     volumes:
       - .:/app
 
