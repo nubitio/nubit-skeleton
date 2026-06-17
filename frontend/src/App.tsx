@@ -30,9 +30,6 @@ const menu: AdminMenuItem[] = [
 ];
 
 const API_BASE_URL = '/api/';
-const MERCURE_HUB_URL = import.meta.env.VITE_MERCURE_HUB_URL ?? '/.well-known/mercure';
-/** Must match API Platform IRIs (DEFAULT_URI / public API origin). */
-const MERCURE_TOPIC_ORIGIN = import.meta.env.VITE_MERCURE_TOPIC_ORIGIN as string | undefined;
 
 function Shell({
   username,
@@ -42,7 +39,7 @@ function Shell({
   onLogout: () => void;
 }) {
   return (
-    <MercureProvider hubUrl={MERCURE_HUB_URL}>
+    <MercureProvider>
       <SchemaProvider>
         <HydraResourceSchemaProvider>
           <HydraResourceStoreProvider>
@@ -98,7 +95,7 @@ export function App() {
             locale="en"
             timezone="UTC"
             currency="USD"
-            mercureTopicOrigin={MERCURE_TOPIC_ORIGIN}
+
           >
             <SmartCrudRolesProvider roles={roles}>
               <BrowserRouter>

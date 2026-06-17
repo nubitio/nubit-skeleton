@@ -26,8 +26,6 @@ services:
     environment:
       API_PROXY_TARGET: http://app
       MERCURE_PROXY_TARGET: http://mercure
-      VITE_MERCURE_HUB_URL: /.well-known/mercure
-      VITE_MERCURE_TOPIC_ORIGIN: http://localhost:8000
     volumes:
       - .:/app
 
