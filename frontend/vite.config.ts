@@ -14,4 +14,10 @@ export default defineConfig({
       '/.well-known/mercure': { target: mercureTarget, changeOrigin: true },
     },
   },
+  preview: {
+    proxy: {
+      '/api': { target: apiTarget, changeOrigin: false },
+      '/.well-known/mercure': { target: mercureTarget, changeOrigin: true },
+    },
+  },
 });

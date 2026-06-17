@@ -116,6 +116,16 @@ class SalesDocument
         return $this;
     }
 
+    #[Groups(['document:read'])]
+    #[ApiProperty(
+        description: 'Lines',
+        openapiContext: ['x-crud' => ['order' => 3, 'visibleOnForm' => false]],
+    )]
+    public function getLineCount(): int
+    {
+        return $this->lines->count();
+    }
+
     public function getTotal(): string
     {
         return $this->total;
