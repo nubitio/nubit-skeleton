@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Command;
 
+use App\Entity\Customer;
 use App\Entity\Product;
 use App\Entity\SalesDocument;
 use App\Entity\SalesDocumentLine;
@@ -59,6 +60,30 @@ final class SeedCommand extends Command
             $io->success('5 sample products created.');
         } else {
             $io->note('Products already seeded.');
+        }
+
+        $customerRepo = $this->entityManager->getRepository(Customer::class);
+        if (0 === $customerRepo->count([])) {
+            $products = $productRepo->findBy([], ['id' => 'ASC'], 2);
+            $preferred = $products[0] ?? null;
+            $samples = [
+                ['Acme Retail', 'retail@acme.example', 'retail'],
+                ['Global Wholesale Co.', 'sales@globalwholesale.example', 'wholesale'],
+                ['Enterprise Systems Ltd.', 'procurement@enterprise.example', 'enterprise'],
+            ];
+            foreach ($samples as [$name, $email, $segment]) {
+                $customer = new Customer()
+                    ->setName($name)
+                    ->setEmail($email)
+                    ->setSegment($segment);
+                if ($preferred) {
+                    $customer->setPreferredProduct($preferred);
+                }
+                $this->entityManager->persist($customer);
+            }
+            $io->success('3 sample customers created.');
+        } else {
+            $io->note('Customers already seeded.');
         }
 
         $salesRepo = $this->entityManager->getRepository(SalesDocument::class);

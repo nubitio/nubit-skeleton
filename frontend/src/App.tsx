@@ -6,19 +6,21 @@ import {
   CoreProvider,
   HydraResourceSchemaProvider,
   HydraResourceStoreProvider,
+  LoginPage,
   MercureProvider,
   SchemaProvider,
+  SessionProvider,
   SmartCrudRolesProvider,
   ThemeProvider,
   ThemeSwitcher,
+  ToastHost,
+  useAppRuntime,
+  useSession,
   type AdminMenuItem,
 } from '@nubitio/react-admin';
-import { useSession } from './hooks/useSession';
-import { LoginPage } from './pages/LoginPage';
+import { CustomersPage } from './pages/CustomersPage';
 import { ProductsPage } from './pages/ProductsPage';
 import { SalesDocumentsPage } from './pages/SalesDocumentsPage';
-import { ToastHost, useAppRuntime } from './runtime/ToastHost';
-import './runtime/toast.css';
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 30_000 } },
@@ -26,6 +28,7 @@ const queryClient = new QueryClient({
 
 const menu: AdminMenuItem[] = [
   { text: 'Products', icon: 'ph ph-package', path: '/products' },
+  { text: 'Customers', icon: 'ph ph-users', path: '/customers' },
   { text: 'Sales', icon: 'ph ph-receipt', path: '/sales' },
 ];
 
@@ -65,6 +68,7 @@ function Shell({
               <Routes>
                 <Route path="/" element={<Navigate to="/products" replace />} />
                 <Route path="/products" element={<ProductsPage />} />
+                <Route path="/customers" element={<CustomersPage />} />
                 <Route path="/sales" element={<SalesDocumentsPage />} />
               </Routes>
             </AdminShell>
@@ -75,7 +79,7 @@ function Shell({
   );
 }
 
-export function App() {
+function AuthenticatedApp() {
   const { session, refresh, logout, roles, username } = useSession();
   const { runtime, toasts, dismiss } = useAppRuntime();
 
@@ -84,31 +88,38 @@ export function App() {
   }
 
   return (
+    <CoreProvider
+      http={{ baseUrl: API_BASE_URL, refreshPath: 'auth/refresh', loginPath: 'auth/login' }}
+      runtime={runtime}
+    >
+      <CoreConfigProvider apiBaseUrl={API_BASE_URL} locale="en" timezone="UTC" currency="USD">
+        <SmartCrudRolesProvider roles={roles}>
+          <BrowserRouter>
+            {session.status === 'authenticated' ? (
+              <Shell username={username ?? 'User'} onLogout={() => void logout()} />
+            ) : (
+              <LoginPage
+                apiBaseUrl={API_BASE_URL}
+                defaultUsername="admin@example.com"
+                hint="Demo credentials: admin@example.com / admin1234"
+                onLoggedIn={() => void refresh()}
+              />
+            )}
+          </BrowserRouter>
+          <ToastHost toasts={toasts} onDismiss={dismiss} />
+        </SmartCrudRolesProvider>
+      </CoreConfigProvider>
+    </CoreProvider>
+  );
+}
+
+export function App() {
+  return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <CoreProvider
-          http={{ baseUrl: API_BASE_URL, refreshPath: 'auth/refresh', loginPath: 'auth/login' }}
-          runtime={runtime}
-        >
-          <CoreConfigProvider
-            apiBaseUrl={API_BASE_URL}
-            locale="en"
-            timezone="UTC"
-            currency="USD"
-
-          >
-            <SmartCrudRolesProvider roles={roles}>
-              <BrowserRouter>
-                {session.status === 'authenticated' ? (
-                  <Shell username={username ?? 'User'} onLogout={() => void logout()} />
-                ) : (
-                  <LoginPage onLoggedIn={() => void refresh()} />
-                )}
-              </BrowserRouter>
-              <ToastHost toasts={toasts} onDismiss={dismiss} />
-            </SmartCrudRolesProvider>
-          </CoreConfigProvider>
-        </CoreProvider>
+        <SessionProvider apiBaseUrl={API_BASE_URL}>
+          <AuthenticatedApp />
+        </SessionProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );

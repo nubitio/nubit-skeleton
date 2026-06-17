@@ -13,8 +13,8 @@
   "dependencies": {
     "@fontsource/inter": "^5.2.8",
     "@fontsource/syne": "^5.2.7",
-    "@nubitio/react-admin": "^0.5.12",
-    "@nubitio/ui": "^0.5.12",
+    "@nubitio/react-admin": "^0.5.14",
+    "@nubitio/ui": "^0.5.14",
     "@phosphor-icons/web": "^2.1.2",
     "@tanstack/react-query": "^5.0.0",
     "i18next": "^23.16.8",
