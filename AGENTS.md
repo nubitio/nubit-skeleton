@@ -20,6 +20,7 @@ docker compose exec app php bin/console app:seed              # admin@example.co
 docker compose exec app php bin/console cache:clear
 cd frontend && corepack pnpm dev                              # or use the compose `frontend` service
 cd frontend && corepack pnpm build                            # tsc + vite build
+docker compose exec app php vendor/bin/phpunit                # internal-stack contract tests
 ```
 
 URLs: app/API http://localhost:8000 · React http://localhost:5173 · Mercure http://localhost:3000
@@ -31,9 +32,8 @@ URLs: app/API http://localhost:8000 · React http://localhost:5173 · Mercure ht
 | `src/Entity/Product.php` | Reference entity — copy its pattern for new resources |
 | `src/Command/SeedCommand.php` | Demo data |
 | `config/packages/security.yaml` | Firewall + access control (JWT authenticator from the bundle) |
-| `config/packages/nubit_admin.yaml` | Auth TTLs, cookie flags, docs locale |
-| `frontend/src/App.tsx` | Providers, Mercure, toast runtime, menu, routes, `/api/me` session |
-| `src/Controller/MeController.php` | `GET /api/me` — username + roles for `SmartCrudRolesProvider` |
+| `config/packages/nubit_admin.yaml` | `app_profile`, auth TTLs, cookie flags, docs locale |
+| `frontend/src/App.tsx` | `createNubitApp()` — menú/rutas declarativos; providers vía el motor |
 | `frontend/src/pages/ProductsPage.tsx` | Reference page — `defineResource` + `SmartCrudPage` + audit trail |
 | `frontend/src/pages/SalesDocumentsPage.tsx` | Master-detail — `formDetail`, drawer, `canEditRow` |
 | `src/Entity/SalesDocument.php` | Embedded lines collection + processor totals |

@@ -8,3 +8,11 @@
 /frontend/e2e-report/
 /frontend/e2e-results/
 .DS_Store
+
+# Plan del motor Nubit — seguimiento local, no commitear
+/docs/local/
+
+###> phpunit/phpunit ###
+/phpunit.xml
+/.phpunit.cache/
+###< phpunit/phpunit ###

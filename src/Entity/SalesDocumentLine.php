@@ -5,11 +5,16 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiProperty;
+use Nubit\ApiPlatform\Attribute\EmbeddedLines;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[EmbeddedLines(
+    parentProperty: 'document',
+    normalizationGroups: ['document:read'],
+)]
 #[ORM\Entity]
 #[ORM\Table(name: 'sales_document_line')]
 class SalesDocumentLine

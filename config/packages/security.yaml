@@ -20,6 +20,9 @@ security:
             stateless: true
             provider: app_users
             custom_authenticator: Nubit\AdminBundle\Auth\JWTAuthenticator
+            login_throttling:
+                max_attempts: 5
+                interval: '15 minutes'
 
     access_control:
         - { path: ^/api/auth/(login|refresh), roles: PUBLIC_ACCESS }

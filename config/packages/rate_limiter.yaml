@@ -1,0 +1,6 @@
+# symfony/rate-limiter is required for login_throttling in security.yaml.
+# The limiter itself is auto-created by the security component; this file
+# exists to satisfy the framework bundle requirement and can be extended
+# with additional app-level limiters (e.g. for API endpoints).
+framework:
+    rate_limiter: ~

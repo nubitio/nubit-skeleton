@@ -53,6 +53,7 @@ class Customer
     private string $email = '';
 
     #[ORM\Column(length: 16)]
+    #[Assert\Choice(choices: ['retail', 'wholesale', 'enterprise'])]
     #[ApiProperty(
         description: 'Segment',
         openapiContext: [

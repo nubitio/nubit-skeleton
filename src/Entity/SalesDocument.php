@@ -67,7 +67,7 @@ class SalesDocument
     private string $status = 'draft';
 
     #[ORM\Column(type: Types::DECIMAL, precision: 12, scale: 2)]
-    #[Groups(['document:read', 'document:write'])]
+    #[Groups(['document:read'])]
     #[ApiProperty(
         description: 'Total',
         openapiContext: ['x-crud' => ['order' => 2, 'format' => 'currency', 'visibleOnForm' => false]],

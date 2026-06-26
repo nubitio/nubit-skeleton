@@ -64,6 +64,27 @@
     "nubitio/admin-bundle": {
         "version": "v0.2.0"
     },
+    "nubitio/sequence-bundle": {
+        "version": "v0.10.3"
+    },
+    "nubitio/workflow-bundle": {
+        "version": "v0.10.3"
+    },
+    "phpunit/phpunit": {
+        "version": "12.5",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "11.1",
+            "ref": "ca0bc067abfb40a8de1b2561b96cbfc2b833c314"
+        },
+        "files": [
+            ".env.test",
+            "phpunit.xml.dist",
+            "tests/bootstrap.php",
+            "bin/phpunit"
+        ]
+    },
     "symfony/console": {
         "version": "7.4",
         "recipe": {

@@ -1,4 +1,7 @@
 nubit_admin:
+    # internal = single-org panel (default). saas/hybrid add tenant + features
+    # blocks to GET /api/me when the platform contracts supply them.
+    app_profile: internal
     auth:
         secret: '%env(APP_SECRET)%' # >= 32 bytes
         access_token_ttl: 3600

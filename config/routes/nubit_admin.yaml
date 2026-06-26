@@ -1,2 +1,5 @@
 nubit_admin:
     resource: '@NubitAdminBundle/config/routes.php'
+
+nubit_embedded_lines:
+    resource: '@NubitAdminBundle/config/embedded_lines_routes.yaml'

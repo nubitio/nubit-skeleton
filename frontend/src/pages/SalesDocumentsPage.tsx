@@ -3,6 +3,7 @@ import {
   SmartCrudPage,
   currencyField,
   defineResource,
+  embeddedLinesUrl,
   entityField,
   numberField,
   type FormHandle,
@@ -22,7 +23,7 @@ const salesDocuments = defineResource('/api/sales_documents', {
   },
   formDetail: {
     propertyName: 'lines',
-    url: '/api/sales_document_lines?document={id}',
+    url: embeddedLinesUrl('/api/sales_document_lines', 'document'),
     allowAdding: true,
     allowDeleting: true,
     allowUpdating: true,

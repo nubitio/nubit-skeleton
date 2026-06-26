@@ -4,42 +4,43 @@ declare(strict_types=1);
 
 namespace App\State;
 
-use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use App\Entity\SalesDocument;
-use App\Entity\SalesDocumentLine;
+use Nubit\AdminBundle\State\AbstractEmbeddedLinesProcessor;
 
 /**
  * Binds embedded lines to their parent and recomputes monetary totals on every save.
  *
- * @implements ProcessorInterface<SalesDocument, SalesDocument>
+ * @extends AbstractEmbeddedLinesProcessor<SalesDocument, SalesDocumentLine>
  */
-final readonly class SalesDocumentProcessor implements ProcessorInterface
+final readonly class SalesDocumentProcessor extends AbstractEmbeddedLinesProcessor
 {
     /** @param ProcessorInterface<mixed, mixed> $persistProcessor */
     public function __construct(
-        private ProcessorInterface $persistProcessor,
+        ProcessorInterface $persistProcessor,
     ) {
+        parent::__construct($persistProcessor);
     }
 
-    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): mixed
+    protected function supports(mixed $data): bool
+    {
+        return $data instanceof SalesDocument;
+    }
+
+    protected function linesProperty(): string
+    {
+        return 'lines';
+    }
+
+    protected function lineSetter(): string
+    {
+        return 'setDocument';
+    }
+
+    protected function afterLinesSynced(mixed $data): void
     {
         if ($data instanceof SalesDocument) {
-            $this->syncLines($data);
             $data->recalculateTotal();
-        }
-
-        return $this->persistProcessor->process($data, $operation, $uriVariables, $context);
-    }
-
-    private function syncLines(SalesDocument $document): void
-    {
-        foreach ($document->getLines() as $line) {
-            if (!$line instanceof SalesDocumentLine) {
-                continue;
-            }
-
-            $line->setDocument($document);
         }
     }
 }
