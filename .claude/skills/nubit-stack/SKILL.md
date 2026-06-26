@@ -15,7 +15,7 @@ needs a route. Do not hand-build datagrids or forms unless explicitly asked.
 | --- | --- | --- |
 | Entities + API | `src/Entity/*.php` | `#[ApiResource]` + `DataGridFilter` + `x-crud` hints drive everything |
 | Auth, formats, services | `nubitio/admin-bundle` (vendor) | JWT dual cookie/Bearer, JSON formats, grid filter — already wired |
-| React admin | `frontend/src/` | `SmartCrudPage` renders grid + forms from `/api/docs.jsonld` |
+| React admin | `frontend/src/` | `createNubitApp()` bootstraps providers; `SmartCrudPage` renders from `/api/docs.jsonld` |
 | Infra | `compose.yaml` | FrankenPHP (`app`, :8000) + PostgreSQL + Mercure (:3000) + Vite (:5173) |
 
 Run backend commands inside the container: `docker compose exec app php bin/console …`
@@ -84,9 +84,29 @@ const customers = defineResource('/api/customers', { title: 'Customers' });
 export const CustomersPage = () => <SmartCrudPage resource={customers} />;
 ```
 
-In `frontend/src/App.tsx`: add `{ text: 'Customers', icon: 'ph ph-users', path: '/customers' }`
-to `menu` and `<Route path="/customers" element={<CustomersPage />} />`.
-Icons are Phosphor classes (`ph ph-*`).
+In `frontend/src/App.tsx`: add the menu item and route to `createNubitApp()`:
+
+```tsx
+import { createNubitApp } from '@nubitio/react-admin';
+import { CustomersPage } from './pages/CustomersPage';
+
+const { App } = createNubitApp({
+  title: 'Nubit Admin',
+  menu: [
+    // …existing items…
+    { text: 'Customers', icon: 'ph ph-users', path: '/customers' },
+  ],
+  routes: [
+    // …existing routes…
+    { path: '/customers', element: <CustomersPage /> },
+  ],
+});
+
+export { App };
+```
+
+Icons are Phosphor classes (`ph ph-*`). Optional `roles` on menu items hide entries
+by session role; `filterMenu` adds app-specific rules (tenant features, runtime config).
 
 ### 4. Verify (always do this)
 
@@ -100,6 +120,7 @@ curl -s -b /tmp/cj 'http://localhost:8000/api/customers?filter%5B0%5D%5B0%5D=nam
 ```
 
 Then check the browser at http://localhost:5173 (grid renders, create works).
+Contract tests (no tenant plugins): `docker compose exec app php vendor/bin/phpunit`.
 After changing entities: `docker compose exec app php bin/console cache:clear`
 **and then `docker compose restart app`** — the FrankenPHP worker keeps API
 Platform property metadata in process memory, so new fields won't appear in
@@ -121,13 +142,16 @@ heuristic when that fetch fails. Consequences:
 
 ## Integration wiring (already in this skeleton)
 
-- **Mercure**: `MercureProvider` in `frontend/src/App.tsx` with hub URL
-  `/.well-known/mercure` (Vite proxies to the hub in dev — see `vite.config.ts`).
+- **Mercure**: `createNubitApp()` registers `MercureProvider` by default (`hydra: true`).
+  Hub URL `/.well-known/mercure` (Vite proxies to the hub in dev — see `vite.config.ts`).
   Set `VITE_MERCURE_TOPIC_ORIGIN` to the API public origin (`http://localhost:8000`
   in Docker) so SSE topics match API Platform `@id` IRIs; backend uses
   `DEFAULT_URI` for the same value.
 - **Toasts**: `useAppRuntime()` + `ToastHost` feed `CoreProvider.runtime.notify`.
 - **Session**: `GET /api/me` on boot; logout calls `POST /api/auth/logout`.
+- **Runtime config** (opt-in): `runtime_config: true` + `RuntimeConfigProviderInterface`
+  → `GET /api/runtime-config`; React hook `useRuntimeConfig()`. Off by default in
+  this skeleton — enable when the app needs UI flags/defaults separate from `/api/me`.
 - **Master-detail demo**: `SalesDocumentsPage.tsx` + `SalesDocument` entity.
 
 ## Master-detail (lines inside a form), drawer and page modes
@@ -138,11 +162,14 @@ heuristic when that fetch fails. Consequences:
   Page mode needs BOTH routes (`/sales` and `/sales/:id`) pointing at the same
   page component plus `routing: { routeParam: 'id' }` — or use the
   `crudRoute('/sales', <SalesPage />)` helper which returns both routes.
-- `formDetail: { propertyName: 'lines', url: '/api/sales-document-lines?document={id}', fields: [...] }`
+- `formDetail: { propertyName: 'lines', url: embeddedLinesUrl('/api/sales_document_lines', 'document'), fields: [...] }`
   renders an editable detail grid inside the form. Rows are submitted
   **embedded** in the parent payload under `propertyName`; on edit they are
   reloaded from `url` (the `{id}` placeholder is required — without it the
-  edit form shows an empty detail grid). The "add row" button has aria-label
+  edit form shows an empty detail grid). On the line entity add
+  `#[EmbeddedLines(parentProperty: 'document')]` — the bundle serves the reload
+  endpoint; no custom controller. Extend `AbstractEmbeddedLinesProcessor` on the
+  parent processor to bind lines. The "add row" button has aria-label
   `Add item` and no visible text.
 - `gridDetail: { url: '...?document={id}', fields: [...] }` adds an expandable
   row panel to the main grid (read-only). Expose an API Platform
@@ -246,10 +273,207 @@ variants, fully token-themed:
   `currency` overrides it, and with neither set it falls back to plain
   fixed-point formatting.
 
+## ERP document pattern — Sequence + Workflow + Auditable + lines
+
+The reference implementation is `src/Entity/Invoice.php` + `InvoiceLine.php` +
+`src/State/InvoiceProcessor.php` + `frontend/src/pages/InvoicesPage.tsx`.
+Copy this for every document type (purchase orders, receipts, credit notes…).
+
+### Backend — four attributes on the header entity
+
+```php
+// Install once: composer require nubitio/workflow-bundle nubitio/sequence-bundle
+// Both bundles are auto-registered in config/bundles.php by Flex.
+
+#[Sequence(field: 'number', name: 'invoice', prefix: 'INV-', padding: 4)]
+#[Workflow(
+    field: 'status',
+    transitions: [
+        'confirm' => ['from' => ['draft'], 'to' => 'confirmed', 'label' => 'Confirm'],
+        'mark_paid' => ['from' => ['confirmed'], 'to' => 'paid', 'label' => 'Mark as paid', 'roles' => ['ROLE_ADMIN']],
+        'cancel'   => ['from' => ['draft', 'confirmed'], 'to' => 'cancelled', 'label' => 'Cancel', 'roles' => ['ROLE_ADMIN']],
+    ],
+)]
+#[Auditable(resource: 'invoice')]
+#[ApiResource(processor: InvoiceProcessor::class, ...)]
+class Invoice { /* lines collection, header fields, recalculateTotals() */ }
+```
+
+- `#[Sequence]` fills `$number` on first persist; skip if field already set.
+  Register any `scope: ['customer']` paths to scope counters per dimension.
+- `#[Workflow]` auto-registers `POST /api/invoices/{id}/transition/{name}`.
+  `SmartCrudPage` reads `x-workflow` from `/api/docs.jsonld` and builds row
+  action buttons automatically — no frontend code needed.
+  Optional `guard: MyGuard::class` (implement `WorkflowGuardInterface`) for
+  domain rules that go beyond role checks.
+- `#[Auditable]` records field-level diffs. Use `#[AuditMasked]` on sensitive
+  properties to exclude them.
+- Status field: mark `'visibleOnForm' => false` in `x-crud` — the workflow
+  engine sets it, the user never edits it directly.
+
+### Line entity
+
+```php
+#[EmbeddedLines(parentProperty: 'invoice', normalizationGroups: ['invoice:read'])]
+#[ORM\Entity]
+class InvoiceLine { /* product, quantity, unitPrice, taxRate, lineTotal */ }
+```
+
+### State processor
+
+```php
+// config/services.yaml — required, interface has multiple candidates
+App\State\InvoiceProcessor:
+    arguments:
+        $persistProcessor: '@api_platform.doctrine.orm.state.persist_processor'
+```
+
+```php
+final readonly class InvoiceProcessor extends AbstractEmbeddedLinesProcessor {
+    protected function supports(mixed $data): bool   { return $data instanceof Invoice; }
+    protected function linesProperty(): string        { return 'lines'; }
+    protected function lineSetter(): string           { return 'setInvoice'; }
+    protected function afterLinesSynced(mixed $data): void {
+        if ($data instanceof Invoice) { $data->recalculateTotals(); }
+    }
+}
+```
+
+### Frontend page
+
+```tsx
+// SmartCrudPage auto-reads x-workflow and builds transition buttons — no rowActions needed.
+const invoices = defineResource('/api/invoices', {
+  title: 'Invoices',
+  viewMode: { mode: 'drawer', drawerSize: 'lg' },
+  permissions: {
+    canView: true,
+    canEditRow: (row) => !['paid', 'cancelled'].includes(String(row.status)),
+    canDeleteRow: (row) => row.status === 'draft',
+  },
+  auditTrail: { enabled: true, apiUrl: (id) => `/api/audit-trail/invoice/${id}` },
+  formDetail: {
+    propertyName: 'lines',
+    url: embeddedLinesUrl('/api/invoice_lines', 'invoice'),
+    allowAdding: true, allowDeleting: true, allowUpdating: true,
+    fields: [
+      entityField('/api/products', '_iri', 'name').name('product').required(true).build(),
+      numberField().name('quantity').precision(2).build(),
+      currencyField().name('unitPrice').build(),
+      numberField().name('taxRate').precision(2).build(),
+      currencyField().name('lineTotal').readonly(true).build(),
+    ],
+  },
+});
+export function InvoicesPage() { return <SmartCrudPage resource={invoices} />; }
+```
+
+## Module navigation (FeatureHubLayout)
+
+Group related pages under a single sidebar entry with tabs. Required for ERP
+modules (Sales, Purchasing, Inventory, HR…).
+
+`FeatureHubLayout` uses `<Outlet />` so it **must** be used as a React Router
+layout route inside a nested `<Routes>`. The parent App.tsx entry needs `/*`.
+
+```tsx
+// frontend/src/pages/SalesModule.tsx
+import { Navigate, Route, Routes } from 'react-router-dom';
+import { FeatureHubLayout } from '@nubitio/react-admin';
+
+const BASE = '/sales';
+
+export function SalesModule() {
+  return (
+    <Routes>
+      <Route
+        element={
+          <FeatureHubLayout
+            title="Sales"
+            basePath={BASE}
+            defaultPath={`${BASE}/invoices`}
+            density="compact"
+            tabs={[
+              { key: 'invoices',  label: 'Invoices',  path: `${BASE}/invoices`,  icon: 'invoice' },
+              { key: 'orders',    label: 'Orders',    path: `${BASE}/orders`,    icon: 'receipt' },
+              { key: 'customers', label: 'Customers', path: `${BASE}/customers`, icon: 'users' },
+            ]}
+          />
+        }
+      >
+        <Route index element={<Navigate to={`${BASE}/invoices`} replace />} />
+        <Route path="invoices"  element={<InvoicesPage />} />
+        <Route path="orders"    element={<OrdersPage />} />
+        <Route path="customers" element={<CustomersPage />} />
+      </Route>
+    </Routes>
+  );
+}
+```
+
+```tsx
+// frontend/src/App.tsx — one menu entry + wildcard route per module
+menu: [{ text: 'Sales', icon: 'ph ph-receipt', path: '/sales' }],
+routes: [{ path: '/sales/*', element: <SalesModule /> }],
+```
+
+`density="compact"` collapses title + tabs to a single row, leaving more
+vertical space for the grid. Use `density="default"` for hub landing pages
+with a subtitle or banner.
+
+## Granular permissions on /api/me
+
+The frontend can't read HttpOnly cookies so it can't inspect the JWT.
+`GET /api/me` is the single source of truth for UX gating.
+
+Add a `permissions` map by decorating `MeResponseBuilderInterface`:
+
+```php
+// src/Session/AppMeResponseBuilder.php
+final readonly class AppMeResponseBuilder implements MeResponseBuilderInterface {
+    public function __construct(private MeResponseBuilderInterface $inner) {}
+    public function build(UserInterface $user): array {
+        $response = $this->inner->build($user);
+        $isAdmin  = in_array('ROLE_ADMIN', $user->getRoles(), true);
+        $response['permissions'] = [
+            'invoice.pay'    => $isAdmin,
+            'invoice.cancel' => $isAdmin,
+            'catalog.manage' => $isAdmin,
+            // add keys as the app grows
+        ];
+        return $response;
+    }
+}
+```
+
+```yaml
+# config/services.yaml
+Nubit\AdminBundle\Session\MeResponseBuilderInterface:
+    alias: App\Session\AppMeResponseBuilder
+App\Session\AppMeResponseBuilder:
+    arguments:
+        $inner: '@Nubit\AdminBundle\Session\DefaultMeResponseBuilder'
+```
+
+Frontend consumption:
+```tsx
+const { session } = useSession();
+const perms = (session as any).profile?.permissions ?? {};
+const canPay = perms['invoice.pay'] ?? false;
+```
+
+Rules:
+- Keep permission keys as `module.action` strings.
+- Symfony `security:` expressions on operations are the **real gate** — this
+  is UX mirroring only.
+- Add new keys here as modules are built; don't abstract prematurely.
+
 ## Workflow actions and row locking
 
 - `rowActions: (row) => [...]` adds per-row menu actions (confirm + PATCH
   state transitions work well; grids with `mercure: true` refresh themselves).
+- When `#[Workflow]` is on the entity, `SmartCrudPage` auto-builds row actions
+  from `x-workflow` in the API docs — **do not set `rowActions` manually**.
 - `permissions.canEditRow / canDeleteRow: (row) => boolean` hide Edit/Delete
   per row and make row-click open read-only. **Set `canView: true` alongside
   them** — it defaults to false, and a fully locked row would otherwise have
@@ -272,10 +496,12 @@ variants, fully token-themed:
   already require `ROLE_USER` (see `config/packages/security.yaml`
   `access_control`).
 - **Role-aware UI**: cookies are HttpOnly, so the SPA can't read the JWT.
-  This skeleton ships `GET /api/me` (`src/Controller/MeController.php`) and
-  wires the response into `SmartCrudRolesProvider` via `frontend/src/hooks/useSession.ts`.
+  `GET /api/me` comes from `nubitio/admin-bundle` (`MeResponseBuilderInterface`);
+  the skeleton sets `app_profile: internal` in `config/packages/nubit_admin.yaml`.
+  The response is wired into `SmartCrudRolesProvider` via `SessionProvider`.
   Mirror roles as UX only (menu filtering, `defineResource` permission presets).
-  Symfony `security:` expressions remain the real gate.
+  Symfony `security:` expressions remain the real gate. Alias
+  `MeResponseBuilderInterface` to add domain fields (branch, currency, etc.).
 - **Extra JWT claims / login payload**: implement `TokenClaimsProviderInterface`
   and alias it over `DefaultTokenClaimsProvider` in `config/services.yaml`.
 - **Extra login cookies** (e.g. Mercure subscriber JWT): implement
