@@ -1,0 +1,14 @@
+#:schema https://mago.carthage.software/1.40.2/schema.json
+version = "1"
+php-version = "8.2"
+
+[source]
+paths = ["src", "tests"]
+includes = ["vendor"]
+excludes = ["var/**"]
+
+[linter]
+integrations = ["symfony", "phpunit"]
+
+[linter.rules]
+missing-strict-types = { level = "error" }
