@@ -15,7 +15,7 @@ needs a route. Do not hand-build datagrids or forms unless explicitly asked.
 | --- | --- | --- |
 | Entities + API | `src/Entity/*.php` | `#[ApiResource]` + `DataGridFilter` + `x-crud` hints drive everything |
 | Auth, formats, services | `nubitio/admin-bundle` (vendor) | JWT dual cookie/Bearer, JSON formats, grid filter — already wired |
-| React admin | `frontend/src/` | `createNubitApp()` bootstraps providers; `SmartCrudPage` renders from `/api/docs.jsonld` |
+| React admin | `frontend/src/` | `createNubitApp()` bootstraps providers; `SchemaCrudPage` renders from `/api/docs.jsonld` |
 | Infra | `compose.yaml` | FrankenPHP (`app`, :8000) + PostgreSQL + Mercure (:3000) + Vite (:5173) |
 
 Run backend commands inside the container: `docker compose exec app php bin/console …`
@@ -79,9 +79,9 @@ docker compose exec app php bin/console doctrine:migrations:migrate --no-interac
 
 ```tsx
 // frontend/src/pages/CustomersPage.tsx
-import { SmartCrudPage, defineResource } from '@nubitio/react-admin';
+import { SchemaCrudPage, defineResource } from '@nubitio/react-admin';
 const customers = defineResource('/api/customers', { title: 'Customers' });
-export const CustomersPage = () => <SmartCrudPage resource={customers} />;
+export const CustomersPage = () => <SchemaCrudPage resource={customers} />;
 ```
 
 In `frontend/src/App.tsx`: add the menu item and route to `createNubitApp()`:
@@ -302,7 +302,7 @@ class Invoice { /* lines collection, header fields, recalculateTotals() */ }
 - `#[Sequence]` fills `$number` on first persist; skip if field already set.
   Register any `scope: ['customer']` paths to scope counters per dimension.
 - `#[Workflow]` auto-registers `POST /api/invoices/{id}/transition/{name}`.
-  `SmartCrudPage` reads `x-workflow` from `/api/docs.jsonld` and builds row
+  `SchemaCrudPage` reads `x-workflow` from `/api/docs.jsonld` and builds row
   action buttons automatically — no frontend code needed.
   Optional `guard: MyGuard::class` (implement `WorkflowGuardInterface`) for
   domain rules that go beyond role checks.
@@ -314,10 +314,19 @@ class Invoice { /* lines collection, header fields, recalculateTotals() */ }
 ### Line entity
 
 ```php
-#[EmbeddedLines(parentProperty: 'invoice', normalizationGroups: ['invoice:read'])]
+#[EmbeddedLines(
+    parentProperty: 'invoice',
+    route: '/api/invoice_lines',
+    normalizationGroups: ['invoice:read'],
+)]
+#[ApiResource(operations: [new GetCollection(), new Get()], normalizationContext: ['groups' => ['invoice:read']])]
 #[ORM\Entity]
-class InvoiceLine { /* product, quantity, unitPrice, taxRate, lineTotal */ }
+class InvoiceLine { /* product, quantity, unitPrice, taxRate, lineTotal + x-crud hints */ }
 ```
+
+`#[ApiResource]` on the line entity exposes its schema in `/api/docs.jsonld`.
+`SchemaCrudPage` infers `formDetail` fields automatically from `x-embedded-lines`
+on the parent — no manual `formDetail.fields` in the frontend.
 
 ### State processor
 
@@ -342,7 +351,7 @@ final readonly class InvoiceProcessor extends AbstractEmbeddedLinesProcessor {
 ### Frontend page
 
 ```tsx
-// SmartCrudPage auto-reads x-workflow and builds transition buttons — no rowActions needed.
+// SchemaCrudPage auto-reads x-workflow and builds transition buttons — no rowActions needed.
 const invoices = defineResource('/api/invoices', {
   title: 'Invoices',
   viewMode: { mode: 'drawer', drawerSize: 'lg' },
@@ -354,18 +363,17 @@ const invoices = defineResource('/api/invoices', {
   auditTrail: { enabled: true, apiUrl: (id) => `/api/audit-trail/invoice/${id}` },
   formDetail: {
     propertyName: 'lines',
-    url: embeddedLinesUrl('/api/invoice_lines', 'invoice'),
-    allowAdding: true, allowDeleting: true, allowUpdating: true,
-    fields: [
-      entityField('/api/products', '_iri', 'name').name('product').required(true).build(),
-      numberField().name('quantity').precision(2).build(),
-      currencyField().name('unitPrice').build(),
-      numberField().name('taxRate').precision(2).build(),
-      currencyField().name('lineTotal').readonly(true).build(),
-    ],
+    allowAdding: true,
+    allowDeleting: true,
+    allowUpdating: true,
+    required: true,
+    summary: {
+      sticky: true,
+      items: [{ column: 'lineTotal', summaryType: 'sum', valueFormat: 'currency', label: 'Lines total' }],
+    },
   },
 });
-export function InvoicesPage() { return <SmartCrudPage resource={invoices} />; }
+export function InvoicesPage() { return <SchemaCrudPage resource={invoices} />; }
 ```
 
 ## Module navigation (FeatureHubLayout)
@@ -472,7 +480,7 @@ Rules:
 
 - `rowActions: (row) => [...]` adds per-row menu actions (confirm + PATCH
   state transitions work well; grids with `mercure: true` refresh themselves).
-- When `#[Workflow]` is on the entity, `SmartCrudPage` auto-builds row actions
+- When `#[Workflow]` is on the entity, `SchemaCrudPage` auto-builds row actions
   from `x-workflow` in the API docs — **do not set `rowActions` manually**.
 - `permissions.canEditRow / canDeleteRow: (row) => boolean` hide Edit/Delete
   per row and make row-click open read-only. **Set `canView: true` alongside

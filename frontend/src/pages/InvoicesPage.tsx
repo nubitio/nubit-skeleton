@@ -1,11 +1,7 @@
 import type { RefObject } from 'react';
 import {
-  SmartCrudPage,
-  currencyField,
+  SchemaCrudPage,
   defineResource,
-  embeddedLinesUrl,
-  entityField,
-  numberField,
   type FormHandle,
 } from '@nubitio/react-admin';
 
@@ -16,10 +12,11 @@ import {
  *
  *   1. Auto-numbered document (INV-0001…) — driven by #[Sequence] on Invoice.
  *   2. State machine toolbar actions (Confirm / Mark as paid / Cancel / Reopen)
- *      — SmartCrudPage auto-reads x-workflow from /api/docs.jsonld and builds
+ *      — SchemaCrudPage auto-reads x-workflow from /api/docs.jsonld and builds
  *        row actions; no manual wiring needed.
  *   3. Audit trail (History button) — every field-level change is recorded.
- *   4. Master-detail lines with live totals — subtotal + tax auto-recalculated
+ *   4. Master-detail lines with live totals — line fields are inferred from
+ *      InvoiceLine x-crud hints via x-embedded-lines; subtotal + tax recalculated
  *      server-side by InvoiceProcessor; running total shown in the drawer footer.
  *
  * Copy this file as the starting point for:
@@ -43,7 +40,6 @@ const invoices = defineResource('/api/invoices', {
 
   formDetail: {
     propertyName: 'lines',
-    url: embeddedLinesUrl('/api/invoice_lines', 'invoice'),
     allowAdding: true,
     allowDeleting: true,
     allowUpdating: true,
@@ -54,13 +50,6 @@ const invoices = defineResource('/api/invoices', {
         { column: 'lineTotal', summaryType: 'sum', valueFormat: 'currency', label: 'Lines total' },
       ],
     },
-    fields: [
-      entityField('/api/products', '_iri', 'name').name('product').label('Product').required(true).build(),
-      numberField().name('quantity').label('Qty').required(true).precision(2).build(),
-      currencyField().name('unitPrice').label('Unit price').required(true).build(),
-      numberField().name('taxRate').label('Tax %').precision(2).defaultValue(0).build(),
-      currencyField().name('lineTotal').label('Line total').readonly(true).build(),
-    ],
   },
 
   // Recompute the header total field live as lines change in the drawer.
@@ -80,5 +69,5 @@ const invoices = defineResource('/api/invoices', {
 });
 
 export function InvoicesPage() {
-  return <SmartCrudPage resource={invoices} />;
+  return <SchemaCrudPage resource={invoices} />;
 }

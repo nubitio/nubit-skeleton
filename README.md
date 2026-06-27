@@ -58,12 +58,12 @@ class Customer
 
 ```tsx
 const customers = defineResource('/api/customers', { title: 'Customers' });
-export const CustomersPage = () => <SmartCrudPage resource={customers} />;
+export const CustomersPage = () => <SchemaCrudPage resource={customers} />;
 ```
 
 4. Register the route + menu item in [`frontend/src/App.tsx`](frontend/src/App.tsx). Done — full CRUD.
 
-See [`frontend/src/pages/SalesDocumentsPage.tsx`](frontend/src/pages/SalesDocumentsPage.tsx) for a **master-detail** example (line items inside the form, drawer view mode, row locking by status).
+See [`frontend/src/pages/SalesDocumentsPage.tsx`](frontend/src/pages/SalesDocumentsPage.tsx) for a **master-detail** example (line fields inferred from the API doc, drawer view mode, row locking by status). For the full ERP pattern (sequence + workflow + audit), see [`InvoicesPage.tsx`](frontend/src/pages/InvoicesPage.tsx).
 
 ## Auth
 

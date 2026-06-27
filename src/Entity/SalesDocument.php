@@ -24,7 +24,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Master-detail example: header fields are auto-generated in the React form;
- * line items are edited through formDetail in SalesDocumentsPage.tsx.
+ * line items are inferred from SalesDocumentLine x-crud hints via x-embedded-lines.
  */
 #[Auditable(resource: 'sales_documents')]
 #[ORM\Entity]

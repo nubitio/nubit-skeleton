@@ -1,17 +1,13 @@
 import type { RefObject } from 'react';
 import {
-  SmartCrudPage,
-  currencyField,
+  SchemaCrudPage,
   defineResource,
-  embeddedLinesUrl,
-  entityField,
-  numberField,
   type FormHandle,
 } from '@nubitio/react-admin';
 
 /**
  * Master-detail example: header fields come from the API docs; line items are
- * edited inline through formDetail and submitted embedded under `lines`.
+ * inferred from SalesDocumentLine x-crud hints via x-embedded-lines.
  */
 const salesDocuments = defineResource('/api/sales_documents', {
   title: 'Sales',
@@ -23,7 +19,6 @@ const salesDocuments = defineResource('/api/sales_documents', {
   },
   formDetail: {
     propertyName: 'lines',
-    url: embeddedLinesUrl('/api/sales_document_lines', 'document'),
     allowAdding: true,
     allowDeleting: true,
     allowUpdating: true,
@@ -32,12 +27,6 @@ const salesDocuments = defineResource('/api/sales_documents', {
       sticky: true,
       items: [{ column: 'lineTotal', summaryType: 'sum', valueFormat: 'currency', label: 'Lines total' }],
     },
-    fields: [
-      entityField('/api/products', '_iri', 'name').name('product').label('Product').required(true).build(),
-      numberField().name('quantity').label('Quantity').required(true).precision(2).build(),
-      currencyField().name('unitPrice').label('Unit price').required(true).build(),
-      currencyField().name('lineTotal').label('Line total').readonly(true).build(),
-    ],
   },
   onDetailRowsChanged: (formRef: RefObject<FormHandle | null>) => {
     const rows = formRef.current?.getDetailData() ?? [];
@@ -47,5 +36,5 @@ const salesDocuments = defineResource('/api/sales_documents', {
 });
 
 export function SalesDocumentsPage() {
-  return <SmartCrudPage resource={salesDocuments} />;
+  return <SchemaCrudPage resource={salesDocuments} />;
 }

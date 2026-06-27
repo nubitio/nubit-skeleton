@@ -1,8 +1,8 @@
-import { SmartCrudPage, defineResource } from '@nubitio/react-admin';
+import { SchemaCrudPage, defineResource } from '@nubitio/react-admin';
 
 const customers = defineResource('/api/customers', {
   title: 'Customers',
   editMode: 'batch',
 });
 
-export const CustomersPage = () => <SmartCrudPage resource={customers} />;
+export const CustomersPage = () => <SchemaCrudPage resource={customers} />;

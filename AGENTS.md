@@ -18,6 +18,7 @@ docker compose exec app php bin/console doctrine:migrations:diff --no-interactio
 docker compose exec app php bin/console doctrine:migrations:migrate --no-interaction
 docker compose exec app php bin/console app:seed              # admin@example.com / admin1234
 docker compose exec app php bin/console cache:clear
+docker compose exec app php bin/console nubit:discover          # list resources, routes, workflows
 cd frontend && corepack pnpm dev                              # or use the compose `frontend` service
 cd frontend && corepack pnpm build                            # tsc + vite build
 docker compose exec app php vendor/bin/phpunit                # internal-stack contract tests
@@ -33,9 +34,11 @@ URLs: app/API http://localhost:8000 · React http://localhost:5173 · Mercure ht
 | `src/Command/SeedCommand.php` | Demo data |
 | `config/packages/security.yaml` | Firewall + access control (JWT authenticator from the bundle) |
 | `config/packages/nubit_admin.yaml` | `app_profile`, auth TTLs, cookie flags, docs locale |
-| `frontend/src/App.tsx` | `createNubitApp()` — menú/rutas declarativos; providers vía el motor |
-| `frontend/src/pages/ProductsPage.tsx` | Reference page — `defineResource` + `SmartCrudPage` + audit trail |
-| `frontend/src/pages/SalesDocumentsPage.tsx` | Master-detail — `formDetail`, drawer, `canEditRow` |
+| `frontend/src/App.tsx` | `createNubitApp()` — menú/rutas declarativos; DevTools panel on localhost |
+| `nubit-react/docs/architecture/` | Pipeline, field rules, tiers, breakpoints (symlink or sibling repo) |
+| `frontend/src/pages/ProductsPage.tsx` | Reference page — `defineResource` + `SchemaCrudPage` + audit trail |
+| `frontend/src/pages/SalesDocumentsPage.tsx` | Master-detail — inferred `formDetail`, drawer, `canEditRow` |
+| `frontend/src/pages/InvoicesPage.tsx` | ERP document — sequence, workflow, audit, inferred lines |
 | `src/Entity/SalesDocument.php` | Embedded lines collection + processor totals |
 
 ## Conventions

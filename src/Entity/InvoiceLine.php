@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiProperty;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Nubit\ApiPlatform\Attribute\EmbeddedLines;
@@ -13,11 +16,19 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Line item for an Invoice.
- * #[EmbeddedLines] auto-registers the reload endpoint used by the drawer form.
+ *
+ * #[ApiResource] exposes the schema in /api/docs.jsonld so SchemaCrudPage can
+ * infer formDetail line fields from x-crud hints (no manual frontend fields).
+ * #[EmbeddedLines] registers the reload endpoint used by the drawer form.
  */
 #[EmbeddedLines(
     parentProperty: 'invoice',
+    route: '/api/invoice_lines',
     normalizationGroups: ['invoice:read'],
+)]
+#[ApiResource(
+    operations: [new GetCollection(), new Get()],
+    normalizationContext: ['groups' => ['invoice:read']],
 )]
 #[ORM\Entity]
 #[ORM\Table(name: 'invoice_line')]
@@ -60,7 +71,7 @@ class InvoiceLine
 
     #[ORM\Column(type: Types::DECIMAL, precision: 12, scale: 2)]
     #[Groups(['invoice:read'])]
-    #[ApiProperty(openapiContext: ['x-crud' => ['order' => 4, 'format' => 'currency', 'visibleOnForm' => false]])]
+    #[ApiProperty(openapiContext: ['x-crud' => ['order' => 4, 'format' => 'currency']])]
     private string $lineTotal = '0.00';
 
     public function getId(): ?int { return $this->id; }

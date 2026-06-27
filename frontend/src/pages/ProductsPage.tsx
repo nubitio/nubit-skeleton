@@ -1,4 +1,4 @@
-import { SmartCrudPage, defineResource } from '@nubitio/react-admin';
+import { SchemaCrudPage, defineResource } from '@nubitio/react-admin';
 
 /**
  * Full CRUD page generated from the API docs: fields, filters, sorting and
@@ -17,5 +17,5 @@ const products = defineResource('/api/products', {
 });
 
 export function ProductsPage() {
-  return <SmartCrudPage resource={products} />;
+  return <SchemaCrudPage resource={products} />;
 }
