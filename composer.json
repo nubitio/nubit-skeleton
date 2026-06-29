@@ -8,7 +8,7 @@
         "phpunit/phpunit": "^12.0"
     },
     "require": {
-        "php": ">=8.2",
+        "php": ">=8.3",
         "ext-ctype": "*",
         "ext-iconv": "*",
         "api-platform/core": "^4.1",
@@ -16,9 +16,9 @@
         "doctrine/doctrine-migrations-bundle": "^4.0",
         "doctrine/orm": "^3.6",
         "nelmio/cors-bundle": "^2.6",
-        "nubitio/admin-bundle": "0.*",
-        "nubitio/sequence-bundle": "^0.10.3",
-        "nubitio/workflow-bundle": "^0.10.3",
+        "nubitio/admin-bundle": "^0.10.13",
+        "nubitio/sequence-bundle": "^0.10.13",
+        "nubitio/workflow-bundle": "^0.10.13",
         "symfony/console": "7.4.*",
         "symfony/dotenv": "7.4.*",
         "symfony/flex": "^2",
