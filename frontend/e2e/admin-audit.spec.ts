@@ -56,11 +56,11 @@ test.describe('Nubit admin visual audit', () => {
     await login(page);
     await shot(page, '01-products-grid');
 
-    await page.getByRole('button', { name: 'Customers' }).click();
+    await page.goto('/sales/customers');
     await expect(page.getByText('Acme Retail')).toBeVisible();
     await shot(page, '02-customers-grid');
 
-    await page.getByRole('button', { name: 'Sales' }).click();
+    await page.goto('/sales/orders');
     await expect(page.getByText('SD-0001')).toBeVisible();
     await openRowEdit(page, 'SD-0001');
 

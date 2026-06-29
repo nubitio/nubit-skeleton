@@ -7,7 +7,7 @@ test('debug: check DOM after dblclick', async ({ page }) => {
   await page.getByRole('button', { name: 'Sign in' }).click();
   await page.getByText('Espresso Machine').waitFor({ timeout: 20_000 });
 
-  await page.getByRole('button', { name: 'Customers' }).click();
+  await page.goto('/sales/customers');
   await page.getByText('Acme Retail').waitFor({ timeout: 10_000 });
 
   // Dump row classes before dblclick

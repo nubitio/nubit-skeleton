@@ -12,7 +12,7 @@ async function login(page: Page) {
 }
 
 async function goToCustomers(page: Page) {
-  await page.getByRole('button', { name: 'Customers' }).click();
+  await page.goto('/sales/customers');
   await expect(page.getByText('Acme Retail')).toBeVisible({ timeout: 10_000 });
 }
 
