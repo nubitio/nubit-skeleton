@@ -121,7 +121,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  * }
  * @psalm-type ServicesConfig = array{
  *     _defaults?: DefaultsType,
- *     _instanceof?: InstanceofType,
+ *     _instanceof?: array<class-string, InstanceofType>,
  *     ...<string, DefinitionType|AliasType|PrototypeType|StackType|ArgumentsType|null>
  * }
  * @psalm-type ExtensionType = array<string, mixed>
@@ -1255,6 +1255,8 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         },
  *         directory?: scalar|Param|null, // Sub-directory inside the storage where uploads land. // Default: "media"
  *         purge_retention_days?: int|Param, // nubit:media:purge removes media soft-deleted longer ago than this. // Default: 30
+ *         max_size?: int|Param, // Maximum upload size in bytes. 0 means no limit. // Default: 10485760
+ *         allowed_mimes?: list<scalar|Param|null>,
  *     },
  *     runtime_config?: bool|Param, // Expose GET /api/runtime-config (opt-in; payload from RuntimeConfigProviderInterface). // Default: false
  *     soft_delete?: bool|Param, // Register the Doctrine filter hiding #[SoftDeletable] rows. // Default: true
@@ -1573,8 +1575,8 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  * }
  * @psalm-type MercureConfig = array{
  *     hubs?: array<string, array{ // Default: []
- *         url?: scalar|Param|null, // URL of the hub's publish endpoint
- *         public_url?: scalar|Param|null, // URL of the hub's public endpoint // Default: null
+ *         url?: scalar|Param|null, // URL of the hub's publish endpoint // Default: null
+ *         public_url?: scalar|Param|null, // URL of the hub's public endpoint
  *         jwt?: string|array{ // JSON Web Token configuration.
  *             value?: scalar|Param|null, // JSON Web Token to use to publish to this hub.
  *             provider?: scalar|Param|null, // The ID of a service to call to provide the JSON Web Token.
