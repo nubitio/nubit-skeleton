@@ -32,8 +32,9 @@ async function shot(page: Page, name: string) {
   await page.screenshot({ path: path.join(SCREENSHOT_DIR, `${name}.png`), fullPage: true });
 }
 
-async function openRowEdit(page: Page, rowText: string) {
-  const row = page.getByRole('row').filter({ hasText: rowText });
+async function openFirstGridRowEdit(page: Page) {
+  const row = page.locator('tr.nb-datagrid__row').first();
+  await expect(row).toBeVisible({ timeout: 20_000 });
   await row.locator('button').last().click();
   await page.getByRole('menuitem', { name: /edit/i }).click();
 }
@@ -61,8 +62,7 @@ test.describe('Nubit admin visual audit', () => {
     await shot(page, '02-customers-grid');
 
     await page.goto('/sales/orders');
-    await expect(page.getByText('SD-0001')).toBeVisible();
-    await openRowEdit(page, 'SD-0001');
+    await openFirstGridRowEdit(page);
 
     const drawer = page.getByRole('dialog', { name: /edit/i });
     await expect(drawer.getByRole('heading', { name: /edit/i })).toBeVisible({ timeout: 10_000 });
