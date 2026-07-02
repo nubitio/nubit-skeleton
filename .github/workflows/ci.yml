@@ -181,7 +181,6 @@ jobs:
 
       - name: Run Playwright
         working-directory: frontend
-        continue-on-error: true
         run: PLAYWRIGHT_BASE_URL=http://localhost:5174 pnpm e2e
 
       - name: Dump logs on failure

@@ -16,131 +16,110 @@ async function goToCustomers(page: Page) {
   await expect(page.getByText('Acme Retail')).toBeVisible({ timeout: 10_000 });
 }
 
-/** Locator for the row that is currently in inline-edit mode. */
-function editingRow(page: Page) {
-  return page.locator('tr.nb-datagrid__row--editing');
+function customerRow(page: Page, name: string) {
+  return page.getByRole('row').filter({ hasText: name });
 }
+
+async function editFirstTextCell(page: Page, rowText: string) {
+  const row = customerRow(page, rowText);
+  await row.locator('td.nb-datagrid__cell--editable').first().click();
+
+  const activeCell = page.locator('td.nb-datagrid__edit-cell.nb-datagrid__cell--active');
+  await expect(activeCell).toBeVisible({ timeout: 5_000 });
+
+  const input = activeCell.getByRole('textbox').first();
+  await expect(input).toBeVisible();
+  return input;
+}
+
+async function updateCustomerName(page: Page, from: string, to: string) {
+  const input = await editFirstTextCell(page, from);
+  await input.clear();
+  await input.fill(to);
+}
+
+const saveAllButton = (page: Page) => page.locator('.nb-datagrid__toolbar-icon-action--save');
+const discardAllButton = (page: Page) => page.locator('.nb-datagrid__toolbar-icon-action--revert');
 
 test.describe.configure({ timeout: 60_000 });
 
-test.describe('Inline row editing (batch mode)', () => {
-  test('double-click row enters edit mode with inline controls', async ({ page }) => {
+test.describe('Inline editing (batch mode)', () => {
+  test('clicking an editable cell opens the active cell editor', async ({ page }) => {
     await login(page);
     await goToCustomers(page);
 
-    // Double-click the first data row (Acme Retail)
-    await page.getByRole('row').filter({ hasText: 'Acme Retail' }).dblclick();
+    const input = await editFirstTextCell(page, 'Acme Retail');
 
-    // Row should now have editing class and show inline input controls
-    const row = editingRow(page);
-    await expect(row.getByRole('textbox').first()).toBeVisible({ timeout: 5_000 });
-
-    // Save (✓) and Cancel (✗) buttons should appear in the actions cell
-    await expect(row.getByTitle('Save row')).toBeVisible();
-    await expect(row.getByTitle('Cancel edit')).toBeVisible();
-  });
-
-  test('batch bar appears when a row is in edit mode', async ({ page }) => {
-    await login(page);
-    await goToCustomers(page);
-
-    await page.getByRole('row').filter({ hasText: 'Acme Retail' }).dblclick();
-
-    // Batch bar should appear above the table
-    const batchBar = page.locator('.nb-datagrid__batch-bar');
-    await expect(batchBar).toBeVisible({ timeout: 5_000 });
-    await expect(batchBar).toContainText('1 row');
-  });
-
-  test('cancel edit restores read mode and hides batch bar', async ({ page }) => {
-    await login(page);
-    await goToCustomers(page);
-
-    await page.getByRole('row').filter({ hasText: 'Acme Retail' }).dblclick();
-
-    const row = editingRow(page);
-    await expect(row.getByTitle('Cancel edit')).toBeVisible();
-    await row.getByTitle('Cancel edit').click();
-
-    // Row should no longer have editing class
-    await expect(page.locator('tr.nb-datagrid__row--editing')).toHaveCount(0, { timeout: 3_000 });
-
-    // Batch bar should disappear
-    await expect(page.locator('.nb-datagrid__batch-bar')).toBeHidden();
-  });
-
-  test('multiple rows can be open simultaneously in batch mode', async ({ page }) => {
-    await login(page);
-    await goToCustomers(page);
-
-    await page.getByRole('row').filter({ hasText: 'Acme Retail' }).dblclick();
-    await page.getByRole('row').filter({ hasText: 'Global Wholesale' }).dblclick();
-
-    // Both rows should be in editing mode
-    const editingRows = page.locator('tr.nb-datagrid__row--editing');
-    await expect(editingRows).toHaveCount(2, { timeout: 5_000 });
-
-    // Batch bar shows 2 rows
-    await expect(page.locator('.nb-datagrid__batch-bar')).toContainText('2 row');
-  });
-
-  test('edit via ⋮ menu → Edit row starts inline edit', async ({ page }) => {
-    await login(page);
-    await goToCustomers(page);
-
-    // Open the ⋮ actions menu on the Acme Retail row
-    await page.getByRole('row').filter({ hasText: 'Acme Retail' }).locator('button').last().click();
-
-    const editItem = page.getByRole('menuitem', { name: /edit row/i });
-    await expect(editItem).toBeVisible({ timeout: 5_000 });
-    await editItem.click();
-
-    // Row should now be in edit mode
-    await expect(editingRow(page).getByRole('textbox').first()).toBeVisible({ timeout: 5_000 });
-  });
-
-  test('discard all clears all editing rows', async ({ page }) => {
-    await login(page);
-    await goToCustomers(page);
-
-    await page.getByRole('row').filter({ hasText: 'Acme Retail' }).dblclick();
-    await page.getByRole('row').filter({ hasText: 'Global Wholesale' }).dblclick();
-
-    await expect(page.locator('.nb-datagrid__batch-bar')).toBeVisible();
-
-    await page.locator('.nb-datagrid__batch-bar-btn--discard').click();
-
-    await expect(page.locator('.nb-datagrid__batch-bar')).toBeHidden({ timeout: 3_000 });
+    await expect(input).toHaveValue('Acme Retail');
+    await expect(page.locator('td.nb-datagrid__cell--active')).toHaveCount(1);
     await expect(page.locator('tr.nb-datagrid__row--editing')).toHaveCount(0);
   });
 
-  test('inline save patches the row and exits edit mode', async ({ page }) => {
+  test('toolbar save and discard actions appear after a cell changes', async ({ page }) => {
     await login(page);
     await goToCustomers(page);
 
-    await page.getByRole('row').filter({ hasText: 'Acme Retail' }).dblclick();
+    await updateCustomerName(page, 'Acme Retail', 'Acme Retail Draft');
 
-    const row = editingRow(page);
+    await expect(page.locator('tr.nb-datagrid__row--dirty')).toHaveCount(1, { timeout: 5_000 });
+    await expect(page.locator('td.nb-datagrid__cell--dirty')).toHaveCount(1);
+    await expect(saveAllButton(page)).toBeVisible();
+    await expect(discardAllButton(page)).toBeVisible();
+  });
 
-    // Change the name field (first textbox in the editing row)
-    const nameInput = row.getByRole('textbox').first();
-    await nameInput.clear();
-    await nameInput.fill('Acme Retail Updated');
+  test('discard all clears dirty rows and restores the original value', async ({ page }) => {
+    await login(page);
+    await goToCustomers(page);
 
-    await row.getByTitle('Save row').click();
+    await updateCustomerName(page, 'Acme Retail', 'Acme Retail Draft');
+    await expect(page.locator('tr.nb-datagrid__row--dirty')).toHaveCount(1);
 
-    // Row should exit edit mode (no more editing class)
-    await expect(page.locator('tr.nb-datagrid__row--editing')).toHaveCount(0, { timeout: 10_000 });
+    await discardAllButton(page).click();
 
-    // Updated name should be visible in the grid
-    await expect(page.getByRole('row').filter({ hasText: 'Acme Retail Updated' })).toBeVisible();
+    await expect(page.locator('tr.nb-datagrid__row--dirty')).toHaveCount(0, { timeout: 3_000 });
+    await expect(saveAllButton(page)).toBeHidden();
+    await expect(discardAllButton(page)).toBeHidden();
+    await expect(customerRow(page, 'Acme Retail')).toBeVisible();
+  });
 
-    // Restore the original name
-    await page.getByRole('row').filter({ hasText: 'Acme Retail Updated' }).dblclick();
-    const nameInput2 = editingRow(page).getByRole('textbox').first();
-    await nameInput2.clear();
-    await nameInput2.fill('Acme Retail');
-    await editingRow(page).getByTitle('Save row').click();
-    await expect(page.getByRole('row').filter({ hasText: 'Acme Retail' })).toBeVisible({ timeout: 10_000 });
+  test('multiple rows can hold unsaved changes simultaneously', async ({ page }) => {
+    await login(page);
+    await goToCustomers(page);
+
+    await updateCustomerName(page, 'Acme Retail', 'Acme Retail Draft');
+    await updateCustomerName(page, 'Global Wholesale', 'Global Wholesale Draft');
+
+    await expect(page.locator('tr.nb-datagrid__row--dirty')).toHaveCount(2, { timeout: 5_000 });
+    await expect(page.locator('td.nb-datagrid__cell--dirty')).toHaveCount(2);
+  });
+
+  test('discard all clears multiple dirty rows', async ({ page }) => {
+    await login(page);
+    await goToCustomers(page);
+
+    await updateCustomerName(page, 'Acme Retail', 'Acme Retail Draft');
+    await updateCustomerName(page, 'Global Wholesale', 'Global Wholesale Draft');
+    await expect(page.locator('tr.nb-datagrid__row--dirty')).toHaveCount(2);
+
+    await discardAllButton(page).click();
+
+    await expect(page.locator('tr.nb-datagrid__row--dirty')).toHaveCount(0, { timeout: 3_000 });
+    await expect(customerRow(page, 'Acme Retail')).toBeVisible();
+    await expect(customerRow(page, 'Global Wholesale')).toBeVisible();
+  });
+
+  test('toolbar save patches the row and clears dirty state', async ({ page }) => {
+    await login(page);
+    await goToCustomers(page);
+
+    await updateCustomerName(page, 'Acme Retail', 'Acme Retail Updated');
+    await saveAllButton(page).click();
+
+    await expect(page.locator('tr.nb-datagrid__row--dirty')).toHaveCount(0, { timeout: 10_000 });
+    await expect(customerRow(page, 'Acme Retail Updated')).toBeVisible();
+
+    await updateCustomerName(page, 'Acme Retail Updated', 'Acme Retail');
+    await saveAllButton(page).click();
+    await expect(customerRow(page, 'Acme Retail')).toBeVisible({ timeout: 10_000 });
   });
 });

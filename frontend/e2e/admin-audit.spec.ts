@@ -68,7 +68,7 @@ test.describe('Nubit admin visual audit', () => {
     await expect(drawer.getByRole('heading', { name: /edit/i })).toBeVisible({ timeout: 10_000 });
     const detailTable = drawer.locator('.nb-form__detail-table-scroll .nb-form__detail-table');
     await expect(detailTable.locator('tbody tr')).toHaveCount(2, { timeout: 15_000 });
-    await expect(detailTable.getByRole('spinbutton').nth(0)).toHaveValue('2.00');
+    await expect(detailTable.locator('tbody tr').first().locator('td').nth(1).locator('input')).toHaveValue('2.00');
 
     const drawerText = (await drawer.textContent()) ?? '';
     expect(drawerText).not.toContain('[object Object]');
