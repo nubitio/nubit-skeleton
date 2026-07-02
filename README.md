@@ -6,16 +6,13 @@ Annotate an entity → get a datagrid with filters/sorting/search, create/edit f
 
 ## Start a new project
 
-Three ways to get a copy (it's a [template repository](https://github.com/nubitio/nubit-skeleton)):
+Two ways to get a copy (it's a [template repository](https://github.com/nubitio/nubit-skeleton)):
 
 ```bash
 # a) GitHub CLI — new repo under your account, no shared history
 gh repo create my-app --template nubitio/nubit-skeleton --private --clone && cd my-app
 
 # b) Web UI — the "Use this template" button on GitHub
-
-# c) Composer
-composer create-project nubitio/nubit-skeleton my-app && cd my-app
 ```
 
 Then boot it:
