@@ -57,6 +57,7 @@ final class SeedCommand extends Command
                     new Product()->setName($name)->setSku($sku)->setPrice($price),
                 );
             }
+            $this->entityManager->flush();
             $io->success('5 sample products created.');
         } else {
             $io->note('Products already seeded.');
