@@ -12,6 +12,8 @@
 # Plan del motor Nubit — seguimiento local, no commitear
 /docs/local/
 
+/graphify-out/
+
 ###> phpunit/phpunit ###
 /phpunit.xml
 /.phpunit.cache/

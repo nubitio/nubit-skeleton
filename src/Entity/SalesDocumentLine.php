@@ -11,6 +11,8 @@ use ApiPlatform\Metadata\GetCollection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Nubit\ApiPlatform\Attribute\EmbeddedLines;
+use Nubit\TenantBundle\Contract\TenantOwnedInterface;
+use Nubit\TenantBundle\Entity\TenantOwnedTrait;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -27,13 +29,17 @@ use Symfony\Component\Validator\Constraints as Assert;
     normalizationGroups: ['document:read'],
 )]
 #[ApiResource(
-    operations: [new GetCollection(), new Get()],
+    operations: [
+        new GetCollection(security: "is_granted('APP_SALES_DOCUMENT_LINE_READ')"),
+        new Get(security: "is_granted('APP_SALES_DOCUMENT_LINE_READ')"),
+    ],
     normalizationContext: ['groups' => ['document:read']],
 )]
 #[ORM\Entity]
 #[ORM\Table(name: 'sales_document_line')]
-class SalesDocumentLine
+class SalesDocumentLine implements TenantOwnedInterface
 {
+    use TenantOwnedTrait;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

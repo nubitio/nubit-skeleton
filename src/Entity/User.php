@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Tenant\OrganizationMembershipUserInterface;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -12,7 +15,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: 'app_user')]
 #[ORM\UniqueConstraint(name: 'UNIQ_APP_USER_EMAIL', columns: ['email'])]
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface, OrganizationMembershipUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -28,6 +31,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column]
     private string $password;
+
+    /** @var Collection<int, OrganizationMembership> */
+    #[ORM\OneToMany(targetEntity: OrganizationMembership::class, mappedBy: 'user', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private Collection $organizationMemberships;
+
+    public function __construct()
+    {
+        $this->organizationMemberships = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -82,5 +94,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function eraseCredentials(): void
     {
+    }
+
+    /** @return Collection<int, OrganizationMembership> */
+    public function getOrganizationMemberships(): Collection
+    {
+        return $this->organizationMemberships;
+    }
+
+    public function addOrganizationMembership(OrganizationMembership $membership): static
+    {
+        if (!$this->organizationMemberships->contains($membership)) {
+            $this->organizationMemberships->add($membership);
+            $membership->setUser($this);
+        }
+
+        return $this;
     }
 }

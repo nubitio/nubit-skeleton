@@ -11,4 +11,5 @@ return [
     Symfony\Bundle\MercureBundle\MercureBundle::class => ['all' => true],
     Nubit\SequenceBundle\NubitSequenceBundle::class => ['all' => true],
     Nubit\WorkflowBundle\NubitWorkflowBundle::class => ['all' => true],
+    Nubit\TenantBundle\NubitTenantBundle::class => ['all' => true],
 ];

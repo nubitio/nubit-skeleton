@@ -19,6 +19,8 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Nubit\ApiPlatform\Attribute\Auditable;
 use Nubit\ApiPlatform\Doctrine\Filter\DataGridFilter;
+use Nubit\TenantBundle\Contract\TenantOwnedInterface;
+use Nubit\TenantBundle\Entity\TenantOwnedTrait;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -30,7 +32,13 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity]
 #[ORM\Table(name: 'sales_document')]
 #[ApiResource(
-    operations: [new GetCollection(), new Post(), new Get(), new Patch(), new Delete()],
+    operations: [
+        new GetCollection(security: "is_granted('APP_SALES_DOCUMENT_READ')"),
+        new Post(security: "is_granted('APP_SALES_DOCUMENT_WRITE')"),
+        new Get(security: "is_granted('APP_SALES_DOCUMENT_READ')"),
+        new Patch(security: "is_granted('APP_SALES_DOCUMENT_WRITE')"),
+        new Delete(security: "is_granted('APP_SALES_DOCUMENT_DELETE')"),
+    ],
     mercure: true,
     paginationClientItemsPerPage: true,
     normalizationContext: ['groups' => ['document:read']],
@@ -38,8 +46,9 @@ use Symfony\Component\Validator\Constraints as Assert;
     processor: SalesDocumentProcessor::class,
 )]
 #[ApiFilter(DataGridFilter::class)]
-class SalesDocument
+class SalesDocument implements TenantOwnedInterface
 {
+    use TenantOwnedTrait;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

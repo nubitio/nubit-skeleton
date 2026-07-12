@@ -27,6 +27,10 @@ services:
         arguments:
             $persistProcessor: '@api_platform.doctrine.orm.state.persist_processor'
 
+    App\Security\InvoiceWorkflowGuard:
+        tags:
+            - { name: 'nubit.workflow_guard', class: 'App\Security\InvoiceWorkflowGuard' }
+
     # Granular permissions on /api/me — decorates the default builder.
     # Add new 'module.action' keys in AppMeResponseBuilder::resolvePermissions().
     Nubit\AdminBundle\Session\MeResponseBuilderInterface:
@@ -35,3 +39,6 @@ services:
     App\Session\AppMeResponseBuilder:
         arguments:
             $inner: '@Nubit\AdminBundle\Session\DefaultMeResponseBuilder'
+
+    Nubit\TenantBundle\Resolver\TenantResolverInterface:
+        alias: App\Tenant\OrganizationTenantResolver

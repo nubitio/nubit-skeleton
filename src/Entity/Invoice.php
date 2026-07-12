@@ -13,6 +13,7 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\State\InvoiceProcessor;
+use App\Security\InvoiceWorkflowGuard;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -20,6 +21,8 @@ use Doctrine\ORM\Mapping as ORM;
 use Nubit\ApiPlatform\Attribute\Auditable;
 use Nubit\ApiPlatform\Doctrine\Filter\DataGridFilter;
 use Nubit\SequenceBundle\Attribute\Sequence;
+use Nubit\TenantBundle\Contract\TenantOwnedInterface;
+use Nubit\TenantBundle\Entity\TenantOwnedTrait;
 use Nubit\WorkflowBundle\Attribute\Workflow;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -43,24 +46,25 @@ use Symfony\Component\Validator\Constraints as Assert;
             'from' => ['draft'],
             'to'   => 'confirmed',
             'label' => 'Confirm',
+            'guard' => InvoiceWorkflowGuard::class,
         ],
         'mark_paid' => [
             'from' => ['confirmed'],
             'to'   => 'paid',
             'label' => 'Mark as paid',
-            'roles' => ['ROLE_ADMIN'],
+            'guard' => InvoiceWorkflowGuard::class,
         ],
         'cancel' => [
             'from' => ['draft', 'confirmed'],
             'to'   => 'cancelled',
             'label' => 'Cancel',
-            'roles' => ['ROLE_ADMIN'],
+            'guard' => InvoiceWorkflowGuard::class,
         ],
         'reopen' => [
             'from' => ['cancelled'],
             'to'   => 'draft',
             'label' => 'Reopen',
-            'roles' => ['ROLE_ADMIN'],
+            'guard' => InvoiceWorkflowGuard::class,
         ],
     ],
 )]
@@ -68,7 +72,13 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity]
 #[ORM\Table(name: 'invoice')]
 #[ApiResource(
-    operations: [new GetCollection(), new Post(), new Get(), new Patch(), new Delete()],
+    operations: [
+        new GetCollection(security: "is_granted('APP_INVOICE_READ')"),
+        new Post(security: "is_granted('APP_INVOICE_WRITE')"),
+        new Get(security: "is_granted('APP_INVOICE_READ')"),
+        new Patch(security: "is_granted('APP_INVOICE_WRITE')"),
+        new Delete(security: "is_granted('APP_INVOICE_DELETE')"),
+    ],
     mercure: true,
     paginationClientItemsPerPage: true,
     normalizationContext: ['groups' => ['invoice:read']],
@@ -76,8 +86,9 @@ use Symfony\Component\Validator\Constraints as Assert;
     processor: InvoiceProcessor::class,
 )]
 #[ApiFilter(DataGridFilter::class)]
-class Invoice
+class Invoice implements TenantOwnedInterface
 {
+    use TenantOwnedTrait;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

@@ -1575,8 +1575,8 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  * }
  * @psalm-type MercureConfig = array{
  *     hubs?: array<string, array{ // Default: []
- *         url?: scalar|Param|null, // URL of the hub's publish endpoint // Default: null
- *         public_url?: scalar|Param|null, // URL of the hub's public endpoint
+ *         url?: scalar|Param|null, // URL of the hub's publish endpoint
+ *         public_url?: scalar|Param|null, // URL of the hub's public endpoint // Default: null
  *         jwt?: string|array{ // JSON Web Token configuration.
  *             value?: scalar|Param|null, // JSON Web Token to use to publish to this hub.
  *             provider?: scalar|Param|null, // The ID of a service to call to provide the JSON Web Token.
@@ -1601,6 +1601,21 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     enabled?: bool|Param, // Enable workflow transition routes and x-workflow OpenAPI hints. // Default: true
  *     api_route_prefix?: scalar|Param|null, // Global API route prefix prepended when inferring collection paths. // Default: "/api"
  * }
+ * @psalm-type NubitTenantConfig = array{
+ *     enabled?: bool|Param, // Enable tenant resolution, Doctrine filter, and registry wiring. // Default: false
+ *     isolation?: "column"|"database"|Param, // Default: "column"
+ *     tenant_connection?: scalar|Param|null, // Doctrine connection name switched in database isolation mode. // Default: "default"
+ *     control_plane_connection?: scalar|Param|null, // Doctrine connection for tenant registry lookups in database isolation mode. // Default: "default"
+ *     quotas_enabled?: bool|Param, // Enforce plan limits via FeatureChecker entitlements and QuotaUsageProvider implementations. // Default: false
+ *     resolution?: list<scalar|Param|null>,
+ *     tenant_entity?: scalar|Param|null, // FQCN of the tenant root entity used by the registry and self-filter. // Default: "Nubit\\TenantBundle\\Entity\\Tenant"
+ *     jwt_secret?: scalar|Param|null, // Secret for jwt_claim resolution. Defaults to %env(APP_SECRET)%. // Default: "%env(APP_SECRET)%"
+ *     jwt_id_claim?: scalar|Param|null, // Default: "tenantId"
+ *     jwt_name_claim?: scalar|Param|null, // Default: "tenantName"
+ *     tenant_header?: scalar|Param|null, // Default: "X-Tenant-Id"
+ *     base_domain?: scalar|Param|null, // Base domain for subdomain resolution (e.g. example.com). // Default: null
+ *     rls_enabled?: bool|Param, // Set PostgreSQL app.tenant_id per request (requires RLS policies). // Default: false
+ * }
  * @psalm-type ConfigType = array{
  *     imports?: ImportsConfig,
  *     parameters?: ParametersConfig,
@@ -1615,6 +1630,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     mercure?: MercureConfig,
  *     nubit_sequence?: NubitSequenceConfig,
  *     nubit_workflow?: NubitWorkflowConfig,
+ *     nubit_tenant?: NubitTenantConfig,
  *     "when@dev"?: array{
  *         imports?: ImportsConfig,
  *         parameters?: ParametersConfig,
@@ -1629,6 +1645,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         mercure?: MercureConfig,
  *         nubit_sequence?: NubitSequenceConfig,
  *         nubit_workflow?: NubitWorkflowConfig,
+ *         nubit_tenant?: NubitTenantConfig,
  *     },
  *     "when@prod"?: array{
  *         imports?: ImportsConfig,
@@ -1644,6 +1661,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         mercure?: MercureConfig,
  *         nubit_sequence?: NubitSequenceConfig,
  *         nubit_workflow?: NubitWorkflowConfig,
+ *         nubit_tenant?: NubitTenantConfig,
  *     },
  *     "when@test"?: array{
  *         imports?: ImportsConfig,
@@ -1659,6 +1677,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         mercure?: MercureConfig,
  *         nubit_sequence?: NubitSequenceConfig,
  *         nubit_workflow?: NubitWorkflowConfig,
+ *         nubit_tenant?: NubitTenantConfig,
  *     },
  *     ...<string, ExtensionType|array{ // extra keys must follow the when@%env% pattern or match an extension alias
  *         imports?: ImportsConfig,

@@ -70,6 +70,9 @@
     "nubitio/sequence-bundle": {
         "version": "v0.10.3"
     },
+    "nubitio/tenant-bundle": {
+        "version": "v0.10.13"
+    },
     "nubitio/workflow-bundle": {
         "version": "v0.10.3"
     },
