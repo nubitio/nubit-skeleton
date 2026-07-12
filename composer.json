@@ -21,6 +21,7 @@
         "nubitio/tenant-bundle": "^0.12.0",
         "nubitio/workflow-bundle": "^0.12.0",
         "symfony/console": "7.4.*",
+        "symfony/expression-language": "7.4.*",
         "symfony/dotenv": "7.4.*",
         "symfony/flex": "^2",
         "symfony/framework-bundle": "7.4.*",
