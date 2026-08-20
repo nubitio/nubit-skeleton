@@ -1,6 +1,6 @@
 ---
 name: nubit-stack
-description: Build CRUD admin features on the Nubit stack (Symfony + API Platform + @nubitio/react-admin). Use when adding resources/entities/pages, customizing grids or forms, wiring auth, or troubleshooting this skeleton. The frontend GENERATES screens from the API docs — most features need zero frontend field code.
+description: Build and troubleshoot CRUD admin features on the Nubit stack (Symfony + API Platform backend, @nubitio/react-admin frontend). Use whenever the user asks to add a resource/entity/page/module, customize a grid, form, filter, or column, wire up auth/roles/permissions/feature flags, add file uploads, an audit trail, exports (XLS/PDF), a dashboard/KPI page, a document workflow (invoices, orders, sequences, status transitions), master-detail/line items, multi-tenant/SaaS behavior (quotas, billing UI, per-tenant data isolation), or debug why a screen isn't showing fields or data — even if they just say "add a Customers page", "why isn't this field showing up", or "add an export button" without naming the stack. The frontend GENERATES screens from the backend's API docs, so most features need zero hand-written frontend field code — reach for this skill before hand-building a datagrid, form, chart, or export endpoint.
 ---
 
 # Building with the Nubit stack
@@ -144,390 +144,53 @@ heuristic when that fetch fails. Consequences:
 
 - **Mercure**: `createNubitApp()` registers `MercureProvider` by default (`hydra: true`).
   Hub URL `/.well-known/mercure` (Vite proxies to the hub in dev — see `vite.config.ts`).
-  Set `VITE_MERCURE_TOPIC_ORIGIN` to the API public origin (`http://localhost:8000`
-  in Docker) so SSE topics match API Platform `@id` IRIs; backend uses
-  `DEFAULT_URI` for the same value.
+  SSE topic matching is controlled by `CoreConfigProvider`'s `mercureTopicOrigin` prop
+  (not an env var nubit-react reads itself) — point it at the API's public origin
+  (`http://localhost:8000` in Docker) so topics match API Platform `@id` IRIs; the
+  backend's `DEFAULT_URI` must agree. Per-resource `mercure?: boolean` on
+  `defineResource` (default `true`) opts a single resource out of the subscription.
 - **Toasts**: `useAppRuntime()` + `ToastHost` feed `CoreProvider.runtime.notify`.
 - **Session**: `GET /api/me` on boot; logout calls `POST /api/auth/logout`.
-- **Runtime config** (opt-in): `runtime_config: true` + `RuntimeConfigProviderInterface`
-  → `GET /api/runtime-config`; React hook `useRuntimeConfig()`. Off by default in
-  this skeleton — enable when the app needs UI flags/defaults separate from `/api/me`.
+  `useSession()` returns `{ session, refresh, logout, roles, username }` — there is
+  **no `session.profile.permissions`**; role checks read `roles` (array of strings),
+  not a permissions map. `session.profile` also carries `appProfile`, `tenant`, and
+  `features` (see feature flags below).
+- **Runtime config**: `RuntimeConfigProviderInterface` on the backend (behind
+  `nubit_admin.runtime_config: true`, off by default in this skeleton) serves
+  `GET /api/runtime-config`. On the frontend it's **not** a `createNubitApp` option —
+  call the `useRuntimeConfig()` hook directly wherever you need the values (e.g. inside
+  `filterMenu` or a page component).
+- **CRUD-engine translations**: setting `lng: 'es'` on your i18next instance only
+  affects strings you own. To translate the CRUD engine's own built-in strings
+  (grid toolbar, "History" button, validation messages) call `initCoreI18n()` from
+  `@nubitio/react-admin` once at startup — without it those stay in whatever locale
+  the bundled default is, regardless of `lng`.
 - **Master-detail demo**: `SalesDocumentsPage.tsx` + `SalesDocument` entity.
 
-## Master-detail (lines inside a form), drawer and page modes
+## Beyond flat CRUD
 
-`defineResource` accepts far more than `title` — use the engine:
+Two reference files cover everything past the basic grid+form. Read the one
+that matches what's being built — don't load both up front.
 
-- `viewMode: 'drawer' | 'page' | { mode: 'drawer', drawerSize: 'md' }`.
-  Page mode needs BOTH routes (`/sales` and `/sales/:id`) pointing at the same
-  page component plus `routing: { routeParam: 'id' }` — or use the
-  `crudRoute('/sales', <SalesPage />)` helper which returns both routes.
-- `formDetail: { propertyName: 'lines', url: embeddedLinesUrl('/api/sales_document_lines', 'document'), fields: [...] }`
-  renders an editable detail grid inside the form. Rows are submitted
-  **embedded** in the parent payload under `propertyName`; on edit they are
-  reloaded from `url` (the `{id}` placeholder is required — without it the
-  edit form shows an empty detail grid). On the line entity add
-  `#[EmbeddedLines(parentProperty: 'document')]` — the bundle serves the reload
-  endpoint; no custom controller. Extend `AbstractEmbeddedLinesProcessor` on the
-  parent processor to bind lines. The "add row" button has aria-label
-  `Add item` and no visible text.
-- `gridDetail: { url: '...?document={id}', fields: [...] }` adds an expandable
-  row panel to the main grid (read-only). Expose an API Platform
-  `SearchFilter` on the child's parent property so `?document=<id>` works.
-- Detail `fields` accept builder instances directly (`entityField(...)
-  .name('product')`) — `.build()` is called for you (also valid to call it
-  yourself).
-- `entityField(url, valueField, textField)`: use `valueField: '_iri'` — that
-  is what the Hydra data source injects on option rows. `'@id'` will not
-  resolve labels (plain-JSON option payloads have no `@id`).
-- `onDetailRowsChanged(formRef)` lets you recompute header fields live from
-  `formRef.current?.getDetailData()`.
+- **`references/detail-views-and-media.md`** — line items inside a form
+  (master-detail), drawer/page view modes, image/file uploads, audit-trail
+  panels, lifecycle timelines, grid/form footer summaries.
+- **`references/erp-and-permissions.md`** — the full ERP document pattern
+  (sequence numbers + status workflow + audit + embedded lines, e.g.
+  invoices), grouping pages into a tabbed module (`FeatureHubLayout`),
+  role-based UI gating, per-row workflow actions/locking, and smaller
+  customizations (soft delete, virtual columns, roles per operation,
+  theming, extra JWT claims).
+- **`references/platform-and-saas.md`** — multi-tenant apps (`nubitio/tenant-bundle`),
+  feature flags/entitlements and quota UI, export (XLS/PDF), the
+  `@nubitio/dashboard` package, analytics/observability, and grid summary
+  aggregation. This is this skeleton's `app_profile: internal` by default —
+  read this file only when the app needs `saas`/`hybrid` behavior or one of
+  these specific features.
 
-Backend side for embedded detail rows: serialization groups on parent and
-line fields, `cascade: ['persist','remove']` + `orphanRemoval: true` on the
-collection, and a state processor that sets the back-reference and computes
-amounts on every save. Detail rows are sent without ids → treat saves as full
-replace. Don't put groups on the line's back-reference property (circular).
-Compute totals in the parent's processor; the line's own processor never runs
-for embedded writes.
-
-To keep an embedded collection out of the auto-generated form, use
-`#[ApiProperty(readable: false)]` (excluded from reads entirely) or the
-`x-crud: ['visibleOnForm' => false]` hint (column stays in the grid).
-Plain `x-crud: hidden` only hides grid columns.
-
-## Uploads / media library
-
-`nubit_admin.media.enabled: true` (already on in this skeleton) gives you the
-full pipeline. To add an image/file to an entity:
-
-```php
-#[ORM\ManyToOne(targetEntity: \Nubit\AdminBundle\Media\Entity\Media::class)]
-#[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
-#[ApiProperty(openapiContext: ['x-crud' => ['format' => 'image', 'hidden' => true]])]
-private ?Media $photo = null;   // see src/Entity/Product.php
-```
-
-`format: 'image'` (or `'file'` for documents) renders a dropzone that uploads
-**instantly** to `POST /api/media` (multipart, field `file`) and submits only
-the media IRI with the form. The serialized `path` is always a public URL
-(default: the bundle streaming route `/api/media/{id}/file`). Storage is
-local `var/uploads` by default; S3 = point `media.storage.filesystem` at a
-FilesystemOperator service. Schedule `bin/console nubit:media:purge` — deletes
-are soft and abandoned-form uploads orphan files.
-
-## Audit trail (change history per row)
-
-`nubit_admin.audit.enabled: true` (already on here) + `#[Auditable]`
-(`Nubit\ApiPlatform\Attribute\Auditable`) on the entity records field-level
-before/after diffs of every create/update/delete, attributed to the logged-in
-user. Wire the panel per resource:
-
-```ts
-defineResource('/api/products', {
-  auditTrail: { enabled: true, apiUrl: (id) => `/api/audit-trail/product/${id}` },
-})
-```
-
-The grid gains a History toolbar button acting on the selected row (see
-`ProductsPage.tsx` + `src/Entity/Product.php`). The `{resource}` URL segment
-is the lowercased class short name, or `#[Auditable(resource: '...')]`.
-Diffs skip `ignored_fields` (createdAt/updatedAt/password by default) and
-collection contents; relations collapse to their id. Schedule
-`bin/console nubit:audit:purge` — the log grows with every audited write.
-
-## Timelines (document lifecycles and event logs)
-
-`Timeline` / `TimelineItem` from `@nubitio/react-admin` — one primitive, two
-variants, fully token-themed:
-
-- `variant="stepper"`: workflow stages (e.g. a document lifecycle: draft →
-  sent → accepted/rejected). `status` per item: `complete` (check), `current`
-  (ring), `pending`, `error` (red ✗). Use this instead of alert()s or ad-hoc
-  status text when a row has a state machine. Add
-  `orientation="horizontal"` for wizard/checkout layouts (1 → 2 → 3, labels
-  under the markers).
-- `variant="log"`: chronological events with tone-colored dot markers
-  (`tone: success|info|danger|warning`) + `timestamp`/`dateTime`. The
-  AuditTrailPanel renders change history with it automatically — reach for it
-  directly when building custom activity feeds.
-
-```tsx
-<Timeline variant="stepper" title="F001-672" description="SUNAT status">
-  <TimelineItem status="complete" title="Draft created" />
-  <TimelineItem status="current" title="Awaiting CDR" />
-  <TimelineItem status="error" title="Rejected · code 2017" />
-</Timeline>
-```
-
-## Summaries (grid footers and line totals)
-
-- `formDetail.summary: { sticky: true, items: [...] }` adds a footer to the
-  lines grid inside the form (e.g. running tax + total while editing). Safe
-  there: the form always loads ALL lines of the document.
-- `summaryFields: [...]` adds the same footer to the MAIN grid, but it is
-  computed client-side over the **loaded page only** — on paginated grids the
-  number lies once there is more than one page. **Don't use it on paginated
-  resources** until server-side summaries exist. The currency preset reads
-  the app-wide currency from `<CoreConfigProvider currency="USD">`; per-item
-  `currency` overrides it, and with neither set it falls back to plain
-  fixed-point formatting.
-
-## ERP document pattern — Sequence + Workflow + Auditable + lines
-
-The reference implementation is `src/Entity/Invoice.php` + `InvoiceLine.php` +
-`src/State/InvoiceProcessor.php` + `frontend/src/pages/InvoicesPage.tsx`.
-Copy this for every document type (purchase orders, receipts, credit notes…).
-
-### Backend — four attributes on the header entity
-
-```php
-// Install once: composer require nubitio/workflow-bundle nubitio/sequence-bundle
-// Both bundles are auto-registered in config/bundles.php by Flex.
-
-#[Sequence(field: 'number', name: 'invoice', prefix: 'INV-', padding: 4)]
-#[Workflow(
-    field: 'status',
-    transitions: [
-        'confirm' => ['from' => ['draft'], 'to' => 'confirmed', 'label' => 'Confirm'],
-        'mark_paid' => ['from' => ['confirmed'], 'to' => 'paid', 'label' => 'Mark as paid', 'roles' => ['ROLE_ADMIN']],
-        'cancel'   => ['from' => ['draft', 'confirmed'], 'to' => 'cancelled', 'label' => 'Cancel', 'roles' => ['ROLE_ADMIN']],
-    ],
-)]
-#[Auditable(resource: 'invoice')]
-#[ApiResource(processor: InvoiceProcessor::class, ...)]
-class Invoice { /* lines collection, header fields, recalculateTotals() */ }
-```
-
-- `#[Sequence]` fills `$number` on first persist; skip if field already set.
-  Register any `scope: ['customer']` paths to scope counters per dimension.
-- `#[Workflow]` auto-registers `POST /api/invoices/{id}/transition/{name}`.
-  `SchemaCrudPage` reads `x-workflow` from `/api/docs.jsonld` and builds row
-  action buttons automatically — no frontend code needed.
-  Optional `guard: MyGuard::class` (implement `WorkflowGuardInterface`) for
-  domain rules that go beyond role checks.
-- `#[Auditable]` records field-level diffs. Use `#[AuditMasked]` on sensitive
-  properties to exclude them.
-- Status field: mark `'visibleOnForm' => false` in `x-crud` — the workflow
-  engine sets it, the user never edits it directly.
-
-### Line entity
-
-```php
-#[EmbeddedLines(
-    parentProperty: 'invoice',
-    route: '/api/invoice_lines',
-    normalizationGroups: ['invoice:read'],
-)]
-#[ApiResource(operations: [new GetCollection(), new Get()], normalizationContext: ['groups' => ['invoice:read']])]
-#[ORM\Entity]
-class InvoiceLine { /* product, quantity, unitPrice, taxRate, lineTotal + x-crud hints */ }
-```
-
-`#[ApiResource]` on the line entity exposes its schema in `/api/docs.jsonld`.
-`SchemaCrudPage` infers `formDetail` fields automatically from `x-embedded-lines`
-on the parent — no manual `formDetail.fields` in the frontend.
-
-### State processor
-
-```php
-// config/services.yaml — required, interface has multiple candidates
-App\State\InvoiceProcessor:
-    arguments:
-        $persistProcessor: '@api_platform.doctrine.orm.state.persist_processor'
-```
-
-```php
-final readonly class InvoiceProcessor extends AbstractEmbeddedLinesProcessor {
-    protected function supports(mixed $data): bool   { return $data instanceof Invoice; }
-    protected function linesProperty(): string        { return 'lines'; }
-    protected function lineSetter(): string           { return 'setInvoice'; }
-    protected function afterLinesSynced(mixed $data): void {
-        if ($data instanceof Invoice) { $data->recalculateTotals(); }
-    }
-}
-```
-
-### Frontend page
-
-```tsx
-// SchemaCrudPage auto-reads x-workflow and builds transition buttons — no rowActions needed.
-const invoices = defineResource('/api/invoices', {
-  title: 'Invoices',
-  viewMode: { mode: 'drawer', drawerSize: 'lg' },
-  permissions: {
-    canView: true,
-    canEditRow: (row) => !['paid', 'cancelled'].includes(String(row.status)),
-    canDeleteRow: (row) => row.status === 'draft',
-  },
-  auditTrail: { enabled: true, apiUrl: (id) => `/api/audit-trail/invoice/${id}` },
-  formDetail: {
-    propertyName: 'lines',
-    allowAdding: true,
-    allowDeleting: true,
-    allowUpdating: true,
-    required: true,
-    summary: {
-      sticky: true,
-      items: [{ column: 'lineTotal', summaryType: 'sum', valueFormat: 'currency', label: 'Lines total' }],
-    },
-  },
-});
-export function InvoicesPage() { return <SchemaCrudPage resource={invoices} />; }
-```
-
-## Module navigation (FeatureHubLayout)
-
-Group related pages under a single sidebar entry with tabs. Required for ERP
-modules (Sales, Purchasing, Inventory, HR…).
-
-`FeatureHubLayout` uses `<Outlet />` so it **must** be used as a React Router
-layout route inside a nested `<Routes>`. The parent App.tsx entry needs `/*`.
-
-```tsx
-// frontend/src/pages/SalesModule.tsx
-import { Navigate, Route, Routes } from 'react-router-dom';
-import { FeatureHubLayout } from '@nubitio/react-admin';
-
-const BASE = '/sales';
-
-export function SalesModule() {
-  return (
-    <Routes>
-      <Route
-        element={
-          <FeatureHubLayout
-            title="Sales"
-            basePath={BASE}
-            defaultPath={`${BASE}/invoices`}
-            density="compact"
-            tabs={[
-              { key: 'invoices',  label: 'Invoices',  path: `${BASE}/invoices`,  icon: 'invoice' },
-              { key: 'orders',    label: 'Orders',    path: `${BASE}/orders`,    icon: 'receipt' },
-              { key: 'customers', label: 'Customers', path: `${BASE}/customers`, icon: 'users' },
-            ]}
-          />
-        }
-      >
-        <Route index element={<Navigate to={`${BASE}/invoices`} replace />} />
-        <Route path="invoices"  element={<InvoicesPage />} />
-        <Route path="orders"    element={<OrdersPage />} />
-        <Route path="customers" element={<CustomersPage />} />
-      </Route>
-    </Routes>
-  );
-}
-```
-
-```tsx
-// frontend/src/App.tsx — one menu entry + wildcard route per module
-menu: [{ text: 'Sales', icon: 'ph ph-receipt', path: '/sales' }],
-routes: [{ path: '/sales/*', element: <SalesModule /> }],
-```
-
-`density="compact"` collapses title + tabs to a single row, leaving more
-vertical space for the grid. Use `density="default"` for hub landing pages
-with a subtitle or banner.
-
-## Granular permissions on /api/me
-
-The frontend can't read HttpOnly cookies so it can't inspect the JWT.
-`GET /api/me` is the single source of truth for UX gating.
-
-Add a `permissions` map by decorating `MeResponseBuilderInterface`:
-
-```php
-// src/Session/AppMeResponseBuilder.php
-final readonly class AppMeResponseBuilder implements MeResponseBuilderInterface {
-    public function __construct(private MeResponseBuilderInterface $inner) {}
-    public function build(UserInterface $user): array {
-        $response = $this->inner->build($user);
-        $isAdmin  = in_array('ROLE_ADMIN', $user->getRoles(), true);
-        $response['permissions'] = [
-            'invoice.pay'    => $isAdmin,
-            'invoice.cancel' => $isAdmin,
-            'catalog.manage' => $isAdmin,
-            // add keys as the app grows
-        ];
-        return $response;
-    }
-}
-```
-
-```yaml
-# config/services.yaml
-Nubit\AdminBundle\Session\MeResponseBuilderInterface:
-    alias: App\Session\AppMeResponseBuilder
-App\Session\AppMeResponseBuilder:
-    arguments:
-        $inner: '@Nubit\AdminBundle\Session\DefaultMeResponseBuilder'
-```
-
-Frontend consumption:
-```tsx
-const { session } = useSession();
-const perms = (session as any).profile?.permissions ?? {};
-const canPay = perms['invoice.pay'] ?? false;
-```
-
-Rules:
-- Keep permission keys as `module.action` strings.
-- Symfony `security:` expressions on operations are the **real gate** — this
-  is UX mirroring only.
-- Add new keys here as modules are built; don't abstract prematurely.
-
-## Workflow actions and row locking
-
-- `rowActions: (row) => [...]` adds per-row menu actions (confirm + PATCH
-  state transitions work well; grids with `mercure: true` refresh themselves).
-- When `#[Workflow]` is on the entity, `SchemaCrudPage` auto-builds row actions
-  from `x-workflow` in the API docs — **do not set `rowActions` manually**.
-- `permissions.canEditRow / canDeleteRow: (row) => boolean` hide Edit/Delete
-  per row and make row-click open read-only. **Set `canView: true` alongside
-  them** — it defaults to false, and a fully locked row would otherwise have
-  no actions at all.
-- Menu items render as `[role=menuitem]` buttons (useful for E2E selectors).
-
-## Customizations
-
-- **Computed/joined grid columns** (no ORM mapping): implement
-  `Nubit\ApiPlatform\Doctrine\Filter\GridVirtualFieldInterface` (autoconfigured
-  by the bundle). Use `GridFilterHelper::dqlOperator/valueForOperator/uniqueParameterName`.
-- **Soft delete**: add `#[Nubit\ApiPlatform\Attribute\SoftDeletable]` to the entity (plus a
-  `deleted_at` nullable datetime column) — HTTP queries hide deleted rows automatically;
-  console commands see everything.
-- **Change password**: `POST /api/auth/change-password` ships with the bundle
-  (`currentPassword`/`newPassword`); it rotates all sessions. Purge old refresh tokens with
-  `bin/console nubit:auth:purge-refresh-tokens`.
-- **Roles per operation**: standard API Platform `security: "is_granted('ROLE_ADMIN')"`
-  on the operation (needs symfony/expression-language). Routes under `/api`
-  already require `ROLE_USER` (see `config/packages/security.yaml`
-  `access_control`).
-- **Role-aware UI**: cookies are HttpOnly, so the SPA can't read the JWT.
-  `GET /api/me` comes from `nubitio/admin-bundle` (`MeResponseBuilderInterface`);
-  the skeleton sets `app_profile: internal` in `config/packages/nubit_admin.yaml`.
-  The response is wired into `SmartCrudRolesProvider` via `SessionProvider`.
-  Mirror roles as UX only (menu filtering, `defineResource` permission presets).
-  Symfony `security:` expressions remain the real gate. Alias
-  `MeResponseBuilderInterface` to add domain fields (branch, currency, etc.).
-- **Extra JWT claims / login payload**: implement `TokenClaimsProviderInterface`
-  and alias it over `DefaultTokenClaimsProvider` in `config/services.yaml`.
-- **Extra login cookies** (e.g. Mercure subscriber JWT): implement
-  `LoginResponseDecoratorInterface` (autoconfigured).
-- **Manual field control on the frontend** (rare): pass `fields: [...]` built
-  with `textField()/numberField()/entityField()…` to `defineResource` (builder
-  instances are accepted directly — calling `.build()` is optional), plus
-  `adapter: RestAdapter` for non-Hydra backends.
-- **App-wide currency**: `currency` formatting takes the ISO 4217 code from
-  `item.currency` row data when present, else from
-  `<CoreConfigProvider currency="USD">` (`frontend/src/App.tsx`). With neither,
-  values render as plain fixed-point numbers — the library defaults to no
-  country's currency.
-- **Theming**: tokens are CSS custom properties from `@nubitio/ui`
-  (`--surface-*`, `--text-*`, `--accent-color`, `--font-family-{sans,display}`).
-  Style custom pages with tokens, never hardcoded colors — dark mode is free.
-  Theme css files live in `frontend/public/themes/` (copied from the package
-  by `scripts/copy-themes.mjs` on `pnpm dev/build`).
+This skeleton defaults `viewMode` to `'dialog'` when a resource sets none
+(`'dialog' | 'drawer' | 'page'`) — pick `drawer` or `page` explicitly for
+anything with more than a handful of fields.
 
 ## Gotchas (cost real debugging time — respect them)
 
@@ -547,13 +210,17 @@ Rules:
    Don't add CORS config for the SPA; it's not cross-origin.
 8. New vendor service classes are NOT autodiscovered — bundle registers its
    own; app services go in `config/services.yaml` as usual.
-9. Resources with `mercure: true` publish **after** the flush. Since bundle
-   0.7 a dead hub no longer 500s the request: the write returns 2xx and the
-   failure is logged as a warning ("Mercure publish failed") — live refresh
-   degrades to manual. In messenger workers the error is rethrown so async
-   `Update` routing keeps retrying. A broken hub shows as 502 on
+9. Resources with `mercure: true` publish **after** the flush. A dead hub no
+   longer 500s an HTTP request (`nubit_admin.mercure.fail_safe`, default
+   `true`): the write returns 2xx and the failure is logged as a warning
+   ("Mercure publish failed") — live refresh degrades to manual. In
+   messenger/console contexts the error is rethrown so async `Update`
+   routing keeps retrying. A broken hub shows as 502 on
    `/.well-known/mercure`; if host port 3000 is taken, start the stack with
    `MERCURE_PORT=3001 docker compose up -d`.
+10. `formDetail.inferFields` is legacy — inference from the backend's
+    `x-embedded-lines` metadata is automatic now. Only set `inferFields: false`
+    if you deliberately want to suppress it and hand-write `fields`.
 
 ## Library source (for deeper digging)
 
