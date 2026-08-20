@@ -63,6 +63,13 @@
     },
     "scripts": {
         "test": "phpunit",
+        "check": [
+            "@test",
+            "@stan",
+            "@cs",
+            "@php bin/console lint:yaml config --parse-tags",
+            "@php bin/console lint:container"
+        ],
         "stan": "mago analyze",
         "cs": "mago lint && mago fmt --dry-run",
         "cs-fix": "mago lint --fix && mago fmt",

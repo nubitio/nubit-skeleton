@@ -7,11 +7,20 @@ const symfonyRoot = resolve(process.env.NUBIT_SYMFONY_PATH ?? `${root}/../nubit-
 
 const readJson = async (path) => JSON.parse(await readFile(path, 'utf8'));
 const compatibility = await readJson(resolve(root, 'nubit-compatibility.json'));
+const backend = await readJson(resolve(root, 'composer.json'));
 const frontend = await readJson(resolve(root, 'frontend/package.json'));
 const checkSourceContracts = process.env.NUBIT_SKIP_SOURCE_CONTRACTS !== '1';
 
 const failures = [];
 const lineOf = (range) => String(range).replace(/^[^0-9]*/, '').split('.').slice(0, 2).join('.');
+
+for (const name of compatibility.backend.packages) {
+  const range = backend.require[name];
+  if (!range) failures.push(`backend dependency missing: ${name}`);
+  else if (lineOf(range) !== compatibility.backend.line) {
+    failures.push(`${name} resolves from line ${lineOf(range)}, expected ${compatibility.backend.line}`);
+  }
+}
 
 for (const name of compatibility.frontend.packages) {
   const range = frontend.dependencies[name];
