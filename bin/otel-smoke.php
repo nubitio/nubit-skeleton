@@ -20,4 +20,9 @@ try {
     $span->end();
 }
 
-fwrite(STDOUT, "OpenTelemetry smoke span completed.\n");
+Globals::meterProvider()
+    ->getMeter('nubitio/skeleton-smoke')
+    ->createCounter('nubit.observability.smoke')
+    ->add(1, ['nubit.smoke' => true]);
+
+fwrite(STDOUT, "OpenTelemetry smoke span and metric completed.\n");

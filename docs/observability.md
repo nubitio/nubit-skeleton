@@ -10,12 +10,13 @@ Start the Collector profile and enable SDK autoloading for the command:
 
 ```bash
 docker compose --profile observability up -d --build otel-collector app
-docker compose exec -e OTEL_PHP_AUTOLOAD_ENABLED=true app php bin/otel-smoke.php
+docker compose exec -e OTEL_PHP_AUTOLOAD_ENABLED=true -e OTEL_METRIC_EXPORT_INTERVAL=1000 app php bin/otel-smoke.php
 docker compose logs otel-collector
 ```
 
-The Collector debug exporter should print a span named
-`nubit.observability.smoke`.
+The Collector debug exporter should print a span and a metric named
+`nubit.observability.smoke`. Collector readiness is exposed at
+`http://localhost:13133/`; override `OTEL_HEALTH_PORT` if needed.
 
 ## Configuration
 
@@ -42,6 +43,7 @@ Run a Collector or vendor gateway separately from the application, use TLS,
 batch export, bounded retries, tail sampling where justified, and backend
 retention controls. Telemetry failure must never make an ERP request fail.
 
-The current slice establishes safe SDK/export infrastructure and Nubit tracing
-services. HTTP, Doctrine and Messenger instrumentation are delivered in later
-rollout slices so each cardinality and privacy boundary can be tested.
+Nubit emits privacy-safe HTTP, Messenger and DBAL spans plus RED metrics. Metric
+dimensions intentionally exclude tenant identifiers, request identifiers,
+URLs, SQL and message payloads. Configure backend aggregation and alerts by
+route, operation and status rather than by customer.
