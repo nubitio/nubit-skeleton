@@ -21,6 +21,43 @@ services:
       database:
         condition: service_healthy
 
+  analytics-worker:
+    profiles: [analytics]
+    build: .
+    working_dir: /app
+    command: php bin/console messenger:consume async --time-limit=3600 --memory-limit=256M --failure-limit=1
+    restart: unless-stopped
+    volumes:
+      - .:/app
+    environment:
+      DATABASE_URL: postgresql://app:!ChangeMe!@database:5432/app?serverVersion=16&charset=utf8
+      OTEL_PHP_AUTOLOAD_ENABLED: ${OTEL_PHP_AUTOLOAD_ENABLED:-false}
+      OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME:-nubit-skeleton}-analytics-worker
+      OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-http://otel-collector:4318}
+      OTEL_EXPORTER_OTLP_PROTOCOL: ${OTEL_EXPORTER_OTLP_PROTOCOL:-http/protobuf}
+    depends_on:
+      database:
+        condition: service_healthy
+
+  analytics-scheduler:
+    profiles: [analytics]
+    build: .
+    working_dir: /app
+    command: sh -c 'while true; do php bin/console nubit:analytics:dispatch-outbox; sleep "$${ANALYTICS_POLL_INTERVAL:-5}"; done'
+    restart: unless-stopped
+    volumes:
+      - .:/app
+    environment:
+      DATABASE_URL: postgresql://app:!ChangeMe!@database:5432/app?serverVersion=16&charset=utf8
+      ANALYTICS_POLL_INTERVAL: ${ANALYTICS_POLL_INTERVAL:-5}
+      OTEL_PHP_AUTOLOAD_ENABLED: ${OTEL_PHP_AUTOLOAD_ENABLED:-false}
+      OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME:-nubit-skeleton}-analytics-scheduler
+      OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-http://otel-collector:4318}
+      OTEL_EXPORTER_OTLP_PROTOCOL: ${OTEL_EXPORTER_OTLP_PROTOCOL:-http/protobuf}
+    depends_on:
+      database:
+        condition: service_healthy
+
   frontend:
     image: node:22-alpine
     working_dir: /app/frontend

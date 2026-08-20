@@ -40,6 +40,10 @@ OpenTelemetry is available as an opt-in Compose profile. See
 [`docs/observability.md`](docs/observability.md) for the local Collector smoke
 test and production guidance.
 
+Transactional, privacy-safe analytics is enabled in the application and its
+delivery processes are opt-in. See [`docs/analytics.md`](docs/analytics.md) for
+provider configuration, operations and failure recovery.
+
 > Before anything real: change `APP_SECRET` in `.env` (≥ 32 bytes — it signs the auth JWTs) and the database/Mercure passwords in `compose.yaml`.
 
 Before deployment, run `php bin/console app:doctor --strict`. Production and

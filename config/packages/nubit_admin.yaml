@@ -21,6 +21,13 @@ nubit_admin:
     # served at /api/audit-trail/{resource}/{id} (see Product + ProductsPage).
     audit:
         enabled: true
+    # Privacy-safe product analytics. Requests only write to the local
+    # transactional outbox; delivery happens asynchronously.
+    analytics:
+        enabled: '%env(bool:ANALYTICS_ENABLED)%'
+        redaction_hmac_key: '%env(ANALYTICS_REDACTION_HMAC_KEY)%'
+        delivery_endpoint: '%env(ANALYTICS_DELIVERY_ENDPOINT)%'
+        delivery_token: '%env(ANALYTICS_DELIVERY_TOKEN)%'
 
 when@dev:
     nubit_admin:
