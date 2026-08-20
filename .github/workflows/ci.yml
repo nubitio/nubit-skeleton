@@ -5,6 +5,10 @@ on:
     branches: [main]
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   compatibility:
     name: Compatibility declaration
@@ -33,6 +37,15 @@ jobs:
 
       - name: Install dependencies
         run: composer install --no-interaction --no-progress
+
+      - name: PHPUnit
+        run: vendor/bin/phpunit
+
+      - name: Static analysis (no new issues)
+        run: composer stan
+
+      - name: PHP lint (no new issues)
+        run: composer lint
 
       - name: Lint YAML config
         run: php bin/console lint:yaml config --parse-tags

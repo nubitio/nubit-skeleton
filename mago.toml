@@ -11,4 +11,4 @@ excludes = ["var/**"]
 integrations = ["symfony", "phpunit"]
 
 [linter.rules]
-missing-strict-types = { level = "error" }
+strict-types = { level = "error" }

@@ -1,0 +1,91 @@
+variant = "loose"
+
+[[issues]]
+file = "src/Command/SeedCommand.php"
+code = "semantics"
+message = "Direct method call on `new` expressions without parentheses is only available in PHP 8.4 and above."
+count = 4
+
+[[issues]]
+file = "src/Entity/Invoice.php"
+code = "invalid-type-cast"
+message = "Non numeric string of type `string` implicitly cast to `float`."
+count = 3
+
+[[issues]]
+file = "src/Entity/InvoiceLine.php"
+code = "invalid-type-cast"
+message = "Non numeric string of type `string` implicitly cast to `float`."
+count = 3
+
+[[issues]]
+file = "src/Entity/SalesDocument.php"
+code = "invalid-type-cast"
+message = "Non numeric string of type `string` implicitly cast to `float`."
+count = 1
+
+[[issues]]
+file = "src/Entity/SalesDocumentLine.php"
+code = "invalid-type-cast"
+message = "Non numeric string of type `string` implicitly cast to `float`."
+count = 2
+
+[[issues]]
+file = "src/Entity/User.php"
+code = "invalid-return-statement"
+message = 'Invalid return type for function `App\Entity\User::getUserIdentifier`: expected `non-empty-string`, but found `string`.'
+count = 1
+
+[[issues]]
+file = "src/Security/OrganizationAuthorization.php"
+code = "redundant-logical-operation"
+message = "Redundant `&&` operation: left operand is always truthy and right operand is evaluated."
+count = 1
+
+[[issues]]
+file = "src/Security/OrganizationCapabilityVoter.php"
+code = "missing-template-parameter"
+message = 'Too few template arguments for `Symfony\Component\Security\Core\Authorization\Voter\Voter`: expected at least 2, but found 0.'
+count = 1
+
+[[issues]]
+file = "src/State/SalesDocumentProcessor.php"
+code = "invalid-template-parameter"
+message = 'Template argument for `Nubit\AdminBundle\State\AbstractEmbeddedLinesProcessor` is not compatible with its constraint.'
+count = 1
+
+[[issues]]
+file = "src/Tenant/OrganizationTenantResolver.php"
+code = "possibly-null-argument"
+message = 'Argument #1 of method `Nubit\TenantBundle\Resolver\ResolvedTenant::__construct` is possibly `null`, but parameter type `int` does not accept it.'
+count = 2
+
+[[issues]]
+file = "src/Tenant/OrganizationTenantResolver.php"
+code = "possibly-null-array-index"
+message = "Possibly using `null` as an array index to access element."
+count = 1
+
+[[issues]]
+file = "src/Tenant/OrganizationTenantResolver.php"
+code = "redundant-logical-operation"
+message = "Redundant `||` operation: left operand is always false and right operand is evaluated."
+count = 1
+
+[[issues]]
+file = "src/Tenant/OrganizationTenantResolver.php"
+code = "redundant-type-comparison"
+message = 'Redundant condition: variable `$membership` (type `App\Entity\OrganizationMembership`) is already known to be `App\Entity\OrganizationMembership`.'
+count = 1
+
+[[issues]]
+file = "tests/SaasTenantContractTest.php"
+code = "mixed-argument"
+message = 'Invalid argument type for argument #2 of `PHPUnit\Framework\Assert::assertArrayHasKey`: expected `ArrayAccess<array-key, mixed>|array<array-key, mixed>`, but found `mixed`.'
+count = 1
+
+[[issues]]
+file = "tests/SaasTenantContractTest.php"
+code = "mixed-assignment"
+message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
+count = 3
