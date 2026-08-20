@@ -100,6 +100,7 @@ compose.yaml          FrankenPHP app + PostgreSQL + Mercure + frontend dev serve
 
 - `frontend && pnpm build` produces a static SPA (`frontend/dist`) — serve it from any static host or from FrankenPHP, with `/api` proxied to the Symfony app.
 - Set `cookie_secure: true` (default outside dev), real secrets, and a persistent `MERCURE_JWT_SECRET`.
+- Follow the phased [privacy, telemetry, analytics and feature-flag rollout](docs/platform-rollout.md) before enabling external providers.
 
 ## License
 

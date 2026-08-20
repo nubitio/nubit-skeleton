@@ -37,6 +37,7 @@ URLs: app/API http://localhost:8000 · React http://localhost:5173 · Mercure ht
 | `config/packages/nubit_admin.yaml` | `app_profile`, auth TTLs, cookie flags, docs locale |
 | `frontend/src/App.tsx` | `createNubitApp()` — menú/rutas declarativos; DevTools panel on localhost |
 | `nubit-react/docs/architecture/` | Pipeline, field rules, tiers, breakpoints (symlink or sibling repo) |
+| `docs/platform-rollout.md` | Phased privacy, telemetry, analytics and feature-flag adoption |
 | `frontend/src/pages/ProductsPage.tsx` | Reference page — `defineResource` + `SchemaCrudPage` + audit trail |
 | `frontend/src/pages/SalesDocumentsPage.tsx` | Master-detail — inferred `formDetail`, drawer, `canEditRow` |
 | `frontend/src/pages/InvoicesPage.tsx` | ERP document — sequence, workflow, audit, inferred lines |
