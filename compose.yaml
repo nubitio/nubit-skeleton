@@ -13,6 +13,10 @@ services:
       MERCURE_URL: http://mercure/.well-known/mercure
       MERCURE_PUBLIC_URL: http://localhost:${MERCURE_PORT:-3000}/.well-known/mercure
       MERCURE_JWT_SECRET: '!ChangeThisMercureHubJWTSecretKey!'
+      OTEL_PHP_AUTOLOAD_ENABLED: ${OTEL_PHP_AUTOLOAD_ENABLED:-false}
+      OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME:-nubit-skeleton}
+      OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-http://otel-collector:4318}
+      OTEL_EXPORTER_OTLP_PROTOCOL: ${OTEL_EXPORTER_OTLP_PROTOCOL:-http/protobuf}
     depends_on:
       database:
         condition: service_healthy
@@ -29,6 +33,16 @@ services:
       VITE_NUBIT_PROFILE: ${NUBIT_PROFILE:-showcase}
     volumes:
       - .:/app
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.157.0
+    profiles: [observability]
+    command: [--config=/etc/otelcol-contrib/config.yaml]
+    volumes:
+      - ./docker/otel-collector.yaml:/etc/otelcol-contrib/config.yaml:ro
+    ports:
+      - '${OTEL_GRPC_PORT:-4317}:4317'
+      - '${OTEL_HTTP_PORT:-4318}:4318'
 
 ###> doctrine/doctrine-bundle ###
   database:

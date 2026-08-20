@@ -36,6 +36,10 @@ profile also exposes the ERP examples; see [`docs/profiles.md`](docs/profiles.md
 | Mercure hub (proxied in dev) | http://localhost:5173/.well-known/mercure |
 | Session profile | `GET /api/me` |
 
+OpenTelemetry is available as an opt-in Compose profile. See
+[`docs/observability.md`](docs/observability.md) for the local Collector smoke
+test and production guidance.
+
 > Before anything real: change `APP_SECRET` in `.env` (≥ 32 bytes — it signs the auth JWTs) and the database/Mercure passwords in `compose.yaml`.
 
 Before deployment, run `php bin/console app:doctor --strict`. Production and
