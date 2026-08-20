@@ -1,0 +1,44 @@
+name: Nubit compatibility canary
+
+on:
+  schedule:
+    - cron: '17 5 * * 1'
+  workflow_dispatch:
+
+jobs:
+  latest-and-source:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: nubit-skeleton
+      - uses: actions/checkout@v4
+        with:
+          repository: nubitio/nubit-react
+          path: nubit-react
+      - uses: actions/checkout@v4
+        with:
+          repository: nubitio/nubit-symfony
+          path: nubit-symfony
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: nubit-skeleton/frontend/package.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: nubit-skeleton/frontend/pnpm-lock.yaml
+      - name: Verify source contracts and declared lines
+        working-directory: nubit-skeleton
+        env:
+          NUBIT_REACT_PATH: ../nubit-react
+          NUBIT_SYMFONY_PATH: ../nubit-symfony
+        run: node scripts/check-compatibility.mjs
+      - name: Resolve latest packages in the declared frontend line
+        working-directory: nubit-skeleton/frontend
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm update '@nubitio/*'
+      - name: Build latest compatible frontend
+        working-directory: nubit-skeleton/frontend
+        run: pnpm build

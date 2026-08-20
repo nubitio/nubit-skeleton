@@ -25,6 +25,10 @@ docker compose exec app php bin/console app:seed
 
 Open **http://localhost:5173** and sign in with `admin@example.com` / `admin1234`.
 
+For the minimal Product-only navigation, start with
+`NUBIT_PROFILE=minimal docker compose up -d --build`. The default `showcase`
+profile also exposes the ERP examples; see [`docs/profiles.md`](docs/profiles.md).
+
 | Service | URL |
 | --- | --- |
 | React admin (Vite dev) | http://localhost:5173 |
@@ -33,6 +37,9 @@ Open **http://localhost:5173** and sign in with `admin@example.com` / `admin1234
 | Session profile | `GET /api/me` |
 
 > Before anything real: change `APP_SECRET` in `.env` (≥ 32 bytes — it signs the auth JWTs) and the database/Mercure passwords in `compose.yaml`.
+
+Before deployment, run `php bin/console app:doctor --strict`. Production and
+strict checks fail while any known template secret or password is active.
 
 ## Add your own resource
 

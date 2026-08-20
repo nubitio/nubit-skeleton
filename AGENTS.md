@@ -19,6 +19,7 @@ docker compose exec app php bin/console doctrine:migrations:migrate --no-interac
 docker compose exec app php bin/console app:seed              # admin@example.com / admin1234
 docker compose exec app php bin/console cache:clear
 docker compose exec app php bin/console nubit:discover          # list resources, routes, workflows
+docker compose exec app php bin/console app:doctor --strict     # reject template secrets before deployment
 cd frontend && corepack pnpm dev                              # or use the compose `frontend` service
 cd frontend && corepack pnpm build                            # tsc + vite build
 docker compose exec app php vendor/bin/phpunit                # internal-stack contract tests

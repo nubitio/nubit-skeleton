@@ -6,6 +6,16 @@ on:
   pull_request:
 
 jobs:
+  compatibility:
+    name: Compatibility declaration
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate declared package lines
+        env:
+          NUBIT_SKIP_SOURCE_CONTRACTS: '1'
+        run: node scripts/check-compatibility.mjs
+
   backend:
     name: Backend (PHP 8.5)
     runs-on: ubuntu-latest
@@ -29,6 +39,14 @@ jobs:
 
       - name: Lint the container
         run: php bin/console lint:container
+
+      - name: Verify production-default detector
+        run: |
+          set +e
+          php bin/console app:doctor --strict
+          status=$?
+          set -e
+          test "$status" -eq 1
 
   frontend:
     name: Frontend build
