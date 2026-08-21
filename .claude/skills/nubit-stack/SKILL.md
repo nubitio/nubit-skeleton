@@ -1,6 +1,6 @@
 ---
 name: nubit-stack
-description: Build and troubleshoot CRUD admin features on the Nubit stack (Symfony + API Platform backend, @nubitio/react-admin frontend). Use whenever the user asks to add a resource/entity/page/module, customize a grid, form, filter, or column, wire up auth/roles/permissions/feature flags, add file uploads, an audit trail, exports (XLS/PDF), a dashboard/KPI page, a document workflow (invoices, orders, sequences, status transitions), master-detail/line items, multi-tenant/SaaS behavior (quotas, billing UI, per-tenant data isolation), or debug why a screen isn't showing fields or data — even if they just say "add a Customers page", "why isn't this field showing up", or "add an export button" without naming the stack. The frontend GENERATES screens from the backend's API docs, so most features need zero hand-written frontend field code — reach for this skill before hand-building a datagrid, form, chart, or export endpoint.
+description: Build and troubleshoot CRUD admin features on the Nubit stack (Symfony + API Platform backend, @nubitio/react-admin frontend). Use whenever the user asks to add a resource/entity/page/module, customize a grid, form, filter, or column, wire up auth/roles/permissions/feature flags, add SSO/single sign-on (OIDC, Okta, Entra ID, Google Workspace, Keycloak), file uploads, an audit trail, exports (XLS/PDF/spreadsheet download), email or in-app notifications, a dashboard/KPI page, a document workflow (invoices, orders, sequences, status transitions), master-detail/line items, multi-tenant/SaaS behavior (quotas, billing UI, per-tenant data isolation, database backups), or debug why a screen isn't showing fields or data — even if they just say "add a Customers page", "why isn't this field showing up", or "add an export button" without naming the stack. The frontend GENERATES screens from the backend's API docs, so most features need zero hand-written frontend field code — reach for this skill before hand-building a datagrid, form, chart, login flow, or export endpoint.
 ---
 
 # Building with the Nubit stack
@@ -46,12 +46,23 @@ class Customer
 }
 ```
 
-`x-crud` hints (all optional): `filterable`, `sortable`, `order` (column order),
-`width` (px), `hidden: true` (exclude from grid, keep in form),
-`visibleOnForm: false` (exclude from form, keep in grid — for computed/server-set
-fields), `format: 'currency'` (decimal renders as money: right-aligned,
-locale-aware thousands separators, 2 decimals — see `price` in
-`src/Entity/Product.php`).
+`x-crud` hints (all optional):
+
+| Hint | Effect |
+| --- | --- |
+| `filterable` / `sortable` | show in the filter row / allow sorting |
+| `order` | column order |
+| `width` | column width in px |
+| `hideInGrid: true` | drop the column from the grid, keep the field in the form |
+| `showInForm: false` | drop the field from the form, keep the column — computed/server-set fields |
+| `readonly: true` | render in the form but not editable |
+| `format` | `'currency'` (decimal as money: right-aligned, locale-aware separators, 2 decimals — see `price` in `src/Entity/Product.php`) · `'image'` / `'file'` (media upload dropzone — see `references/detail-views-and-media.md`) |
+
+⚠️ `hidden` and `visibleOnForm` are the **deprecated** spellings of
+`hideInGrid` and `showInForm`. They still work, and both are still all over
+older code and docs, but they log a one-time console warning in dev. Write the
+new names in anything you add; only touch existing ones when you're already
+editing that property.
 
 Closed value sets: add `'enum' => ['draft', 'sent', 'paid']` to the
 `openapiContext` and the form renders a select with humanized labels
@@ -169,8 +180,8 @@ heuristic when that fetch fails. Consequences:
 
 ## Beyond flat CRUD
 
-Two reference files cover everything past the basic grid+form. Read the one
-that matches what's being built — don't load both up front.
+Three reference files cover everything past the basic grid+form. Read the one
+that matches what's being built — don't load them all up front.
 
 - **`references/detail-views-and-media.md`** — line items inside a form
   (master-detail), drawer/page view modes, image/file uploads, audit-trail
@@ -178,15 +189,21 @@ that matches what's being built — don't load both up front.
 - **`references/erp-and-permissions.md`** — the full ERP document pattern
   (sequence numbers + status workflow + audit + embedded lines, e.g.
   invoices), grouping pages into a tabbed module (`FeatureHubLayout`),
-  role-based UI gating, per-row workflow actions/locking, and smaller
-  customizations (soft delete, virtual columns, roles per operation,
-  theming, extra JWT claims).
-- **`references/platform-and-saas.md`** — multi-tenant apps (`nubitio/tenant-bundle`),
-  feature flags/entitlements and quota UI, export (XLS/PDF), the
-  `@nubitio/dashboard` package, analytics/observability, and grid summary
-  aggregation. This is this skeleton's `app_profile: internal` by default —
-  read this file only when the app needs `saas`/`hybrid` behavior or one of
-  these specific features.
+  role-based UI gating, per-row workflow actions/locking, SSO/OpenID Connect,
+  and smaller customizations (soft delete, virtual columns, roles per
+  operation, theming, extra JWT claims).
+- **`references/platform-and-saas.md`** — multi-tenant apps (`nubitio/tenant-bundle`)
+  and per-tenant backups, feature flags/entitlements and quota UI, export
+  (XLS/PDF), email + in-app notifications, the `@nubitio/dashboard` package,
+  analytics/observability, and grid summary aggregation. This skeleton is
+  `app_profile: internal` by default — read this file only when the app needs
+  `saas`/`hybrid` behavior or one of these specific features.
+
+**⏳ marks something that exists in the libraries' `main` but is not in the
+versions this skeleton pins** (`nubitio/*` 0.13, `@nubitio/*` 0.10 — see
+`nubit-compatibility.json`). Don't write code against a ⏳ feature without
+bumping the dependency first; `composer show nubitio/admin-bundle` and
+`frontend/package.json` are the ground truth for what's actually installed.
 
 This skeleton defaults `viewMode` to `'dialog'` when a resource sets none
 (`'dialog' | 'drawer' | 'page'`) — pick `drawer` or `page` explicitly for

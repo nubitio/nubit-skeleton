@@ -51,8 +51,9 @@ class Invoice { /* lines collection, header fields, recalculateTotals() */ }
   rules that go beyond role checks.
 - `#[Auditable]` records field-level diffs. Use `#[AuditMasked]` on sensitive
   properties to exclude them.
-- Status field: mark `'visibleOnForm' => false` in `x-crud` — the workflow
-  engine sets it, the user never edits it directly.
+- Status field: mark `'showInForm' => false` in `x-crud` — the workflow
+  engine sets it, the user never edits it directly. (`visibleOnForm` is the
+  deprecated spelling; see the hint table in `SKILL.md`.)
 
 ### Line entity
 
@@ -216,6 +217,64 @@ If what's actually needed is "is capability X available to this
 user/tenant" rather than a role check, reach for feature flags instead of
 inventing a permissions map — see the next section.
 
+## SSO / OpenID Connect (⏳ unreleased)
+
+Not in nubitio 0.13. One generic integration for **any** compliant IdP (Okta,
+Entra ID, Google Workspace, Auth0, Keycloak…) via issuer discovery — there is
+no per-provider SDK to install.
+
+```yaml
+# config/packages/nubit_admin.yaml
+nubit_admin:
+    oidc:
+        enabled: true
+        providers:
+            okta:
+                issuer: 'https://example.okta.com'          # {issuer}/.well-known/openid-configuration must resolve
+                client_id: '%env(OKTA_CLIENT_ID)%'
+                client_secret: '%env(OKTA_CLIENT_SECRET)%'
+                scopes: ['openid', 'email', 'profile']      # default
+                redirect_uri: 'https://api.example.com/api/auth/oidc/okta/callback'
+                post_login_redirect_uri: 'https://app.example.com/'
+```
+
+Two things the app **must** provide — the bundle deliberately doesn't guess:
+
+```yaml
+# config/packages/security.yaml — the authenticator is not added for you
+firewalls:
+    main:
+        custom_authenticators:
+            - Nubit\AdminBundle\Auth\Oidc\OidcAuthenticator
+
+# config/services.yaml — provisioning policy is yours (this bundle
+# doesn't know your User class, same as TokenClaimsProviderInterface)
+Nubit\AdminBundle\Auth\Oidc\OidcUserResolverInterface:
+    alias: App\Security\OidcUserResolver
+```
+
+`OidcUserResolver::resolve(array $claims, OidcProviderConfig $provider): UserInterface`
+decides everything policy-shaped: look up by `sub`/`email`, JIT-provision on
+first login, reject unknown users, map IdP groups to roles. Throw
+`OidcAuthenticationException` to refuse.
+
+How it behaves, so you can debug it:
+
+- Login starts at `GET /api/auth/oidc/{provider}/redirect` — point the "Sign in
+  with…" button there. It is a **top-level browser navigation**, not an XHR.
+- Authorization code + PKCE (S256). `state`/`nonce`/verifier ride in an
+  HMAC-signed `OIDC_FLOW` cookie (10 min TTL, `SameSite=Lax` — `Strict` would
+  drop it on the way back from the IdP and break every login).
+- On success the callback issues the **same token pair as password login**, so
+  from `/api/me` onward an SSO session is indistinguishable from a normal one.
+  Failures redirect to `post_login_redirect_uri` with `?error=oidc_failed`, so
+  check the server log for the real reason — the query string never carries it.
+- Needs `symfony/http-client` (discovery + JWKS + token exchange) and
+  `symfony/cache` (caches both for an hour); both are `suggest`.
+- ID tokens are verified against the provider's JWKS by `kid` — the token
+  header's `alg` is never trusted — plus `iss`, `aud`, `nonce`, and `azp`
+  (a multi-audience token without `azp`, or with someone else's, is rejected).
+
 ## Feature flags / entitlements (finer-grained than roles)
 
 For gating that's about a *capability being enabled* rather than *who the
@@ -262,7 +321,12 @@ feature system instead of stretching roles to mean something they don't:
 - **Roles per operation**: standard API Platform `security: "is_granted('ROLE_ADMIN')"`
   on the operation (needs symfony/expression-language). Routes under `/api`
   already require `ROLE_USER` (see `config/packages/security.yaml`
-  `access_control`).
+  `access_control`), so an operation with no `security:` is not world-open —
+  it's reachable by *any authenticated user*, whatever their role. That's a
+  fine default for reads and a common accident on writes.
+  `bin/console nubit:security:audit` (⏳ unreleased) lists every
+  POST/PUT/PATCH/DELETE that never opted in; `--strict` exits non-zero, so it
+  works as a CI gate.
 - **Role-aware UI**: see "Role-aware UI via /api/me" above — `app_profile`
   (`internal`/`saas`/`hybrid`) lives in `config/packages/nubit_admin.yaml` and
   is echoed on `session.profile.appProfile`.

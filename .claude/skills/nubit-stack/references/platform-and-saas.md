@@ -28,6 +28,28 @@ composer require nubitio/tenant-bundle   # auto-registered by Flex
 - `bin/console nubit:tenant:list` — enumerate configured tenants.
 - `PerTenantCommand` (from `nubitio/platform`) — base class for console
   commands that need to iterate every tenant (e.g. a nightly job).
+- **Per-tenant backups** (⏳ unreleased): `nubit_admin.backup.enabled: true`
+  registers a PostgreSQL `TenantBackupRunnerInterface` (`pg_dump
+  --format=custom`, credentials read from the Doctrine connection, password
+  passed via `PGPASSWORD` so it never lands in `ps aux`) plus
+  `bin/console nubit:tenant:backup <tenant> [--type=full] [--dry-run]`.
+  Dumps are written through Flysystem, so "local disk vs S3" is just which
+  filesystem you point it at:
+
+  ```yaml
+  nubit_admin:
+      backup:
+          enabled: true
+          storage:
+              filesystem: ~                                   # service id of a FilesystemOperator; overrides local_directory
+              local_directory: '%kernel.project_dir%/var/backups'
+          pg_dump_binary: pg_dump                              # must be on PATH in the container
+          timeout_seconds: 300
+  ```
+
+  PostgreSQL only — it throws on any other driver rather than writing a
+  partial dump. It keeps no backup history table (the returned `id` is a
+  timestamp); add your own entity if you need to query past runs.
 
 Frontend counterpart: `session.profile.tenant` and `session.profile.appProfile`
 (`'internal' | 'saas' | 'hybrid'`) come back on `GET /api/me` — branch UI on
@@ -53,16 +75,92 @@ SaaS UI building blocks in `@nubitio/react-admin`:
 
 ## Export (XLS / PDF)
 
-`nubitio/platform` ships a full export pipeline — reach for this instead of
-hand-rolling a CSV endpoint:
+Two different things, and the difference matters:
+
+**The library (shipped, `nubitio/platform`).** Classes you call from your own
+controller/state provider — there is no HTTP endpoint until you write one:
 
 - `XlsExporter` / `XlsWorkbookBuilder` / `XlsColumnResolver` / `XlsTotalsWriter`
   / `XlsValidationSpecResolver` / `XlsResponseFactory` for spreadsheet export
   (column resolution reuses the same `x-crud` metadata the grid already has,
   including totals rows).
-- `PdfExporter` for PDF export.
-- Frontend: `permissions.canExport` on `defineResource` gates the toolbar
-  export button that calls through to these.
+- `PdfExporter` for PDF export (needs `pontedilana/php-weasyprint`).
+- Requires `phpoffice/phpspreadsheet` and **`ext-zip`** — both are `suggest`,
+  not hard requirements, so a missing one surfaces as "class not found" at the
+  first export rather than at install.
+
+**The one-line grid export (⏳ unreleased — in `main`, not in nubitio 0.13 /
+@nubitio 0.10).** Turning it on registers `xlsx` as an API Platform format for
+**every** `#[ApiResource]` at once, the same way `json`/`jsonld` are — no
+per-resource wiring, no custom endpoint:
+
+```yaml
+# config/packages/nubit_admin.yaml
+nubit_admin:
+    export:
+        enabled: true    # requires phpoffice/phpspreadsheet + ext-zip
+```
+
+```bash
+curl -b /tmp/cj 'http://localhost:8000/api/products?_format=xlsx' -o products.xlsx
+# or: -H 'Accept: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+```
+
+Frontend: `permissions: { canExport: true }` on `defineResource` puts an
+**Export** button in the grid's utility toolbar. It exports every row matching
+the grid's **current filters and sort with pagination dropped** — not the page
+on screen — and names the file from the response's `Content-Disposition`. The
+button only appears when the store implements `export()` (the Hydra adapter
+does), so `canExport: true` against a plain REST adapter is silently inert.
+
+> In 0.10 `permissions.canExport` reaches the grid as `allowExport` and nothing
+> consumes it — no button is rendered. If a user reports a missing export
+> button on a released version, that's why; it is not a wiring mistake.
+
+## Notifications — email + in-app (⏳ unreleased)
+
+Not in nubitio 0.13 / @nubitio 0.10. Domain code dispatches one
+channel-agnostic message; channels decide how it's delivered.
+
+```yaml
+nubit_admin:
+    notification:
+        enabled: true
+        from_address: 'no-reply@example.com'   # built-in email channel
+        in_app:
+            enabled: true                      # maps a new table — run doctrine:migrations:diff
+```
+
+```php
+// Anywhere in domain code — a workflow transition listener, a processor…
+$this->dispatcher->dispatch(new NotificationMessage(
+    recipient: $user->getUserIdentifier(),     // a plain identifier string, not a User FK
+    subject: 'Invoice INV-0042 confirmed',
+    body: 'The invoice was confirmed and is awaiting payment.',
+    channels: ['email', 'in_app'],             // [] means every registered channel
+    context: ['html' => $renderedHtml],        // optional; the email channel reads 'html'
+));
+```
+
+- `NotificationDispatcherInterface` (autowired) goes through **Messenger**, so
+  a slow mail server never blocks the request. Route `NotificationMessage` to a
+  transport in `messenger.yaml` to make it truly async — it runs sync otherwise.
+- Extra channels: implement `NotificationChannelInterface`
+  (`getIdentifier()` + `send()`); it's autoconfigured onto the
+  `nubit.admin.notification_channel` tag. Slack/SMS/push belong here.
+- `email` needs `symfony/mailer`; the channel is skipped entirely when it isn't
+  installed, so in-app-only setups don't have to pull one in.
+- `in_app.enabled` maps the `nubit_notification` table and exposes
+  `GET /api/notifications` (`mercure: true`, `PATCH { "read": true }` to mark
+  read). Visibility is enforced by a **Doctrine filter**
+  (`nubit_notification_recipient`), not a query parameter — a user cannot ask
+  for someone else's rows, and there is no `recipient` filter to bypass.
+- Frontend (`@nubitio/admin`): `useNotifications()` returns
+  `{ items, unreadCount, loading, markAsRead, refetch }` and stays live over
+  Mercure; `<NotificationPanel>` is the ready-made dropdown, designed to be
+  returned from an `AdminHeaderAction.renderPanel`. Its labels are props
+  (`title`, `emptyTitle`, `markAllReadLabel`) — the `@nubitio/admin` package
+  has no i18n of its own, so pass translated strings from the app.
 
 ## Reports
 
@@ -126,9 +224,21 @@ requirement or you're debugging production behavior:
 ## Escape hatches and dev tooling
 
 - **`@nubitio/eject`** — generates plain, hand-editable field code from the
-  backend's API docs (`ejectFromDocs`, `fieldToCode`). Use this when a
-  resource has outgrown schema-driven generation and needs to become a fully
-  custom page — it's the documented off-ramp, not a sign something is broken.
+  backend's API docs. Use this when a resource has outgrown schema-driven
+  generation and needs to become a fully custom page — it's the documented
+  off-ramp, not a sign something is broken. It's a CLI first, and it is **not**
+  installed in this skeleton — add it when you need it:
+
+  ```bash
+  cd frontend && corepack pnpm add -D @nubitio/eject
+  corepack pnpm exec nubit eject fields /api/products \
+      --docs http://localhost:8000/api/docs.jsonld --out src/pages/productFields.ts
+  corepack pnpm exec nubit eject page ProductsPage /api/products --out src/pages/ProductsPage.tsx
+  ```
+
+  Programmatic equivalents, if you need them: `ejectFieldsFromDocs()`,
+  `renderFieldsModule()`, `renderPageModule()`, `fieldToCodeLine()`. Both
+  commands print to stdout when `--out` is omitted.
 - **DevTools panel**: `createNubitApp({ devTools: true })` (on by default on
   `localhost`) renders `NubitDevToolsPanel`, which inspects the live
   provider tree and shows *why* a field was mapped to a given control —

@@ -50,8 +50,8 @@ for embedded writes.
 
 To keep an embedded collection out of the auto-generated form, use
 `#[ApiProperty(readable: false)]` (excluded from reads entirely) or the
-`x-crud: ['visibleOnForm' => false]` hint (column stays in the grid).
-Plain `x-crud: hidden` only hides grid columns.
+`x-crud: ['showInForm' => false]` hint (column stays in the grid).
+Plain `x-crud: ['hideInGrid' => true]` only hides grid columns.
 
 ## Uploads / media library
 
@@ -61,7 +61,7 @@ full pipeline. To add an image/file to an entity:
 ```php
 #[ORM\ManyToOne(targetEntity: \Nubit\AdminBundle\Media\Entity\Media::class)]
 #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
-#[ApiProperty(openapiContext: ['x-crud' => ['format' => 'image', 'hidden' => true]])]
+#[ApiProperty(openapiContext: ['x-crud' => ['format' => 'image', 'hideInGrid' => true]])]
 private ?Media $photo = null;   // see src/Entity/Product.php
 ```
 
