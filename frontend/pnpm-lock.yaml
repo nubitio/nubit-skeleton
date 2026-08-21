@@ -15,26 +15,26 @@ importers:
         specifier: ^5.2.7
         version: 5.2.7
       '@nubitio/admin':
-        specifier: ^0.11.0
-        version: 0.11.0(6dd0cfb2f5910da87cd80f6cc87dcb94)
+        specifier: ^0.11.1
+        version: 0.11.1(730beccaf9d40f53a12674eecaee29d8)
       '@nubitio/core':
-        specifier: ^0.11.0
-        version: 0.11.0(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react-i18next@14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)
+        specifier: ^0.11.1
+        version: 0.11.1(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react-i18next@14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)
       '@nubitio/crud':
-        specifier: ^0.11.0
-        version: 0.11.0(@nubitio/core@0.11.0(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react-i18next@14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7))(@nubitio/ui@0.11.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@tanstack/react-query@5.101.0(react@19.2.7))(@tiptap/extension-link@3.27.1(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1))(@tiptap/react@3.27.1(@floating-ui/dom@1.7.6)(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@tiptap/starter-kit@3.27.1)(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react-i18next@14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react-router-dom@6.30.4(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)
+        specifier: ^0.11.1
+        version: 0.11.1(@nubitio/core@0.11.1(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react-i18next@14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7))(@nubitio/ui@0.11.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@tanstack/react-query@5.101.0(react@19.2.7))(@tiptap/extension-link@3.27.1(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1))(@tiptap/react@3.27.1(@floating-ui/dom@1.7.6)(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@tiptap/starter-kit@3.27.1)(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react-i18next@14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react-router-dom@6.30.4(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)
       '@nubitio/dashboard':
-        specifier: ^0.11.0
-        version: 0.11.0(@nubitio/core@0.11.0(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react-i18next@14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7))(@nubitio/ui@0.11.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@tanstack/react-query@5.101.0(react@19.2.7))(react-dom@19.2.7(react@19.2.7))(react-router-dom@6.30.4(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)(recharts@3.10.1(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react-is@16.13.1)(react@19.2.7)(redux@5.0.1))
+        specifier: ^0.11.1
+        version: 0.11.1(@nubitio/core@0.11.1(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react-i18next@14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7))(@nubitio/ui@0.11.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@tanstack/react-query@5.101.0(react@19.2.7))(react-dom@19.2.7(react@19.2.7))(react-router-dom@6.30.4(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)(recharts@3.10.1(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react-is@16.13.1)(react@19.2.7)(redux@5.0.1))
       '@nubitio/hydra':
-        specifier: ^0.11.0
-        version: 0.11.0(0b1a9498dcdc33bc059c2864ade01b80)
+        specifier: ^0.11.1
+        version: 0.11.1(4f6c5b920f0fab73047a570fdce172bb)
       '@nubitio/react-admin':
-        specifier: ^0.11.0
-        version: 0.11.0(@tanstack/react-query@5.101.0(react@19.2.7))(@tiptap/extension-link@3.27.1(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1))(@tiptap/react@3.27.1(@floating-ui/dom@1.7.6)(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@tiptap/starter-kit@3.27.1)(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react-i18next@14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react-router-dom@6.30.4(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)(recharts@3.10.1(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react-is@16.13.1)(react@19.2.7)(redux@5.0.1))
+        specifier: ^0.11.1
+        version: 0.11.1(@tanstack/react-query@5.101.0(react@19.2.7))(@tiptap/extension-link@3.27.1(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1))(@tiptap/react@3.27.1(@floating-ui/dom@1.7.6)(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@tiptap/starter-kit@3.27.1)(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react-i18next@14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react-router-dom@6.30.4(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)(recharts@3.10.1(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react-is@16.13.1)(react@19.2.7)(redux@5.0.1))
       '@nubitio/ui':
-        specifier: ^0.11.0
-        version: 0.11.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+        specifier: ^0.11.1
+        version: 0.11.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@phosphor-icons/web':
         specifier: ^2.1.2
         version: 2.1.2
@@ -361,21 +361,21 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
-  '@nubitio/admin@0.11.0':
-    resolution: {integrity: sha512-3+/wc1Id01/4bEjRX2W1bG2R8y3k+ZwOaR8AiLuXwGhtFZVNVWDm5HSCttlnDVE9BaZ7b6wOHVkZ0O3gfsxjvg==}
+  '@nubitio/admin@0.11.1':
+    resolution: {integrity: sha512-zSByNKOsmQW94gM71m6LjWREoVl/mpeiVfoMZYfhNK2EmW1o10WNlsiBs0Hl+tTDPk3zb0ifW3jm9PZNdhRNIg==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
-      '@nubitio/core': ^0.11.0
-      '@nubitio/crud': ^0.11.0
-      '@nubitio/hydra': ^0.11.0
-      '@nubitio/ui': ^0.11.0
+      '@nubitio/core': ^0.11.1
+      '@nubitio/crud': ^0.11.1
+      '@nubitio/hydra': ^0.11.1
+      '@nubitio/ui': ^0.11.1
       '@tanstack/react-query': ^5.0.0
       react: ^18.2.0 || ^19.0.0
       react-dom: ^18.2.0 || ^19.0.0
       react-router-dom: ^6.0.0
 
-  '@nubitio/core@0.11.0':
-    resolution: {integrity: sha512-VDMCXqXQ82eJz6Ymk6QOFN9lsgCb+xCwT73hK+LJTWOPJNA0+mS/1GygNbRlYKsom6jvGavXlzJ7V47725YP7g==}
+  '@nubitio/core@0.11.1':
+    resolution: {integrity: sha512-Oj9CZeNWVAD/0RF0u6YfpgLpRAUp4M5390McC4VNBlXWmp/ep6XG18Uz4z0wEZhMHkPtRSJgcycUwGOSNg4eng==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       i18next: ^23.0.0
@@ -383,12 +383,12 @@ packages:
       react-dom: ^18.2.0 || ^19.0.0
       react-i18next: ^14.0.0
 
-  '@nubitio/crud@0.11.0':
-    resolution: {integrity: sha512-RYodpt2Qxt7qsN4dcD6Td0XjV7n+cQtRi7W+/f/c2MY8a8Z+3lge2qIT53T4oIjoyXi9LEEjLRK7X5jpXxcrKA==}
+  '@nubitio/crud@0.11.1':
+    resolution: {integrity: sha512-pIpdZV+bK4JfSYLtDDEXuBQ9EzWdyZqcdVQxh1kRtuL/I/mEabndTPsh99Qek7N3Nr435yJHW2PFLZCO2O54lw==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
-      '@nubitio/core': ^0.11.0
-      '@nubitio/ui': ^0.11.0
+      '@nubitio/core': ^0.11.1
+      '@nubitio/ui': ^0.11.1
       '@tanstack/react-query': ^5.0.0
       '@tiptap/extension-link': ^3.0.0
       '@tiptap/react': ^3.0.0
@@ -406,32 +406,32 @@ packages:
       '@tiptap/starter-kit':
         optional: true
 
-  '@nubitio/dashboard@0.11.0':
-    resolution: {integrity: sha512-wcbZnw7bQD2tU+SrQOzEsduJJ0fIezRP6flN1++uu6OH/+vcw+fwqDFNN7xrfwVH23gQSpiOxeA+dTAswLkW/w==}
+  '@nubitio/dashboard@0.11.1':
+    resolution: {integrity: sha512-7E5leiEyTzaWKox+1M4LTFZq4AuB9K7z3CQYXn6/pwuJtT2Ki5yVHRJJphi1SAGCuEoVYWWz4WhNVv0zI5FkrQ==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
-      '@nubitio/core': ^0.11.0
-      '@nubitio/ui': ^0.11.0
+      '@nubitio/core': ^0.11.1
+      '@nubitio/ui': ^0.11.1
       '@tanstack/react-query': ^5.0.0
       react: ^18.2.0 || ^19.0.0
       react-dom: ^18.2.0 || ^19.0.0
       react-router-dom: ^6.0.0
       recharts: ^3.0.0
 
-  '@nubitio/hydra@0.11.0':
-    resolution: {integrity: sha512-Atou7TkxuLPT/yXg4mkSzhRGGp9TNMstmuhC2J9Yal+NanaFoAdcoWq0xdSMjf/96RLAacp4WcF6gzGrnBLBPQ==}
+  '@nubitio/hydra@0.11.1':
+    resolution: {integrity: sha512-lWEQBBT/RHo77/C84DTwZ/UmHpeoiGxLyl9OUPBsH8PFiGK/Y99RaiwdaFRL5khoYw5t20qcVq1VCW3E3YuHKw==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
-      '@nubitio/core': ^0.11.0
-      '@nubitio/crud': ^0.11.0
+      '@nubitio/core': ^0.11.1
+      '@nubitio/crud': ^0.11.1
       '@tanstack/react-query': ^5.0.0
       i18next: ^23.0.0
       react: ^18.2.0 || ^19.0.0
       react-dom: ^18.2.0 || ^19.0.0
       react-i18next: ^14.0.0
 
-  '@nubitio/react-admin@0.11.0':
-    resolution: {integrity: sha512-iTlkmINajrU/Vm9nDNEqwEp+fOyXKZ4lsX21jScA6nb+5uRCvxSX3DU6sNcMkd2Bmm4hlZDScP0IOEhi7GEmgw==}
+  '@nubitio/react-admin@0.11.1':
+    resolution: {integrity: sha512-56CdG2IBd1nCR1ARdsxrlnHnR38khkGu0NxmOOVeiV6aRl/lKx1gyInMO6eXuy8StGZTh56h7J4IDYa6tgN/Fw==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       '@tanstack/react-query': ^5.0.0
@@ -441,8 +441,8 @@ packages:
       react-i18next: ^14.0.0
       react-router-dom: ^6.0.0
 
-  '@nubitio/ui@0.11.0':
-    resolution: {integrity: sha512-SYP7NGhlG/VNEUlxgOCvkkM5IGaszV/GzTbPtoOBZnCFDDQtmUheuvnwGbiXdEgE4hbioF8akwsWt6uGoZkNMw==}
+  '@nubitio/ui@0.11.1':
+    resolution: {integrity: sha512-Ksvemj7GBixpChCaE+WsTqmgyL3oQnzSQZzDvLA91AbqO4WsCwstDP9qNMyZzTM1PZr/Qtqo20MZjoTqL+WeOA==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       react: ^18.2.0 || ^19.0.0
@@ -1479,28 +1479,28 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@nubitio/admin@0.11.0(6dd0cfb2f5910da87cd80f6cc87dcb94)':
+  '@nubitio/admin@0.11.1(730beccaf9d40f53a12674eecaee29d8)':
     dependencies:
-      '@nubitio/core': 0.11.0(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react-i18next@14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)
-      '@nubitio/crud': 0.11.0(@nubitio/core@0.11.0(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react-i18next@14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7))(@nubitio/ui@0.11.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@tanstack/react-query@5.101.0(react@19.2.7))(@tiptap/extension-link@3.27.1(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1))(@tiptap/react@3.27.1(@floating-ui/dom@1.7.6)(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@tiptap/starter-kit@3.27.1)(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react-i18next@14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react-router-dom@6.30.4(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)
-      '@nubitio/hydra': 0.11.0(0b1a9498dcdc33bc059c2864ade01b80)
-      '@nubitio/ui': 0.11.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      '@nubitio/core': 0.11.1(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react-i18next@14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)
+      '@nubitio/crud': 0.11.1(@nubitio/core@0.11.1(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react-i18next@14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7))(@nubitio/ui@0.11.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@tanstack/react-query@5.101.0(react@19.2.7))(@tiptap/extension-link@3.27.1(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1))(@tiptap/react@3.27.1(@floating-ui/dom@1.7.6)(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@tiptap/starter-kit@3.27.1)(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react-i18next@14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react-router-dom@6.30.4(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)
+      '@nubitio/hydra': 0.11.1(4f6c5b920f0fab73047a570fdce172bb)
+      '@nubitio/ui': 0.11.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@tanstack/react-query': 5.101.0(react@19.2.7)
       react: 19.2.7
       react-dom: 19.2.7(react@19.2.7)
       react-router-dom: 6.30.4(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
 
-  '@nubitio/core@0.11.0(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react-i18next@14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)':
+  '@nubitio/core@0.11.1(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react-i18next@14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)':
     dependencies:
       i18next: 23.16.8
       react: 19.2.7
       react-dom: 19.2.7(react@19.2.7)
       react-i18next: 14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
 
-  '@nubitio/crud@0.11.0(@nubitio/core@0.11.0(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react-i18next@14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7))(@nubitio/ui@0.11.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@tanstack/react-query@5.101.0(react@19.2.7))(@tiptap/extension-link@3.27.1(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1))(@tiptap/react@3.27.1(@floating-ui/dom@1.7.6)(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@tiptap/starter-kit@3.27.1)(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react-i18next@14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react-router-dom@6.30.4(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)':
+  '@nubitio/crud@0.11.1(@nubitio/core@0.11.1(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react-i18next@14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7))(@nubitio/ui@0.11.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@tanstack/react-query@5.101.0(react@19.2.7))(@tiptap/extension-link@3.27.1(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1))(@tiptap/react@3.27.1(@floating-ui/dom@1.7.6)(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@tiptap/starter-kit@3.27.1)(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react-i18next@14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react-router-dom@6.30.4(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)':
     dependencies:
-      '@nubitio/core': 0.11.0(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react-i18next@14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)
-      '@nubitio/ui': 0.11.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      '@nubitio/core': 0.11.1(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react-i18next@14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)
+      '@nubitio/ui': 0.11.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@tanstack/react-query': 5.101.0(react@19.2.7)
       i18next: 23.16.8
       react: 19.2.7
@@ -1512,34 +1512,34 @@ snapshots:
       '@tiptap/react': 3.27.1(@floating-ui/dom@1.7.6)(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@tiptap/starter-kit': 3.27.1
 
-  '@nubitio/dashboard@0.11.0(@nubitio/core@0.11.0(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react-i18next@14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7))(@nubitio/ui@0.11.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@tanstack/react-query@5.101.0(react@19.2.7))(react-dom@19.2.7(react@19.2.7))(react-router-dom@6.30.4(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)(recharts@3.10.1(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react-is@16.13.1)(react@19.2.7)(redux@5.0.1))':
+  '@nubitio/dashboard@0.11.1(@nubitio/core@0.11.1(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react-i18next@14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7))(@nubitio/ui@0.11.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@tanstack/react-query@5.101.0(react@19.2.7))(react-dom@19.2.7(react@19.2.7))(react-router-dom@6.30.4(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)(recharts@3.10.1(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react-is@16.13.1)(react@19.2.7)(redux@5.0.1))':
     dependencies:
-      '@nubitio/core': 0.11.0(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react-i18next@14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)
-      '@nubitio/ui': 0.11.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      '@nubitio/core': 0.11.1(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react-i18next@14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)
+      '@nubitio/ui': 0.11.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@tanstack/react-query': 5.101.0(react@19.2.7)
       react: 19.2.7
       react-dom: 19.2.7(react@19.2.7)
       react-router-dom: 6.30.4(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       recharts: 3.10.1(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react-is@16.13.1)(react@19.2.7)(redux@5.0.1)
 
-  '@nubitio/hydra@0.11.0(0b1a9498dcdc33bc059c2864ade01b80)':
+  '@nubitio/hydra@0.11.1(4f6c5b920f0fab73047a570fdce172bb)':
     dependencies:
-      '@nubitio/core': 0.11.0(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react-i18next@14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)
-      '@nubitio/crud': 0.11.0(@nubitio/core@0.11.0(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react-i18next@14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7))(@nubitio/ui@0.11.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@tanstack/react-query@5.101.0(react@19.2.7))(@tiptap/extension-link@3.27.1(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1))(@tiptap/react@3.27.1(@floating-ui/dom@1.7.6)(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@tiptap/starter-kit@3.27.1)(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react-i18next@14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react-router-dom@6.30.4(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)
+      '@nubitio/core': 0.11.1(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react-i18next@14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)
+      '@nubitio/crud': 0.11.1(@nubitio/core@0.11.1(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react-i18next@14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7))(@nubitio/ui@0.11.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@tanstack/react-query@5.101.0(react@19.2.7))(@tiptap/extension-link@3.27.1(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1))(@tiptap/react@3.27.1(@floating-ui/dom@1.7.6)(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@tiptap/starter-kit@3.27.1)(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react-i18next@14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react-router-dom@6.30.4(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)
       '@tanstack/react-query': 5.101.0(react@19.2.7)
       i18next: 23.16.8
       react: 19.2.7
       react-dom: 19.2.7(react@19.2.7)
       react-i18next: 14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
 
-  '@nubitio/react-admin@0.11.0(@tanstack/react-query@5.101.0(react@19.2.7))(@tiptap/extension-link@3.27.1(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1))(@tiptap/react@3.27.1(@floating-ui/dom@1.7.6)(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@tiptap/starter-kit@3.27.1)(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react-i18next@14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react-router-dom@6.30.4(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)(recharts@3.10.1(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react-is@16.13.1)(react@19.2.7)(redux@5.0.1))':
+  '@nubitio/react-admin@0.11.1(@tanstack/react-query@5.101.0(react@19.2.7))(@tiptap/extension-link@3.27.1(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1))(@tiptap/react@3.27.1(@floating-ui/dom@1.7.6)(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@tiptap/starter-kit@3.27.1)(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react-i18next@14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react-router-dom@6.30.4(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)(recharts@3.10.1(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react-is@16.13.1)(react@19.2.7)(redux@5.0.1))':
     dependencies:
-      '@nubitio/admin': 0.11.0(6dd0cfb2f5910da87cd80f6cc87dcb94)
-      '@nubitio/core': 0.11.0(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react-i18next@14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)
-      '@nubitio/crud': 0.11.0(@nubitio/core@0.11.0(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react-i18next@14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7))(@nubitio/ui@0.11.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@tanstack/react-query@5.101.0(react@19.2.7))(@tiptap/extension-link@3.27.1(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1))(@tiptap/react@3.27.1(@floating-ui/dom@1.7.6)(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@tiptap/starter-kit@3.27.1)(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react-i18next@14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react-router-dom@6.30.4(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)
-      '@nubitio/dashboard': 0.11.0(@nubitio/core@0.11.0(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react-i18next@14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7))(@nubitio/ui@0.11.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@tanstack/react-query@5.101.0(react@19.2.7))(react-dom@19.2.7(react@19.2.7))(react-router-dom@6.30.4(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)(recharts@3.10.1(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react-is@16.13.1)(react@19.2.7)(redux@5.0.1))
-      '@nubitio/hydra': 0.11.0(0b1a9498dcdc33bc059c2864ade01b80)
-      '@nubitio/ui': 0.11.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      '@nubitio/admin': 0.11.1(730beccaf9d40f53a12674eecaee29d8)
+      '@nubitio/core': 0.11.1(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react-i18next@14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)
+      '@nubitio/crud': 0.11.1(@nubitio/core@0.11.1(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react-i18next@14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7))(@nubitio/ui@0.11.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@tanstack/react-query@5.101.0(react@19.2.7))(@tiptap/extension-link@3.27.1(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1))(@tiptap/react@3.27.1(@floating-ui/dom@1.7.6)(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@tiptap/starter-kit@3.27.1)(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react-i18next@14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react-router-dom@6.30.4(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)
+      '@nubitio/dashboard': 0.11.1(@nubitio/core@0.11.1(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react-i18next@14.1.3(i18next@23.16.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7))(@nubitio/ui@0.11.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@tanstack/react-query@5.101.0(react@19.2.7))(react-dom@19.2.7(react@19.2.7))(react-router-dom@6.30.4(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)(recharts@3.10.1(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react-is@16.13.1)(react@19.2.7)(redux@5.0.1))
+      '@nubitio/hydra': 0.11.1(4f6c5b920f0fab73047a570fdce172bb)
+      '@nubitio/ui': 0.11.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@tanstack/react-query': 5.101.0(react@19.2.7)
       i18next: 23.16.8
       react: 19.2.7
@@ -1552,7 +1552,7 @@ snapshots:
       - '@tiptap/starter-kit'
       - recharts
 
-  '@nubitio/ui@0.11.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
+  '@nubitio/ui@0.11.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
     dependencies:
       react: 19.2.7
       react-dom: 19.2.7(react@19.2.7)

@@ -1,7 +1,7 @@
 {
   "$schema": "./docs/nubit-compatibility.schema.json",
   "backend": {
-    "line": "0.14",
+    "line": "0.15",
     "packages": [
       "nubitio/admin-bundle",
       "nubitio/sequence-bundle",

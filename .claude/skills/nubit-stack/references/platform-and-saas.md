@@ -85,26 +85,44 @@ controller/state provider — there is no HTTP endpoint until you write one:
   (column resolution reuses the same `x-crud` metadata the grid already has,
   including totals rows).
 - `PdfExporter` for PDF export (needs `pontedilana/php-weasyprint`).
-- Requires `phpoffice/phpspreadsheet` and **`ext-zip`** — both are `suggest`,
-  not hard requirements, so a missing one surfaces as "class not found" at the
-  first export rather than at install.
+- Requires `phpoffice/phpspreadsheet` with **`ext-zip` and `ext-gd`** — the
+  package is a `suggest`, not a hard requirement, so enabling the feature
+  without it throws at container build with a message naming what to install.
 
-**The one-line grid export (nubitio 0.14 / @nubitio 0.11).** Turning it on
-registers `xlsx` as an API Platform format for
-**every** `#[ApiResource]` at once, the same way `json`/`jsonld` are — no
-per-resource wiring, no custom endpoint:
+**Grid export (nubitio 0.15 / @nubitio 0.11).** Enabling it installs the
+machinery; each resource then opts in with `#[Exportable]`:
 
 ```yaml
 # config/packages/nubit_admin.yaml
 nubit_admin:
     export:
-        enabled: true    # requires phpoffice/phpspreadsheet + ext-zip
+        enabled: true    # requires phpoffice/phpspreadsheet + ext-zip + ext-gd
+```
+
+```php
+use Nubit\ApiPlatform\Attribute\Exportable;
+
+#[ApiResource]
+#[ApiFilter(DataGridFilter::class)]
+#[Exportable]
+class Product { /* … */ }
 ```
 
 ```bash
-curl -b /tmp/cj 'http://localhost:8000/api/products?_format=xlsx' -o products.xlsx
+curl -b /tmp/cj 'http://localhost:8000/api/products.xlsx' -o products.xlsx
 # or: -H 'Accept: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 ```
+
+An export streams **every row matching the query, pagination removed** — a far
+wider read than the paginated grid the same user sees. Without `#[Exportable]`
+the format is stripped from the resource's operations, so API Platform answers
+**406** and the OpenAPI document does not advertise it. Unlisted, the attribute
+covers `GET` operations only; pass `operations:` to narrow further. Operation
+`security:` expressions still apply — it is the same operation in another
+format.
+
+> Before 0.15 enabling export turned `.xlsx` on for every `#[ApiResource]` at
+> once. Upgrading without annotating means those URLs start answering 404/406.
 
 Frontend: `permissions: { canExport: true }` on `defineResource` puts an
 **Export** button in the grid's utility toolbar. It exports every row matching

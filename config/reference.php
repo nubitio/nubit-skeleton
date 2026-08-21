@@ -1309,7 +1309,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         timeout_seconds?: int|Param, // Default: 300
  *     },
  *     export?: array{
- *         enabled?: bool|Param, // Register the "xlsx" format on every ApiResource: GET ?_format=xlsx (or Accept: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet) streams the same collection/item data as a spreadsheet. Pairs with the frontend toolbar export button gated by permissions.canExport. // Default: false
+ *         enabled?: bool|Param, // Enable the "xlsx" export format. Resources opt in individually with #[Exportable]: their GET endpoints then answer /resource.xlsx or Accept: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet with a spreadsheet of every row matching the query, pagination removed. Resources without the attribute answer 406 and do not advertise the format. Requires phpoffice/phpspreadsheet with ext-zip and ext-gd. Pairs with the frontend toolbar button, gated separately by permissions.canExport. // Default: false
  *     },
  *     runtime_config?: bool|Param, // Expose GET /api/runtime-config (opt-in; payload from RuntimeConfigProviderInterface). // Default: false
  *     soft_delete?: bool|Param, // Register the Doctrine filter hiding #[SoftDeletable] rows. // Default: true
