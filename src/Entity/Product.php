@@ -86,7 +86,7 @@ class Product implements TenantOwnedInterface
     #[ApiProperty(
         readableLink: true,
         description: 'Photo',
-        openapiContext: ['x-crud' => ['order' => 4, 'format' => 'image', 'hidden' => true]],
+        openapiContext: ['x-crud' => ['order' => 4, 'format' => 'image', 'hideInGrid' => true]],
     )]
     private ?Media $photo = null;
 

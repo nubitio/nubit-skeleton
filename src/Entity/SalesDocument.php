@@ -79,7 +79,7 @@ class SalesDocument implements TenantOwnedInterface
     #[Groups(['document:read'])]
     #[ApiProperty(
         description: 'Total',
-        openapiContext: ['x-crud' => ['order' => 2, 'format' => 'currency', 'visibleOnForm' => false]],
+        openapiContext: ['x-crud' => ['order' => 2, 'format' => 'currency', 'showInForm' => false]],
     )]
     private string $total = '0.00';
 
@@ -87,7 +87,7 @@ class SalesDocument implements TenantOwnedInterface
     #[ORM\OneToMany(targetEntity: SalesDocumentLine::class, mappedBy: 'document', cascade: ['persist', 'remove'], orphanRemoval: true)]
     #[Groups(['document:read', 'document:write'])]
     #[ApiProperty(
-        openapiContext: ['x-crud' => ['visibleOnForm' => false, 'hidden' => true]],
+        openapiContext: ['x-crud' => ['showInForm' => false, 'hideInGrid' => true]],
     )]
     private Collection $lines;
 
@@ -128,7 +128,7 @@ class SalesDocument implements TenantOwnedInterface
     #[Groups(['document:read'])]
     #[ApiProperty(
         description: 'Lines',
-        openapiContext: ['x-crud' => ['order' => 3, 'visibleOnForm' => false]],
+        openapiContext: ['x-crud' => ['order' => 3, 'showInForm' => false]],
     )]
     public function getLineCount(): int
     {

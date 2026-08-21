@@ -97,13 +97,13 @@ class Invoice implements TenantOwnedInterface
 
     /**
      * Auto-filled by #[Sequence] on first persist.
-     * Read-only after creation — the frontend uses visibleOnForm on edit.
+     * Read-only after creation — the frontend uses showInForm on edit.
      */
     #[ORM\Column(length: 32, unique: true)]
     #[Groups(['invoice:read'])]
     #[ApiProperty(
         description: 'Number',
-        openapiContext: ['x-crud' => ['filterable' => true, 'sortable' => true, 'order' => 0, 'visibleOnForm' => false]],
+        openapiContext: ['x-crud' => ['filterable' => true, 'sortable' => true, 'order' => 0, 'showInForm' => false]],
     )]
     private string $number = '';
 
@@ -143,7 +143,7 @@ class Invoice implements TenantOwnedInterface
     #[ApiProperty(
         description: 'Status',
         openapiContext: [
-            'x-crud' => ['filterable' => true, 'sortable' => true, 'order' => 4, 'visibleOnForm' => false],
+            'x-crud' => ['filterable' => true, 'sortable' => true, 'order' => 4, 'showInForm' => false],
             'enum' => ['draft', 'confirmed', 'paid', 'cancelled'],
         ],
     )]
@@ -153,7 +153,7 @@ class Invoice implements TenantOwnedInterface
     #[Groups(['invoice:read'])]
     #[ApiProperty(
         description: 'Subtotal',
-        openapiContext: ['x-crud' => ['order' => 5, 'format' => 'currency', 'visibleOnForm' => false]],
+        openapiContext: ['x-crud' => ['order' => 5, 'format' => 'currency', 'showInForm' => false]],
     )]
     private string $subtotal = '0.00';
 
@@ -161,7 +161,7 @@ class Invoice implements TenantOwnedInterface
     #[Groups(['invoice:read'])]
     #[ApiProperty(
         description: 'Tax',
-        openapiContext: ['x-crud' => ['order' => 6, 'format' => 'currency', 'visibleOnForm' => false]],
+        openapiContext: ['x-crud' => ['order' => 6, 'format' => 'currency', 'showInForm' => false]],
     )]
     private string $tax = '0.00';
 
@@ -169,7 +169,7 @@ class Invoice implements TenantOwnedInterface
     #[Groups(['invoice:read'])]
     #[ApiProperty(
         description: 'Total',
-        openapiContext: ['x-crud' => ['order' => 7, 'format' => 'currency', 'visibleOnForm' => false]],
+        openapiContext: ['x-crud' => ['order' => 7, 'format' => 'currency', 'showInForm' => false]],
     )]
     private string $total = '0.00';
 
@@ -177,7 +177,7 @@ class Invoice implements TenantOwnedInterface
     #[Groups(['invoice:read', 'invoice:write'])]
     #[ApiProperty(
         description: 'Notes',
-        openapiContext: ['x-crud' => ['hidden' => true]],
+        openapiContext: ['x-crud' => ['hideInGrid' => true]],
     )]
     private ?string $notes = null;
 
@@ -190,7 +190,7 @@ class Invoice implements TenantOwnedInterface
     )]
     #[Groups(['invoice:read', 'invoice:write'])]
     #[ApiProperty(
-        openapiContext: ['x-crud' => ['visibleOnForm' => false, 'hidden' => true]],
+        openapiContext: ['x-crud' => ['showInForm' => false, 'hideInGrid' => true]],
     )]
     private Collection $lines;
 
@@ -235,7 +235,7 @@ class Invoice implements TenantOwnedInterface
     #[Groups(['invoice:read'])]
     #[ApiProperty(
         description: 'Lines',
-        openapiContext: ['x-crud' => ['order' => 8, 'visibleOnForm' => false]],
+        openapiContext: ['x-crud' => ['order' => 8, 'showInForm' => false]],
     )]
     public function getLineCount(): int { return $this->lines->count(); }
 
