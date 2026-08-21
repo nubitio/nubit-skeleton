@@ -98,12 +98,14 @@ final class SaasTenantContractTest extends TestCase
         $context->setTenant(1, 'admin', null, null);
         self::assertTrue($authorization->isGranted($user, OrganizationAuthorization::PRODUCT_MANAGE));
 
+        // Same user, different tenant: a plain member reads but does not manage.
         $context->setTenant(2, 'member', null, null);
         self::assertFalse($authorization->isGranted($user, OrganizationAuthorization::PRODUCT_MANAGE));
-        self::assertTrue($authorization->isGranted($user, OrganizationAuthorization::INVOICE_WRITE));
+        self::assertTrue($authorization->isGranted($user, OrganizationAuthorization::PRODUCT_READ));
 
+        // A tenant the user has no membership in grants nothing at all.
         $context->setTenant(999, 'missing', null, null);
-        self::assertFalse($authorization->isGranted($user, OrganizationAuthorization::INVOICE_READ));
+        self::assertFalse($authorization->isGranted($user, OrganizationAuthorization::PRODUCT_READ));
     }
 
     public function testTenantResourcesDeclareOperationSecurity(): void

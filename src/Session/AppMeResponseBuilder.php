@@ -55,23 +55,7 @@ final readonly class AppMeResponseBuilder implements MeResponseBuilderInterface
         $can = fn(string $capability): bool => $this->authorization->isGranted($user, $capability);
 
         return [
-            // Invoices
-            'invoice.create' => $can(OrganizationAuthorization::INVOICE_WRITE),
-            'invoice.edit' => $can(OrganizationAuthorization::INVOICE_WRITE),
-            'invoice.confirm' => $can(OrganizationAuthorization::INVOICE_WRITE),
-            'invoice.pay' => $can(OrganizationAuthorization::INVOICE_PAY),
-            'invoice.cancel' => $can(OrganizationAuthorization::INVOICE_CANCEL),
-            'invoice.delete' => $can(OrganizationAuthorization::INVOICE_DELETE),
-
-            // Products / catalog
             'catalog.manage' => $can(OrganizationAuthorization::PRODUCT_MANAGE),
-
-            // Customers
-            'customer.manage' => $can(OrganizationAuthorization::CUSTOMER_WRITE),
-
-            // Reports (future)
-            'report.view' => $can(OrganizationAuthorization::INVOICE_READ),
-            'report.export' => $can(OrganizationAuthorization::PRODUCT_MANAGE),
         ];
     }
 }
