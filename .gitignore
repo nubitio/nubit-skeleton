@@ -18,3 +18,8 @@
 /phpunit.xml
 /.phpunit.cache/
 ###< phpunit/phpunit ###
+
+# Playwright output: reports, traces and the screenshots specs write.
+/frontend/e2e-report/
+/frontend/e2e-results/
+/frontend/e2e/screenshots/
