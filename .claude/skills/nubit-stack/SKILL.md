@@ -199,10 +199,9 @@ that matches what's being built — don't load them all up front.
   `app_profile: internal` by default — read this file only when the app needs
   `saas`/`hybrid` behavior or one of these specific features.
 
-**⏳ marks something that exists in the libraries' `main` but is not in the
-versions this skeleton pins** (`nubitio/*` 0.13, `@nubitio/*` 0.10 — see
-`nubit-compatibility.json`). Don't write code against a ⏳ feature without
-bumping the dependency first; `composer show nubitio/admin-bundle` and
+Sections carry a "since" note when a capability arrived after the initial
+0.x line. This skeleton pins `nubitio/*` 0.14 and `@nubitio/*` 0.11 (see
+`nubit-compatibility.json`); `composer show nubitio/admin-bundle` and
 `frontend/package.json` are the ground truth for what's actually installed.
 
 This skeleton defaults `viewMode` to `'dialog'` when a resource sets none

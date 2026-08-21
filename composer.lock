@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7b909b48bc7c3a806ea18f3f66075812",
+    "content-hash": "c0f8f7b7427b4f170d98c17b7c2ce9c7",
     "packages": [
         {
             "name": "api-platform/core",
@@ -2247,16 +2247,16 @@
         },
         {
             "name": "nubitio/admin-bundle",
-            "version": "v0.13.2",
+            "version": "v0.14.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nubitio/admin-bundle.git",
-                "reference": "e9e272d15b769cb6bfecb49ae9862cfb5a0368f1"
+                "reference": "d90e2b9e1d8e60b4f83f006cf691b63c9ea8c710"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nubitio/admin-bundle/zipball/e9e272d15b769cb6bfecb49ae9862cfb5a0368f1",
-                "reference": "e9e272d15b769cb6bfecb49ae9862cfb5a0368f1",
+                "url": "https://api.github.com/repos/nubitio/admin-bundle/zipball/d90e2b9e1d8e60b4f83f006cf691b63c9ea8c710",
+                "reference": "d90e2b9e1d8e60b4f83f006cf691b63c9ea8c710",
                 "shasum": ""
             },
             "require": {
@@ -2264,9 +2264,9 @@
                 "doctrine/orm": "^3.0",
                 "firebase/php-jwt": "^7.0",
                 "league/flysystem": "^3.0",
-                "nubitio/api-platform": "^0.13",
-                "nubitio/platform": "^0.13",
-                "nubitio/tenant-bundle": "^0.13",
+                "nubitio/api-platform": "^0.14",
+                "nubitio/platform": "^0.14",
+                "nubitio/tenant-bundle": "^0.14",
                 "php": ">=8.3",
                 "psr/log": "^3.0",
                 "symfony/config": "^7.4 || ^8.0",
@@ -2289,13 +2289,21 @@
             },
             "require-dev": {
                 "league/flysystem-memory": "^3.0",
+                "phpoffice/phpspreadsheet": "^5.8.1",
                 "phpunit/phpunit": "^11.5 || ^12.0",
+                "symfony/cache": "^7.4 || ^8.0",
+                "symfony/http-client": "^7.4 || ^8.0",
+                "symfony/mailer": "^7.4 || ^8.0",
                 "symfony/mercure": "^0.6"
             },
             "suggest": {
                 "monolog/monolog": "Privacy-safe structured log processors when nubit_admin.observability.enabled is true",
                 "nubitio/tenant-bundle": "Column-mode multi-tenancy: TenantScoped attribute, Doctrine filter, registry, and resolvers",
                 "open-telemetry/api": "Tenant-aware tracing when nubit_admin.observability.enabled is true",
+                "phpoffice/phpspreadsheet": "Required by the \"xlsx\" export format when nubit_admin.export.enabled is true (also needs ext-zip)",
+                "symfony/cache": "Caches OIDC discovery/JWKS lookups when nubit_admin.oidc.enabled is true",
+                "symfony/http-client": "OIDC discovery/JWKS fetching and token exchange when nubit_admin.oidc.enabled is true",
+                "symfony/mailer": "Email notification channel when nubit_admin.notification.enabled is true",
                 "symfony/mercure-bundle": "Live grid updates; the bundle adds a fail-safe hub decorator and the subscriber cookie"
             },
             "type": "symfony-bundle",
@@ -2323,27 +2331,27 @@
                 "issues": "https://github.com/nubitio/nubit-symfony/issues",
                 "source": "https://github.com/nubitio/nubit-symfony"
             },
-            "time": "2026-08-20T05:51:55+00:00"
+            "time": "2026-08-21T04:40:53+00:00"
         },
         {
             "name": "nubitio/api-platform",
-            "version": "v0.13.2",
+            "version": "v0.14.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nubitio/api-platform.git",
-                "reference": "a2a5cbedc163d7b63eb0d29702cfa08c94333441"
+                "reference": "940dfcbc6d5b929b9af6be1cc08e199f8b69b4ce"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nubitio/api-platform/zipball/a2a5cbedc163d7b63eb0d29702cfa08c94333441",
-                "reference": "a2a5cbedc163d7b63eb0d29702cfa08c94333441",
+                "url": "https://api.github.com/repos/nubitio/api-platform/zipball/940dfcbc6d5b929b9af6be1cc08e199f8b69b4ce",
+                "reference": "940dfcbc6d5b929b9af6be1cc08e199f8b69b4ce",
                 "shasum": ""
             },
             "require": {
                 "api-platform/core": "^4.3.12",
                 "doctrine/orm": "^3.0",
                 "doctrine/persistence": "^4.0",
-                "nubitio/platform": "^0.13",
+                "nubitio/platform": "^0.14",
                 "php": ">=8.3",
                 "psr/log": "^3.0",
                 "symfony/dependency-injection": "^7.4 || ^8.0",
@@ -2386,20 +2394,20 @@
                 "issues": "https://github.com/nubitio/nubit-symfony/issues",
                 "source": "https://github.com/nubitio/nubit-symfony"
             },
-            "time": "2026-08-20T05:24:25+00:00"
+            "time": "2026-08-21T04:40:53+00:00"
         },
         {
             "name": "nubitio/platform",
-            "version": "v0.13.2",
+            "version": "v0.14.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nubitio/platform.git",
-                "reference": "f77165d2bab6befb85ca83610350a0d7f20cc465"
+                "reference": "0b7a1273297b131bf877ce95129583edf0afbf5c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nubitio/platform/zipball/f77165d2bab6befb85ca83610350a0d7f20cc465",
-                "reference": "f77165d2bab6befb85ca83610350a0d7f20cc465",
+                "url": "https://api.github.com/repos/nubitio/platform/zipball/0b7a1273297b131bf877ce95129583edf0afbf5c",
+                "reference": "0b7a1273297b131bf877ce95129583edf0afbf5c",
                 "shasum": ""
             },
             "require": {
@@ -2430,7 +2438,7 @@
                 "symfony/cache": "^7.4 || ^8.0"
             },
             "suggest": {
-                "doctrine/dbal": "Required by Nubit\\Platform\\Observability\\Doctrine tracing middleware",
+                "doctrine/dbal": "Required by Nubit\\Platform\\Observability\\Doctrine tracing middleware and Nubit\\Platform\\Tenant\\Backup\\PostgresTenantBackupRunner",
                 "league/flysystem": "Required by Nubit\\Platform\\Filesystem\\FileManager",
                 "monolog/monolog": "Required by Nubit\\Platform\\Observability\\Logging\\TenantLogProcessor",
                 "open-telemetry/api": "Trace correlation in TenantLogProcessor",
@@ -2464,26 +2472,26 @@
                 "issues": "https://github.com/nubitio/nubit-symfony/issues",
                 "source": "https://github.com/nubitio/nubit-symfony"
             },
-            "time": "2026-08-20T05:51:55+00:00"
+            "time": "2026-08-21T04:29:04+00:00"
         },
         {
             "name": "nubitio/sequence-bundle",
-            "version": "v0.13.2",
+            "version": "v0.14.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nubitio/sequence-bundle.git",
-                "reference": "2ab4684752317626f7c4825c1db6e88285228ea4"
+                "reference": "c6d063d2116e2c0ccdbb952763f7b59f1507c156"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nubitio/sequence-bundle/zipball/2ab4684752317626f7c4825c1db6e88285228ea4",
-                "reference": "2ab4684752317626f7c4825c1db6e88285228ea4",
+                "url": "https://api.github.com/repos/nubitio/sequence-bundle/zipball/c6d063d2116e2c0ccdbb952763f7b59f1507c156",
+                "reference": "c6d063d2116e2c0ccdbb952763f7b59f1507c156",
                 "shasum": ""
             },
             "require": {
                 "api-platform/core": "^4.3.12",
                 "doctrine/orm": "^3.0",
-                "nubitio/api-platform": "^0.13",
+                "nubitio/api-platform": "^0.14",
                 "php": ">=8.3",
                 "symfony/config": "^7.4 || ^8.0",
                 "symfony/dependency-injection": "^7.4 || ^8.0",
@@ -2517,27 +2525,27 @@
                 "issues": "https://github.com/nubitio/nubit-symfony/issues",
                 "source": "https://github.com/nubitio/nubit-symfony"
             },
-            "time": "2026-08-20T05:24:25+00:00"
+            "time": "2026-08-21T04:40:53+00:00"
         },
         {
             "name": "nubitio/tenant-bundle",
-            "version": "v0.13.2",
+            "version": "v0.14.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nubitio/tenant-bundle.git",
-                "reference": "3f71e33101152e5c6cfb004da6507bd0f8b21262"
+                "reference": "00990046f51b498596b788814f101dd6aa2cd0ac"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nubitio/tenant-bundle/zipball/3f71e33101152e5c6cfb004da6507bd0f8b21262",
-                "reference": "3f71e33101152e5c6cfb004da6507bd0f8b21262",
+                "url": "https://api.github.com/repos/nubitio/tenant-bundle/zipball/00990046f51b498596b788814f101dd6aa2cd0ac",
+                "reference": "00990046f51b498596b788814f101dd6aa2cd0ac",
                 "shasum": ""
             },
             "require": {
                 "doctrine/doctrine-bundle": "^3.2",
                 "doctrine/orm": "^3.0",
                 "firebase/php-jwt": "^7.0",
-                "nubitio/platform": "^0.13",
+                "nubitio/platform": "^0.14",
                 "php": ">=8.3",
                 "symfony/config": "^7.4 || ^8.0",
                 "symfony/console": "^7.4 || ^8.0",
@@ -2575,26 +2583,26 @@
                 "issues": "https://github.com/nubitio/nubit-symfony/issues",
                 "source": "https://github.com/nubitio/nubit-symfony"
             },
-            "time": "2026-08-20T05:24:25+00:00"
+            "time": "2026-08-21T04:40:53+00:00"
         },
         {
             "name": "nubitio/workflow-bundle",
-            "version": "v0.13.2",
+            "version": "v0.14.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nubitio/workflow-bundle.git",
-                "reference": "65f11a30659b24b5b268df5ed319a8aab55d25b6"
+                "reference": "6128112a5338c418a987487e8c3434496a4d3530"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nubitio/workflow-bundle/zipball/65f11a30659b24b5b268df5ed319a8aab55d25b6",
-                "reference": "65f11a30659b24b5b268df5ed319a8aab55d25b6",
+                "url": "https://api.github.com/repos/nubitio/workflow-bundle/zipball/6128112a5338c418a987487e8c3434496a4d3530",
+                "reference": "6128112a5338c418a987487e8c3434496a4d3530",
                 "shasum": ""
             },
             "require": {
                 "api-platform/core": "^4.3.12",
                 "doctrine/orm": "^3.0",
-                "nubitio/api-platform": "^0.13",
+                "nubitio/api-platform": "^0.14",
                 "php": ">=8.3",
                 "symfony/config": "^7.4 || ^8.0",
                 "symfony/dependency-injection": "^7.4 || ^8.0",
@@ -2635,7 +2643,7 @@
                 "issues": "https://github.com/nubitio/nubit-symfony/issues",
                 "source": "https://github.com/nubitio/nubit-symfony"
             },
-            "time": "2026-08-20T05:24:25+00:00"
+            "time": "2026-08-21T04:40:53+00:00"
         },
         {
             "name": "nyholm/psr7-server",

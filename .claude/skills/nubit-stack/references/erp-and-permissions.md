@@ -217,9 +217,9 @@ If what's actually needed is "is capability X available to this
 user/tenant" rather than a role check, reach for feature flags instead of
 inventing a permissions map — see the next section.
 
-## SSO / OpenID Connect (⏳ unreleased)
+## SSO / OpenID Connect
 
-Not in nubitio 0.13. One generic integration for **any** compliant IdP (Okta,
+Since nubitio 0.14. One generic integration for **any** compliant IdP (Okta,
 Entra ID, Google Workspace, Auth0, Keycloak…) via issuer discovery — there is
 no per-provider SDK to install.
 
@@ -324,7 +324,7 @@ feature system instead of stretching roles to mean something they don't:
   `access_control`), so an operation with no `security:` is not world-open —
   it's reachable by *any authenticated user*, whatever their role. That's a
   fine default for reads and a common accident on writes.
-  `bin/console nubit:security:audit` (⏳ unreleased) lists every
+  `bin/console nubit:security:audit` (since nubitio 0.14) lists every
   POST/PUT/PATCH/DELETE that never opted in; `--strict` exits non-zero, so it
   works as a CI gate.
 - **Role-aware UI**: see "Role-aware UI via /api/me" above — `app_profile`

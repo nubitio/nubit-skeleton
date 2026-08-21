@@ -28,7 +28,7 @@ composer require nubitio/tenant-bundle   # auto-registered by Flex
 - `bin/console nubit:tenant:list` — enumerate configured tenants.
 - `PerTenantCommand` (from `nubitio/platform`) — base class for console
   commands that need to iterate every tenant (e.g. a nightly job).
-- **Per-tenant backups** (⏳ unreleased): `nubit_admin.backup.enabled: true`
+- **Per-tenant backups** (since nubitio 0.14): `nubit_admin.backup.enabled: true`
   registers a PostgreSQL `TenantBackupRunnerInterface` (`pg_dump
   --format=custom`, credentials read from the Doctrine connection, password
   passed via `PGPASSWORD` so it never lands in `ps aux`) plus
@@ -89,8 +89,8 @@ controller/state provider — there is no HTTP endpoint until you write one:
   not hard requirements, so a missing one surfaces as "class not found" at the
   first export rather than at install.
 
-**The one-line grid export (⏳ unreleased — in `main`, not in nubitio 0.13 /
-@nubitio 0.10).** Turning it on registers `xlsx` as an API Platform format for
+**The one-line grid export (nubitio 0.14 / @nubitio 0.11).** Turning it on
+registers `xlsx` as an API Platform format for
 **every** `#[ApiResource]` at once, the same way `json`/`jsonld` are — no
 per-resource wiring, no custom endpoint:
 
@@ -113,13 +113,14 @@ on screen — and names the file from the response's `Content-Disposition`. The
 button only appears when the store implements `export()` (the Hydra adapter
 does), so `canExport: true` against a plain REST adapter is silently inert.
 
-> In 0.10 `permissions.canExport` reaches the grid as `allowExport` and nothing
-> consumes it — no button is rendered. If a user reports a missing export
-> button on a released version, that's why; it is not a wiring mistake.
+> Before @nubitio 0.11, `permissions.canExport` reached the grid as
+> `allowExport` and nothing consumed it — no button was rendered. If someone on
+> an older version reports a missing export button, that's why; it is not a
+> wiring mistake.
 
-## Notifications — email + in-app (⏳ unreleased)
+## Notifications — email + in-app
 
-Not in nubitio 0.13 / @nubitio 0.10. Domain code dispatches one
+Since nubitio 0.14 / @nubitio 0.11. Domain code dispatches one
 channel-agnostic message; channels decide how it's delivered.
 
 ```yaml

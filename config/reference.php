@@ -1249,6 +1249,17 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         hub_path?: scalar|Param|null, // Default: "/.well-known/mercure"
  *         fail_safe?: bool|Param, // Decorate the default hub so a dead Mercure never turns a successful write into a 500. HTTP requests log-and-continue; workers/console rethrow so async retries still work. Applies whenever MercureBundle is installed, regardless of "enabled". // Default: true
  *     },
+ *     oidc?: array{
+ *         enabled?: bool|Param, // Register GET /api/auth/oidc/{provider}/redirect and /callback (authorization code + PKCE). Works against any OpenID Connect-compliant IdP (Okta, Azure AD, Google Workspace, Auth0, Keycloak…) via issuer discovery — no per-provider SDK. Requires an app-provided OidcUserResolverInterface, and OidcAuthenticator added to the firewall's custom_authenticators. // Default: false
+ *         providers?: array<string, array{ // Default: []
+ *             issuer?: scalar|Param|null, // OIDC issuer base URL — {issuer}/.well-known/openid-configuration must resolve.
+ *             client_id?: scalar|Param|null,
+ *             client_secret?: scalar|Param|null,
+ *             scopes?: list<scalar|Param|null>,
+ *             redirect_uri?: scalar|Param|null, // Must exactly match the redirect URI registered with the IdP — usually {api_base_url}/api/auth/oidc/{name}/callback.
+ *             post_login_redirect_uri?: scalar|Param|null, // Frontend URL the browser lands on after a successful (or failed, with ?error=) login.
+ *         }>,
+ *     },
  *     audit?: array{
  *         enabled?: bool|Param, // Record field-level diffs of #[Auditable] entities and expose GET /api/audit-trail/{resource}/{id}. // Default: false
  *         ignored_fields?: list<scalar|Param|null>,
@@ -1280,6 +1291,25 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         purge_retention_days?: int|Param, // nubit:media:purge removes media soft-deleted longer ago than this. // Default: 30
  *         max_size?: int|Param, // Maximum upload size in bytes. 0 means no limit. // Default: 10485760
  *         allowed_mimes?: list<scalar|Param|null>,
+ *     },
+ *     notification?: array{
+ *         enabled?: bool|Param, // Register NotificationDispatcherInterface (dispatched through Messenger) and an email channel (symfony/mailer). Domain code (e.g. a workflow transition listener) calls dispatch(); app services tagged nubit.admin.notification_channel add more channels. // Default: false
+ *         from_address?: scalar|Param|null, // "From" address for the built-in email channel. // Default: ""
+ *         in_app?: array{
+ *             enabled?: bool|Param, // Register the Notification entity (GET /api/notifications, mercure: true) and an "in_app" channel. Maps a new table — run doctrine:migrations:diff after enabling. // Default: false
+ *         },
+ *     },
+ *     backup?: array{
+ *         enabled?: bool|Param, // Register a PostgreSQL TenantBackupRunnerInterface (pg_dump) and bin/console nubit:tenant:backup. Requires pg_dump on PATH. // Default: false
+ *         storage?: array{
+ *             filesystem?: scalar|Param|null, // Service id of a League\Flysystem FilesystemOperator to store dumps in. Overrides local_directory. // Default: null
+ *             local_directory?: scalar|Param|null, // Default: "%kernel.project_dir%/var/backups"
+ *         },
+ *         pg_dump_binary?: scalar|Param|null, // Default: "pg_dump"
+ *         timeout_seconds?: int|Param, // Default: 300
+ *     },
+ *     export?: array{
+ *         enabled?: bool|Param, // Register the "xlsx" format on every ApiResource: GET ?_format=xlsx (or Accept: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet) streams the same collection/item data as a spreadsheet. Pairs with the frontend toolbar export button gated by permissions.canExport. // Default: false
  *     },
  *     runtime_config?: bool|Param, // Expose GET /api/runtime-config (opt-in; payload from RuntimeConfigProviderInterface). // Default: false
  *     soft_delete?: bool|Param, // Register the Doctrine filter hiding #[SoftDeletable] rows. // Default: true
