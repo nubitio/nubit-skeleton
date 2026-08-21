@@ -4,9 +4,7 @@
     "line": "0.15",
     "packages": [
       "nubitio/admin-bundle",
-      "nubitio/sequence-bundle",
-      "nubitio/tenant-bundle",
-      "nubitio/workflow-bundle"
+      "nubitio/tenant-bundle"
     ]
   },
   "frontend": {

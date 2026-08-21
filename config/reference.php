@@ -1647,13 +1647,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     default_cookie_lifetime?: int|Param, // Default lifetime of the cookie containing the JWT, in seconds. Defaults to the value of "framework.session.cookie_lifetime". // Default: null
  *     enable_profiler?: bool|Param, // Deprecated: The child node "enable_profiler" at path "mercure.enable_profiler" is deprecated. // Enable Symfony Web Profiler integration.
  * }
- * @psalm-type NubitSequenceConfig = array{
- *     enabled?: bool|Param, // Enable automatic sequence allocation on prePersist and x-sequence OpenAPI hints. // Default: true
- * }
- * @psalm-type NubitWorkflowConfig = array{
- *     enabled?: bool|Param, // Enable workflow transition routes and x-workflow OpenAPI hints. // Default: true
- *     api_route_prefix?: scalar|Param|null, // Global API route prefix prepended when inferring collection paths. // Default: "/api"
- * }
  * @psalm-type NubitTenantConfig = array{
  *     enabled?: bool|Param, // Enable tenant resolution, Doctrine filter, and registry wiring. // Default: false
  *     isolation?: "column"|"database"|"schema"|"hybrid"|Param, // Default: "column"
@@ -1684,8 +1677,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     nubit_admin?: NubitAdminConfig,
  *     security?: SecurityConfig,
  *     mercure?: MercureConfig,
- *     nubit_sequence?: NubitSequenceConfig,
- *     nubit_workflow?: NubitWorkflowConfig,
  *     nubit_tenant?: NubitTenantConfig,
  *     "when@dev"?: array{
  *         imports?: ImportsConfig,
@@ -1699,8 +1690,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         nubit_admin?: NubitAdminConfig,
  *         security?: SecurityConfig,
  *         mercure?: MercureConfig,
- *         nubit_sequence?: NubitSequenceConfig,
- *         nubit_workflow?: NubitWorkflowConfig,
  *         nubit_tenant?: NubitTenantConfig,
  *     },
  *     "when@prod"?: array{
@@ -1715,8 +1704,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         nubit_admin?: NubitAdminConfig,
  *         security?: SecurityConfig,
  *         mercure?: MercureConfig,
- *         nubit_sequence?: NubitSequenceConfig,
- *         nubit_workflow?: NubitWorkflowConfig,
  *         nubit_tenant?: NubitTenantConfig,
  *     },
  *     "when@test"?: array{
@@ -1731,8 +1718,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         nubit_admin?: NubitAdminConfig,
  *         security?: SecurityConfig,
  *         mercure?: MercureConfig,
- *         nubit_sequence?: NubitSequenceConfig,
- *         nubit_workflow?: NubitWorkflowConfig,
  *         nubit_tenant?: NubitTenantConfig,
  *     },
  *     ...<string, ExtensionType|array{ // extra keys must follow the when@%env% pattern or match an extension alias

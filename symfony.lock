@@ -67,14 +67,8 @@
     "nubitio/admin-bundle": {
         "version": "v0.2.0"
     },
-    "nubitio/sequence-bundle": {
-        "version": "v0.10.3"
-    },
     "nubitio/tenant-bundle": {
         "version": "v0.10.13"
-    },
-    "nubitio/workflow-bundle": {
-        "version": "v0.10.3"
     },
     "php-http/discovery": {
         "version": "1.20",
