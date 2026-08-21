@@ -25,11 +25,24 @@ docker compose exec app php bin/console app:seed
 
 Open **http://localhost:5173** and sign in with `admin@example.com` / `admin1234`.
 
-The template ships one resource — `Product` — and every optional module off.
-That is deliberate: anything enabled here becomes schema, endpoints and config
-your project inherits and then has to remove. Turn on what you need, one at a
-time; [`config/packages/nubit_admin.yaml`](config/packages/nubit_admin.yaml)
+The template ships one resource — `Product` — single-tenant, with every
+optional module off. That is deliberate: anything enabled here becomes schema,
+endpoints and config your project inherits and then has to remove. Turn on what
+you need, one at a time; [`config/packages/nubit_admin.yaml`](config/packages/nubit_admin.yaml)
 lists each module and what it adds.
+
+**Multi-tenant?** Add it when you need it — the tenancy layer is a feature, not
+a foundation:
+
+```bash
+composer require nubitio/tenant-bundle
+```
+
+Then set `nubit_tenant.enabled: true`, point `tenant_entity` at your tenant root,
+and mark tenant-owned entities with `TenantOwnedInterface` + `TenantOwnedTrait`.
+The nubit-stack skill's `references/platform-and-saas.md` walks the whole path,
+and [nubit-inmobiliaria](https://github.com/nubitio/nubit-inmobiliaria) is a
+multi-tenant application built this way.
 
 | Service | URL |
 | --- | --- |

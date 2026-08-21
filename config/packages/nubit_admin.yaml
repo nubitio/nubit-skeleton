@@ -7,7 +7,7 @@
 # admin-bundle README:
 # https://github.com/nubitio/nubit-symfony/tree/main/packages/admin-bundle
 nubit_admin:
-    app_profile: saas
+    app_profile: internal
     auth:
         secret: '%env(APP_SECRET)%' # >= 32 bytes
         access_token_ttl: 3600

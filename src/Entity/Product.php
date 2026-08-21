@@ -15,8 +15,6 @@ use ApiPlatform\Metadata\Post;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Nubit\ApiPlatform\Doctrine\Filter\DataGridFilter;
-use Nubit\TenantBundle\Contract\TenantOwnedInterface;
-use Nubit\TenantBundle\Entity\TenantOwnedTrait;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -31,20 +29,18 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity]
 #[ApiResource(
     operations: [
-        new GetCollection(security: "is_granted('APP_PRODUCT_READ')"),
-        new Post(security: "is_granted('APP_PRODUCT_MANAGE')"),
-        new Get(security: "is_granted('APP_PRODUCT_READ')"),
-        new Patch(security: "is_granted('APP_PRODUCT_MANAGE')"),
-        new Delete(security: "is_granted('APP_PRODUCT_MANAGE')"),
+        new GetCollection(security: "is_granted('ROLE_USER')"),
+        new Post(security: "is_granted('ROLE_ADMIN')"),
+        new Get(security: "is_granted('ROLE_USER')"),
+        new Patch(security: "is_granted('ROLE_ADMIN')"),
+        new Delete(security: "is_granted('ROLE_ADMIN')"),
     ],
     mercure: true,
     paginationClientItemsPerPage: true,
 )]
 #[ApiFilter(DataGridFilter::class)]
-class Product implements TenantOwnedInterface
+class Product
 {
-    use TenantOwnedTrait;
-
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

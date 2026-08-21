@@ -1,4 +1,0 @@
-nubit_tenant:
-    enabled: true
-    isolation: column
-    tenant_entity: App\Entity\Organization

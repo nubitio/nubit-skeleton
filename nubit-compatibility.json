@@ -3,8 +3,7 @@
   "backend": {
     "line": "0.15",
     "packages": [
-      "nubitio/admin-bundle",
-      "nubitio/tenant-bundle"
+      "nubitio/admin-bundle"
     ]
   },
   "frontend": {

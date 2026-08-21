@@ -42,12 +42,19 @@ URLs: app/API http://localhost:8000 · React http://localhost:5173 · Mercure ht
 
 ## This template is a blank canvas
 
-It ships one resource (`Product`) and every optional module off — media, audit,
-export, notifications, backups, analytics, OIDC. Do not enable one to
-demonstrate it; enable it when the product needs it, and add the migration it
-requires. Master-detail, sequences, workflows and audit trails all work here,
-they are just not switched on: the nubit-stack skill has a worked example of
-each.
+It ships one resource (`Product`), single-tenant, with every optional module
+off — media, audit, export, notifications, backups, analytics, OIDC. Do not
+enable one to demonstrate it; enable it when the product needs it, and add the
+migration it requires (`doctrine:migrations:diff` writes it for you).
+
+**Multi-tenancy is one of those features, not a foundation.** There is no
+tenant context, no Organization entity and no capability voter in this
+codebase — do not assume any of them. Adding it means
+`composer require nubitio/tenant-bundle`, enabling `nubit_tenant`, and marking
+tenant-owned entities with `TenantOwnedInterface` + `TenantOwnedTrait`.
+
+Master-detail, sequences, workflows and audit trails all work on this stack;
+the nubit-stack skill has a worked example of each.
 
 ## Conventions
 
