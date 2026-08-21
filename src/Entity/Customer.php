@@ -39,6 +39,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Customer implements TenantOwnedInterface
 {
     use TenantOwnedTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -46,39 +47,38 @@ class Customer implements TenantOwnedInterface
 
     #[ORM\Column(length: 160)]
     #[Assert\NotBlank]
-    #[ApiProperty(
-        description: 'Name',
-        openapiContext: ['x-crud' => ['filterable' => true, 'sortable' => true, 'order' => 0]],
-    )]
+    #[ApiProperty(description: 'Name', openapiContext: ['x-crud' => [
+        'filterable' => true,
+        'sortable' => true,
+        'order' => 0,
+    ]])]
     private string $name = '';
 
     #[ORM\Column(length: 180)]
     #[Assert\NotBlank]
     #[Assert\Email]
-    #[ApiProperty(
-        description: 'Email',
-        openapiContext: ['x-crud' => ['filterable' => true, 'sortable' => true, 'order' => 1]],
-    )]
+    #[ApiProperty(description: 'Email', openapiContext: ['x-crud' => [
+        'filterable' => true,
+        'sortable' => true,
+        'order' => 1,
+    ]])]
     private string $email = '';
 
     #[ORM\Column(length: 16)]
     #[Assert\Choice(choices: ['retail', 'wholesale', 'enterprise'])]
-    #[ApiProperty(
-        description: 'Segment',
-        openapiContext: [
-            'x-crud' => ['filterable' => true, 'sortable' => true, 'order' => 2],
-            'enum' => ['retail', 'wholesale', 'enterprise'],
-        ],
-    )]
+    #[ApiProperty(description: 'Segment', openapiContext: [
+        'x-crud' => ['filterable' => true, 'sortable' => true, 'order' => 2],
+        'enum' => ['retail', 'wholesale', 'enterprise'],
+    ])]
     private string $segment = 'retail';
 
     #[ORM\ManyToOne(targetEntity: Product::class)]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
-    #[ApiProperty(
-        readableLink: true,
-        description: 'Preferred product',
-        openapiContext: ['x-crud' => ['filterable' => true, 'sortable' => true, 'order' => 3]],
-    )]
+    #[ApiProperty(readableLink: true, description: 'Preferred product', openapiContext: ['x-crud' => [
+        'filterable' => true,
+        'sortable' => true,
+        'order' => 3,
+    ]])]
     private ?Product $preferredProduct = null;
 
     public function getId(): ?int

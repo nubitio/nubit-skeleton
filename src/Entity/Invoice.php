@@ -12,8 +12,8 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
-use App\State\InvoiceProcessor;
 use App\Security\InvoiceWorkflowGuard;
+use App\State\InvoiceProcessor;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -39,35 +39,32 @@ use Symfony\Component\Validator\Constraints as Assert;
  * Copy this pattern for: purchase orders, receipts, credit notes, payroll runs.
  */
 #[Sequence(field: 'number', name: 'invoice', prefix: 'INV-', padding: 4)]
-#[Workflow(
-    field: 'status',
-    transitions: [
-        'confirm' => [
-            'from' => ['draft'],
-            'to'   => 'confirmed',
-            'label' => 'Confirm',
-            'guard' => InvoiceWorkflowGuard::class,
-        ],
-        'mark_paid' => [
-            'from' => ['confirmed'],
-            'to'   => 'paid',
-            'label' => 'Mark as paid',
-            'guard' => InvoiceWorkflowGuard::class,
-        ],
-        'cancel' => [
-            'from' => ['draft', 'confirmed'],
-            'to'   => 'cancelled',
-            'label' => 'Cancel',
-            'guard' => InvoiceWorkflowGuard::class,
-        ],
-        'reopen' => [
-            'from' => ['cancelled'],
-            'to'   => 'draft',
-            'label' => 'Reopen',
-            'guard' => InvoiceWorkflowGuard::class,
-        ],
+#[Workflow(field: 'status', transitions: [
+    'confirm' => [
+        'from' => ['draft'],
+        'to' => 'confirmed',
+        'label' => 'Confirm',
+        'guard' => InvoiceWorkflowGuard::class,
     ],
-)]
+    'mark_paid' => [
+        'from' => ['confirmed'],
+        'to' => 'paid',
+        'label' => 'Mark as paid',
+        'guard' => InvoiceWorkflowGuard::class,
+    ],
+    'cancel' => [
+        'from' => ['draft', 'confirmed'],
+        'to' => 'cancelled',
+        'label' => 'Cancel',
+        'guard' => InvoiceWorkflowGuard::class,
+    ],
+    'reopen' => [
+        'from' => ['cancelled'],
+        'to' => 'draft',
+        'label' => 'Reopen',
+        'guard' => InvoiceWorkflowGuard::class,
+    ],
+])]
 #[Auditable(resource: 'invoice')]
 #[ORM\Entity]
 #[ORM\Table(name: 'invoice')]
@@ -89,6 +86,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Invoice implements TenantOwnedInterface
 {
     use TenantOwnedTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -101,38 +99,42 @@ class Invoice implements TenantOwnedInterface
      */
     #[ORM\Column(length: 32, unique: true)]
     #[Groups(['invoice:read'])]
-    #[ApiProperty(
-        description: 'Number',
-        openapiContext: ['x-crud' => ['filterable' => true, 'sortable' => true, 'order' => 0, 'showInForm' => false]],
-    )]
+    #[ApiProperty(description: 'Number', openapiContext: ['x-crud' => [
+        'filterable' => true,
+        'sortable' => true,
+        'order' => 0,
+        'showInForm' => false,
+    ]])]
     private string $number = '';
 
     #[ORM\ManyToOne(targetEntity: Customer::class)]
     #[ORM\JoinColumn(nullable: false)]
     #[Assert\NotNull]
     #[Groups(['invoice:read', 'invoice:write'])]
-    #[ApiProperty(
-        readableLink: true,
-        description: 'Customer',
-        openapiContext: ['x-crud' => ['filterable' => true, 'sortable' => true, 'order' => 1]],
-    )]
+    #[ApiProperty(readableLink: true, description: 'Customer', openapiContext: ['x-crud' => [
+        'filterable' => true,
+        'sortable' => true,
+        'order' => 1,
+    ]])]
     private ?Customer $customer = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     #[Assert\NotNull]
     #[Groups(['invoice:read', 'invoice:write'])]
-    #[ApiProperty(
-        description: 'Issue date',
-        openapiContext: ['x-crud' => ['filterable' => true, 'sortable' => true, 'order' => 2]],
-    )]
+    #[ApiProperty(description: 'Issue date', openapiContext: ['x-crud' => [
+        'filterable' => true,
+        'sortable' => true,
+        'order' => 2,
+    ]])]
     private ?\DateTimeInterface $issuedAt = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     #[Groups(['invoice:read', 'invoice:write'])]
-    #[ApiProperty(
-        description: 'Due date',
-        openapiContext: ['x-crud' => ['filterable' => true, 'sortable' => true, 'order' => 3]],
-    )]
+    #[ApiProperty(description: 'Due date', openapiContext: ['x-crud' => [
+        'filterable' => true,
+        'sortable' => true,
+        'order' => 3,
+    ]])]
     private ?\DateTimeInterface $dueAt = null;
 
     /**
@@ -140,45 +142,42 @@ class Invoice implements TenantOwnedInterface
      */
     #[ORM\Column(length: 16)]
     #[Groups(['invoice:read'])]
-    #[ApiProperty(
-        description: 'Status',
-        openapiContext: [
-            'x-crud' => ['filterable' => true, 'sortable' => true, 'order' => 4, 'showInForm' => false],
-            'enum' => ['draft', 'confirmed', 'paid', 'cancelled'],
-        ],
-    )]
+    #[ApiProperty(description: 'Status', openapiContext: [
+        'x-crud' => ['filterable' => true, 'sortable' => true, 'order' => 4, 'showInForm' => false],
+        'enum' => ['draft', 'confirmed', 'paid', 'cancelled'],
+    ])]
     private string $status = 'draft';
 
     #[ORM\Column(type: Types::DECIMAL, precision: 12, scale: 2)]
     #[Groups(['invoice:read'])]
-    #[ApiProperty(
-        description: 'Subtotal',
-        openapiContext: ['x-crud' => ['order' => 5, 'format' => 'currency', 'showInForm' => false]],
-    )]
+    #[ApiProperty(description: 'Subtotal', openapiContext: ['x-crud' => [
+        'order' => 5,
+        'format' => 'currency',
+        'showInForm' => false,
+    ]])]
     private string $subtotal = '0.00';
 
     #[ORM\Column(type: Types::DECIMAL, precision: 12, scale: 2)]
     #[Groups(['invoice:read'])]
-    #[ApiProperty(
-        description: 'Tax',
-        openapiContext: ['x-crud' => ['order' => 6, 'format' => 'currency', 'showInForm' => false]],
-    )]
+    #[ApiProperty(description: 'Tax', openapiContext: ['x-crud' => [
+        'order' => 6,
+        'format' => 'currency',
+        'showInForm' => false,
+    ]])]
     private string $tax = '0.00';
 
     #[ORM\Column(type: Types::DECIMAL, precision: 12, scale: 2)]
     #[Groups(['invoice:read'])]
-    #[ApiProperty(
-        description: 'Total',
-        openapiContext: ['x-crud' => ['order' => 7, 'format' => 'currency', 'showInForm' => false]],
-    )]
+    #[ApiProperty(description: 'Total', openapiContext: ['x-crud' => [
+        'order' => 7,
+        'format' => 'currency',
+        'showInForm' => false,
+    ]])]
     private string $total = '0.00';
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Groups(['invoice:read', 'invoice:write'])]
-    #[ApiProperty(
-        description: 'Notes',
-        openapiContext: ['x-crud' => ['hideInGrid' => true]],
-    )]
+    #[ApiProperty(description: 'Notes', openapiContext: ['x-crud' => ['hideInGrid' => true]])]
     private ?string $notes = null;
 
     /** @var Collection<int, InvoiceLine> */
@@ -189,9 +188,7 @@ class Invoice implements TenantOwnedInterface
         orphanRemoval: true,
     )]
     #[Groups(['invoice:read', 'invoice:write'])]
-    #[ApiProperty(
-        openapiContext: ['x-crud' => ['showInForm' => false, 'hideInGrid' => true]],
-    )]
+    #[ApiProperty(openapiContext: ['x-crud' => ['showInForm' => false, 'hideInGrid' => true]])]
     private Collection $lines;
 
     public function __construct()
@@ -200,44 +197,122 @@ class Invoice implements TenantOwnedInterface
         $this->issuedAt = new \DateTimeImmutable();
     }
 
-    public function getId(): ?int { return $this->id; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
-    public function getNumber(): string { return $this->number; }
-    public function setNumber(string $number): static { $this->number = $number; return $this; }
+    public function getNumber(): string
+    {
+        return $this->number;
+    }
 
-    public function getCustomer(): ?Customer { return $this->customer; }
-    public function setCustomer(?Customer $customer): static { $this->customer = $customer; return $this; }
+    public function setNumber(string $number): static
+    {
+        $this->number = $number;
+        return $this;
+    }
 
-    public function getIssuedAt(): ?\DateTimeInterface { return $this->issuedAt; }
-    public function setIssuedAt(?\DateTimeInterface $issuedAt): static { $this->issuedAt = $issuedAt; return $this; }
+    public function getCustomer(): ?Customer
+    {
+        return $this->customer;
+    }
 
-    public function getDueAt(): ?\DateTimeInterface { return $this->dueAt; }
-    public function setDueAt(?\DateTimeInterface $dueAt): static { $this->dueAt = $dueAt; return $this; }
+    public function setCustomer(?Customer $customer): static
+    {
+        $this->customer = $customer;
+        return $this;
+    }
 
-    public function getStatus(): string { return $this->status; }
-    public function setStatus(string $status): static { $this->status = $status; return $this; }
+    public function getIssuedAt(): ?\DateTimeInterface
+    {
+        return $this->issuedAt;
+    }
 
-    public function getSubtotal(): string { return $this->subtotal; }
-    public function setSubtotal(string $subtotal): static { $this->subtotal = $subtotal; return $this; }
+    public function setIssuedAt(?\DateTimeInterface $issuedAt): static
+    {
+        $this->issuedAt = $issuedAt;
+        return $this;
+    }
 
-    public function getTax(): string { return $this->tax; }
-    public function setTax(string $tax): static { $this->tax = $tax; return $this; }
+    public function getDueAt(): ?\DateTimeInterface
+    {
+        return $this->dueAt;
+    }
 
-    public function getTotal(): string { return $this->total; }
-    public function setTotal(string $total): static { $this->total = $total; return $this; }
+    public function setDueAt(?\DateTimeInterface $dueAt): static
+    {
+        $this->dueAt = $dueAt;
+        return $this;
+    }
 
-    public function getNotes(): ?string { return $this->notes; }
-    public function setNotes(?string $notes): static { $this->notes = $notes; return $this; }
+    public function getStatus(): string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): static
+    {
+        $this->status = $status;
+        return $this;
+    }
+
+    public function getSubtotal(): string
+    {
+        return $this->subtotal;
+    }
+
+    public function setSubtotal(string $subtotal): static
+    {
+        $this->subtotal = $subtotal;
+        return $this;
+    }
+
+    public function getTax(): string
+    {
+        return $this->tax;
+    }
+
+    public function setTax(string $tax): static
+    {
+        $this->tax = $tax;
+        return $this;
+    }
+
+    public function getTotal(): string
+    {
+        return $this->total;
+    }
+
+    public function setTotal(string $total): static
+    {
+        $this->total = $total;
+        return $this;
+    }
+
+    public function getNotes(): ?string
+    {
+        return $this->notes;
+    }
+
+    public function setNotes(?string $notes): static
+    {
+        $this->notes = $notes;
+        return $this;
+    }
 
     /** @return Collection<int, InvoiceLine> */
-    public function getLines(): Collection { return $this->lines; }
+    public function getLines(): Collection
+    {
+        return $this->lines;
+    }
 
     #[Groups(['invoice:read'])]
-    #[ApiProperty(
-        description: 'Lines',
-        openapiContext: ['x-crud' => ['order' => 8, 'showInForm' => false]],
-    )]
-    public function getLineCount(): int { return $this->lines->count(); }
+    #[ApiProperty(description: 'Lines', openapiContext: ['x-crud' => ['order' => 8, 'showInForm' => false]])]
+    public function getLineCount(): int
+    {
+        return $this->lines->count();
+    }
 
     public function addLine(InvoiceLine $line): static
     {
@@ -265,11 +340,11 @@ class Invoice implements TenantOwnedInterface
             $line->recalculateLineTotal();
             $base = (float) $line->getQuantity() * (float) $line->getUnitPrice();
             $subtotal += $base;
-            $tax += $base * (float) $line->getTaxRate() / 100;
+            $tax += ($base * (float) $line->getTaxRate()) / 100;
         }
 
         $this->subtotal = number_format($subtotal, 2, '.', '');
-        $this->tax      = number_format($tax, 2, '.', '');
-        $this->total    = number_format($subtotal + $tax, 2, '.', '');
+        $this->tax = number_format($tax, 2, '.', '');
+        $this->total = number_format($subtotal + $tax, 2, '.', '');
     }
 }

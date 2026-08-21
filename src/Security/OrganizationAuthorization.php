@@ -31,16 +31,27 @@ final readonly class OrganizationAuthorization
 
     /** @var list<string> */
     public const CAPABILITIES = [
-        self::PRODUCT_READ, self::PRODUCT_MANAGE,
-        self::CUSTOMER_READ, self::CUSTOMER_WRITE, self::CUSTOMER_DELETE,
-        self::SALES_DOCUMENT_READ, self::SALES_DOCUMENT_WRITE, self::SALES_DOCUMENT_DELETE, self::SALES_DOCUMENT_LINE_READ,
-        self::INVOICE_READ, self::INVOICE_WRITE, self::INVOICE_DELETE, self::INVOICE_LINE_READ,
-        self::INVOICE_PAY, self::INVOICE_CANCEL, self::INVOICE_REOPEN,
+        self::PRODUCT_READ,
+        self::PRODUCT_MANAGE,
+        self::CUSTOMER_READ,
+        self::CUSTOMER_WRITE,
+        self::CUSTOMER_DELETE,
+        self::SALES_DOCUMENT_READ,
+        self::SALES_DOCUMENT_WRITE,
+        self::SALES_DOCUMENT_DELETE,
+        self::SALES_DOCUMENT_LINE_READ,
+        self::INVOICE_READ,
+        self::INVOICE_WRITE,
+        self::INVOICE_DELETE,
+        self::INVOICE_LINE_READ,
+        self::INVOICE_PAY,
+        self::INVOICE_CANCEL,
+        self::INVOICE_REOPEN,
     ];
 
-    public function __construct(private TenantContext $tenantContext)
-    {
-    }
+    public function __construct(
+        private TenantContext $tenantContext,
+    ) {}
 
     public function isGranted(UserInterface $user, string $capability): bool
     {
@@ -58,14 +69,16 @@ final readonly class OrganizationAuthorization
             self::SALES_DOCUMENT_LINE_READ,
             self::INVOICE_READ,
             self::INVOICE_WRITE,
-            self::INVOICE_LINE_READ => true,
+            self::INVOICE_LINE_READ,
+                => true,
             self::PRODUCT_MANAGE,
             self::CUSTOMER_DELETE,
             self::SALES_DOCUMENT_DELETE,
             self::INVOICE_DELETE,
             self::INVOICE_PAY,
             self::INVOICE_CANCEL,
-            self::INVOICE_REOPEN => $membership->isAdmin(),
+            self::INVOICE_REOPEN,
+                => $membership->isAdmin(),
             default => false,
         };
     }
@@ -78,9 +91,11 @@ final readonly class OrganizationAuthorization
         }
 
         foreach ($user->getOrganizationMemberships() as $membership) {
-            if ($membership instanceof OrganizationMembership
+            if (
+                $membership instanceof OrganizationMembership
                 && $membership->isActive()
-                && $membership->getOrganization()?->getId() === $tenantId) {
+                && $membership->getOrganization()?->getId() === $tenantId
+            ) {
                 return $membership;
             }
         }

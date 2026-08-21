@@ -25,9 +25,9 @@ final class SaasTenantContractTest extends TestCase
 
     public function testSaasTenantBundleAndColumnIsolationAreConfigured(): void
     {
-        $admin = Yaml::parseFile($this->projectDir.'/config/packages/nubit_admin.yaml');
-        $tenant = Yaml::parseFile($this->projectDir.'/config/packages/nubit_tenant.yaml');
-        $bundles = require $this->projectDir.'/config/bundles.php';
+        $admin = Yaml::parseFile($this->projectDir . '/config/packages/nubit_admin.yaml');
+        $tenant = Yaml::parseFile($this->projectDir . '/config/packages/nubit_tenant.yaml');
+        $bundles = require $this->projectDir . '/config/bundles.php';
 
         self::assertSame('saas', $admin['nubit_admin']['app_profile'] ?? null);
         self::assertTrue($tenant['nubit_tenant']['enabled'] ?? false);
@@ -39,7 +39,7 @@ final class SaasTenantContractTest extends TestCase
     public function testBusinessEntitiesUseServerStampedTenantOwnership(): void
     {
         foreach (['Product', 'Customer', 'SalesDocument', 'SalesDocumentLine', 'Invoice', 'InvoiceLine'] as $entity) {
-            $source = (string) file_get_contents($this->projectDir.'/src/Entity/'.$entity.'.php');
+            $source = (string) file_get_contents($this->projectDir . '/src/Entity/' . $entity . '.php');
             self::assertStringContainsString('implements TenantOwnedInterface', $source, $entity);
             self::assertStringContainsString('use TenantOwnedTrait;', $source, $entity);
         }
@@ -54,7 +54,10 @@ final class SaasTenantContractTest extends TestCase
         $user->addOrganizationMembership($this->membership($inactive, 'inactive'));
         $resolver = new OrganizationTenantResolver();
 
-        self::assertSame(20, $resolver->resolve(Request::create('/', server: ['HTTP_X_ORGANIZATION_ID' => '20']), $user)?->id);
+        self::assertSame(
+            20,
+            $resolver->resolve(Request::create('/', server: ['HTTP_X_ORGANIZATION_ID' => '20']), $user)?->id,
+        );
         self::assertNull($resolver->resolve(Request::create('/', server: ['HTTP_X_ORGANIZATION_ID' => '10']), $user));
         self::assertNull($resolver->resolve(Request::create('/', server: ['HTTP_X_ORGANIZATION_ID' => '999']), $user));
     }
@@ -73,8 +76,16 @@ final class SaasTenantContractTest extends TestCase
         $user = (new User())->setRoles(['ROLE_ADMIN']);
         $adminOrganization = $this->organization(1, 'admin');
         $memberOrganization = $this->organization(2, 'member');
-        $user->addOrganizationMembership($this->membership($adminOrganization, 'active', OrganizationMembership::ROLE_ADMIN));
-        $user->addOrganizationMembership($this->membership($memberOrganization, 'active', OrganizationMembership::ROLE_MEMBER));
+        $user->addOrganizationMembership($this->membership(
+            $adminOrganization,
+            'active',
+            OrganizationMembership::ROLE_ADMIN,
+        ));
+        $user->addOrganizationMembership($this->membership(
+            $memberOrganization,
+            'active',
+            OrganizationMembership::ROLE_MEMBER,
+        ));
         $context = new TenantContext();
         $authorization = new OrganizationAuthorization($context);
 
@@ -92,7 +103,7 @@ final class SaasTenantContractTest extends TestCase
     public function testTenantResourcesDeclareOperationSecurity(): void
     {
         foreach (['Product', 'Customer', 'SalesDocument', 'SalesDocumentLine', 'Invoice', 'InvoiceLine'] as $entity) {
-            $source = (string) file_get_contents($this->projectDir.'/src/Entity/'.$entity.'.php');
+            $source = (string) file_get_contents($this->projectDir . '/src/Entity/' . $entity . '.php');
             self::assertStringContainsString("security: \"is_granted('APP_", $source, $entity);
             self::assertStringNotContainsString("is_granted('ROLE_ADMIN')", $source, $entity);
         }
@@ -100,15 +111,23 @@ final class SaasTenantContractTest extends TestCase
 
     private function organization(int $id, string $slug): Organization
     {
-        $organization = (new Organization())->setName($slug)->setSlug($slug);
+        $organization = (new Organization())
+            ->setName($slug)
+            ->setSlug($slug);
         $this->setId($organization, $id);
 
         return $organization;
     }
 
-    private function membership(Organization $organization, string $status, string $role = OrganizationMembership::ROLE_MEMBER): OrganizationMembership
-    {
-        return (new OrganizationMembership())->setOrganization($organization)->setStatus($status)->setRole($role);
+    private function membership(
+        Organization $organization,
+        string $status,
+        string $role = OrganizationMembership::ROLE_MEMBER,
+    ): OrganizationMembership {
+        return (new OrganizationMembership())
+            ->setOrganization($organization)
+            ->setStatus($status)
+            ->setRole($role);
     }
 
     private function setId(object $entity, int $id): void

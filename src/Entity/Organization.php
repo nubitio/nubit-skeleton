@@ -25,11 +25,41 @@ class Organization
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $primaryDomain = null;
 
-    public function getId(): ?int { return $this->id; }
-    public function getName(): string { return $this->name; }
-    public function setName(string $name): static { $this->name = $name; return $this; }
-    public function getSlug(): string { return $this->slug; }
-    public function setSlug(string $slug): static { $this->slug = $slug; return $this; }
-    public function getPrimaryDomain(): ?string { return $this->primaryDomain; }
-    public function setPrimaryDomain(?string $primaryDomain): static { $this->primaryDomain = $primaryDomain; return $this; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): static
+    {
+        $this->name = $name;
+        return $this;
+    }
+
+    public function getSlug(): string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(string $slug): static
+    {
+        $this->slug = $slug;
+        return $this;
+    }
+
+    public function getPrimaryDomain(): ?string
+    {
+        return $this->primaryDomain;
+    }
+
+    public function setPrimaryDomain(?string $primaryDomain): static
+    {
+        $this->primaryDomain = $primaryDomain;
+        return $this;
+    }
 }

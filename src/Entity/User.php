@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Repository\UserRepository;
 use App\Tenant\OrganizationMembershipUserInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -33,7 +33,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Organiz
     private string $password;
 
     /** @var Collection<int, OrganizationMembership> */
-    #[ORM\OneToMany(targetEntity: OrganizationMembership::class, mappedBy: 'user', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\OneToMany(
+        targetEntity: OrganizationMembership::class,
+        mappedBy: 'user',
+        cascade: ['persist', 'remove'],
+        orphanRemoval: true,
+    )]
     private Collection $organizationMemberships;
 
     public function __construct()
@@ -92,9 +97,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Organiz
         return $this;
     }
 
-    public function eraseCredentials(): void
-    {
-    }
+    public function eraseCredentials(): void {}
 
     /** @return Collection<int, OrganizationMembership> */
     public function getOrganizationMemberships(): Collection

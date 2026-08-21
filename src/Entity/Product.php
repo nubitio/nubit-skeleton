@@ -43,6 +43,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Product implements TenantOwnedInterface
 {
     use TenantOwnedTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -50,32 +51,37 @@ class Product implements TenantOwnedInterface
 
     #[ORM\Column(length: 160)]
     #[Assert\NotBlank]
-    #[ApiProperty(
-        description: 'Name',
-        openapiContext: ['x-crud' => ['filterable' => true, 'sortable' => true, 'order' => 0]],
-    )]
+    #[ApiProperty(description: 'Name', openapiContext: ['x-crud' => [
+        'filterable' => true,
+        'sortable' => true,
+        'order' => 0,
+    ]])]
     private string $name = '';
 
     #[ORM\Column(length: 64, nullable: true)]
-    #[ApiProperty(
-        description: 'SKU',
-        openapiContext: ['x-crud' => ['filterable' => true, 'sortable' => true, 'order' => 1]],
-    )]
+    #[ApiProperty(description: 'SKU', openapiContext: ['x-crud' => [
+        'filterable' => true,
+        'sortable' => true,
+        'order' => 1,
+    ]])]
     private ?string $sku = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 12, scale: 2)]
     #[Assert\PositiveOrZero]
-    #[ApiProperty(
-        description: 'Price',
-        openapiContext: ['x-crud' => ['filterable' => true, 'sortable' => true, 'order' => 2, 'format' => 'currency']],
-    )]
+    #[ApiProperty(description: 'Price', openapiContext: ['x-crud' => [
+        'filterable' => true,
+        'sortable' => true,
+        'order' => 2,
+        'format' => 'currency',
+    ]])]
     private string $price = '0.00';
 
     #[ORM\Column]
-    #[ApiProperty(
-        description: 'Active',
-        openapiContext: ['x-crud' => ['filterable' => true, 'sortable' => true, 'order' => 3]],
-    )]
+    #[ApiProperty(description: 'Active', openapiContext: ['x-crud' => [
+        'filterable' => true,
+        'sortable' => true,
+        'order' => 3,
+    ]])]
     private bool $active = true;
 
     // Instant upload: the form POSTs the file to /api/media on selection and
@@ -83,11 +89,11 @@ class Product implements TenantOwnedInterface
     // control automatically (use 'file' for non-image attachments).
     #[ORM\ManyToOne(targetEntity: Media::class)]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
-    #[ApiProperty(
-        readableLink: true,
-        description: 'Photo',
-        openapiContext: ['x-crud' => ['order' => 4, 'format' => 'image', 'hideInGrid' => true]],
-    )]
+    #[ApiProperty(readableLink: true, description: 'Photo', openapiContext: ['x-crud' => [
+        'order' => 4,
+        'format' => 'image',
+        'hideInGrid' => true,
+    ]])]
     private ?Media $photo = null;
 
     public function getId(): ?int

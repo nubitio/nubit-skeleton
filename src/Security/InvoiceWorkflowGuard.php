@@ -16,8 +16,7 @@ final class InvoiceWorkflowGuard implements WorkflowGuardInterface
     public function __construct(
         private readonly OrganizationAuthorization $authorization,
         private readonly TokenStorageInterface $tokenStorage,
-    ) {
-    }
+    ) {}
 
     public function canTransition(object $entity, string $transitionName): bool
     {
@@ -30,7 +29,12 @@ final class InvoiceWorkflowGuard implements WorkflowGuardInterface
         };
         $user = $this->tokenStorage->getToken()?->getUser();
 
-        if (!$entity instanceof Invoice || null === $capability || !$user instanceof UserInterface || !$this->authorization->isGranted($user, $capability)) {
+        if (
+            !$entity instanceof Invoice
+            || null === $capability
+            || !$user instanceof UserInterface
+            || !$this->authorization->isGranted($user, $capability)
+        ) {
             $this->blockReason = 'An active organization membership with the required permission is required.';
 
             return false;

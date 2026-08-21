@@ -25,15 +25,14 @@ final readonly class AppMeResponseBuilder implements MeResponseBuilderInterface
     public function __construct(
         private MeResponseBuilderInterface $inner,
         private OrganizationAuthorization $authorization,
-    ) {
-    }
+    ) {}
 
     public function build(UserInterface $user): array
     {
         $response = $this->inner->build($user);
         $response['permissions'] = $this->resolvePermissions($user);
         $membership = $this->authorization->activeMembership($user);
-        if (null !== $membership && null !== $organization = $membership->getOrganization()) {
+        if (null !== $membership && null !== ($organization = $membership->getOrganization())) {
             $response['organization'] = [
                 'id' => $organization->getId(),
                 'name' => $organization->getName(),
@@ -53,26 +52,26 @@ final readonly class AppMeResponseBuilder implements MeResponseBuilderInterface
      */
     private function resolvePermissions(UserInterface $user): array
     {
-        $can = fn (string $capability): bool => $this->authorization->isGranted($user, $capability);
+        $can = fn(string $capability): bool => $this->authorization->isGranted($user, $capability);
 
         return [
             // Invoices
-            'invoice.create'  => $can(OrganizationAuthorization::INVOICE_WRITE),
-            'invoice.edit'    => $can(OrganizationAuthorization::INVOICE_WRITE),
+            'invoice.create' => $can(OrganizationAuthorization::INVOICE_WRITE),
+            'invoice.edit' => $can(OrganizationAuthorization::INVOICE_WRITE),
             'invoice.confirm' => $can(OrganizationAuthorization::INVOICE_WRITE),
-            'invoice.pay'     => $can(OrganizationAuthorization::INVOICE_PAY),
-            'invoice.cancel'  => $can(OrganizationAuthorization::INVOICE_CANCEL),
-            'invoice.delete'  => $can(OrganizationAuthorization::INVOICE_DELETE),
+            'invoice.pay' => $can(OrganizationAuthorization::INVOICE_PAY),
+            'invoice.cancel' => $can(OrganizationAuthorization::INVOICE_CANCEL),
+            'invoice.delete' => $can(OrganizationAuthorization::INVOICE_DELETE),
 
             // Products / catalog
-            'catalog.manage'  => $can(OrganizationAuthorization::PRODUCT_MANAGE),
+            'catalog.manage' => $can(OrganizationAuthorization::PRODUCT_MANAGE),
 
             // Customers
             'customer.manage' => $can(OrganizationAuthorization::CUSTOMER_WRITE),
 
             // Reports (future)
-            'report.view'     => $can(OrganizationAuthorization::INVOICE_READ),
-            'report.export'   => $can(OrganizationAuthorization::PRODUCT_MANAGE),
+            'report.view' => $can(OrganizationAuthorization::INVOICE_READ),
+            'report.export' => $can(OrganizationAuthorization::PRODUCT_MANAGE),
         ];
     }
 }

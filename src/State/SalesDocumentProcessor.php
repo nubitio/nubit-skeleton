@@ -16,9 +16,8 @@ use Nubit\AdminBundle\State\AbstractEmbeddedLinesProcessor;
 final readonly class SalesDocumentProcessor extends AbstractEmbeddedLinesProcessor
 {
     /** @param ProcessorInterface<mixed, mixed> $persistProcessor */
-    public function __construct(
-        ProcessorInterface $persistProcessor,
-    ) {
+    public function __construct(ProcessorInterface $persistProcessor)
+    {
         parent::__construct($persistProcessor);
     }
 

@@ -49,6 +49,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class SalesDocument implements TenantOwnedInterface
 {
     use TenantOwnedTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -58,37 +59,39 @@ class SalesDocument implements TenantOwnedInterface
     #[ORM\Column(length: 32)]
     #[Assert\NotBlank]
     #[Groups(['document:read', 'document:write'])]
-    #[ApiProperty(
-        description: 'Number',
-        openapiContext: ['x-crud' => ['filterable' => true, 'sortable' => true, 'order' => 0]],
-    )]
+    #[ApiProperty(description: 'Number', openapiContext: ['x-crud' => [
+        'filterable' => true,
+        'sortable' => true,
+        'order' => 0,
+    ]])]
     private string $number = '';
 
     #[ORM\Column(length: 16)]
     #[Groups(['document:read', 'document:write'])]
-    #[ApiProperty(
-        description: 'Status',
-        openapiContext: [
-            'x-crud' => ['filterable' => true, 'sortable' => true, 'order' => 1],
-            'enum' => ['draft', 'confirmed', 'cancelled'],
-        ],
-    )]
+    #[ApiProperty(description: 'Status', openapiContext: [
+        'x-crud' => ['filterable' => true, 'sortable' => true, 'order' => 1],
+        'enum' => ['draft', 'confirmed', 'cancelled'],
+    ])]
     private string $status = 'draft';
 
     #[ORM\Column(type: Types::DECIMAL, precision: 12, scale: 2)]
     #[Groups(['document:read'])]
-    #[ApiProperty(
-        description: 'Total',
-        openapiContext: ['x-crud' => ['order' => 2, 'format' => 'currency', 'showInForm' => false]],
-    )]
+    #[ApiProperty(description: 'Total', openapiContext: ['x-crud' => [
+        'order' => 2,
+        'format' => 'currency',
+        'showInForm' => false,
+    ]])]
     private string $total = '0.00';
 
     /** @var Collection<int, SalesDocumentLine> */
-    #[ORM\OneToMany(targetEntity: SalesDocumentLine::class, mappedBy: 'document', cascade: ['persist', 'remove'], orphanRemoval: true)]
-    #[Groups(['document:read', 'document:write'])]
-    #[ApiProperty(
-        openapiContext: ['x-crud' => ['showInForm' => false, 'hideInGrid' => true]],
+    #[ORM\OneToMany(
+        targetEntity: SalesDocumentLine::class,
+        mappedBy: 'document',
+        cascade: ['persist', 'remove'],
+        orphanRemoval: true,
     )]
+    #[Groups(['document:read', 'document:write'])]
+    #[ApiProperty(openapiContext: ['x-crud' => ['showInForm' => false, 'hideInGrid' => true]])]
     private Collection $lines;
 
     public function __construct()
@@ -126,10 +129,7 @@ class SalesDocument implements TenantOwnedInterface
     }
 
     #[Groups(['document:read'])]
-    #[ApiProperty(
-        description: 'Lines',
-        openapiContext: ['x-crud' => ['order' => 3, 'showInForm' => false]],
-    )]
+    #[ApiProperty(description: 'Lines', openapiContext: ['x-crud' => ['order' => 3, 'showInForm' => false]])]
     public function getLineCount(): int
     {
         return $this->lines->count();

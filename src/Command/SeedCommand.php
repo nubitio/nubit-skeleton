@@ -20,7 +20,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-#[AsCommand(name: 'app:seed', description: 'Creates the demo organization, admin membership, and tenant-owned sample data.')]
+#[AsCommand(
+    name: 'app:seed',
+    description: 'Creates the demo organization, admin membership, and tenant-owned sample data.',
+)]
 final class SeedCommand extends Command
 {
     public function __construct(
@@ -49,7 +52,7 @@ final class SeedCommand extends Command
         $userRepo = $this->entityManager->getRepository(User::class);
         $user = $userRepo->findOneBy(['email' => 'admin@example.com']);
         if (!$user instanceof User) {
-            $user = new User()
+            $user = (new User())
                 ->setEmail('admin@example.com')
                 ->setRoles(['ROLE_ADMIN']);
             $user->setPassword($this->passwordHasher->hashPassword($user, 'admin1234'));
@@ -75,9 +78,7 @@ final class SeedCommand extends Command
             $this->entityManager->persist($membership);
             $io->success('Admin membership for the demo organization created.');
         } else {
-            $membership
-                ->setStatus('active')
-                ->setRole(OrganizationMembership::ROLE_ADMIN);
+            $membership->setStatus('active')->setRole(OrganizationMembership::ROLE_ADMIN);
         }
 
         $this->entityManager->flush();
@@ -85,20 +86,28 @@ final class SeedCommand extends Command
         if (null === $organizationId) {
             throw new \LogicException('The demo organization must be persisted before tenant-owned data is seeded.');
         }
-        $this->tenantContext->setTenant($organizationId, $organization->getSlug(), $organization->getPrimaryDomain(), null);
+        $this->tenantContext->setTenant(
+            $organizationId,
+            $organization->getSlug(),
+            $organization->getPrimaryDomain(),
+            null,
+        );
 
         $productRepo = $this->entityManager->getRepository(Product::class);
         if (0 === $productRepo->count(['tenantId' => $organizationId])) {
             $samples = [
-                ['Espresso Machine', 'SKU-001', '450.00'],
-                ['Coffee Grinder', 'SKU-002', '129.90'],
-                ['Milk Frother', 'SKU-003', '39.50'],
-                ['Barista Kit', 'SKU-004', '89.00'],
+                ['Espresso Machine',  'SKU-001', '450.00'],
+                ['Coffee Grinder',    'SKU-002', '129.90'],
+                ['Milk Frother',      'SKU-003', '39.50'],
+                ['Barista Kit',       'SKU-004', '89.00'],
                 ['Arabica Beans 1kg', 'SKU-005', '24.99'],
             ];
             foreach ($samples as [$name, $sku, $price]) {
                 $this->entityManager->persist(
-                    new Product()->setName($name)->setSku($sku)->setPrice($price),
+                    (new Product())
+                        ->setName($name)
+                        ->setSku($sku)
+                        ->setPrice($price),
                 );
             }
             $this->entityManager->flush();
@@ -112,12 +121,12 @@ final class SeedCommand extends Command
             $products = $productRepo->findBy(['tenantId' => $organizationId], ['id' => 'ASC'], 2);
             $preferred = $products[0] ?? null;
             $samples = [
-                ['Acme Retail', 'retail@acme.example', 'retail'],
-                ['Global Wholesale Co.', 'sales@globalwholesale.example', 'wholesale'],
+                ['Acme Retail',             'retail@acme.example',            'retail'],
+                ['Global Wholesale Co.',    'sales@globalwholesale.example',  'wholesale'],
                 ['Enterprise Systems Ltd.', 'procurement@enterprise.example', 'enterprise'],
             ];
             foreach ($samples as [$name, $email, $segment]) {
-                $customer = new Customer()
+                $customer = (new Customer())
                     ->setName($name)
                     ->setEmail($email)
                     ->setSegment($segment);
@@ -135,7 +144,7 @@ final class SeedCommand extends Command
         if (0 === $salesRepo->count(['tenantId' => $organizationId])) {
             $products = $productRepo->findBy(['tenantId' => $organizationId], ['id' => 'ASC'], 2);
             if (\count($products) >= 2) {
-                $document = new SalesDocument()
+                $document = (new SalesDocument())
                     ->setNumber('SD-0001')
                     ->setStatus('confirmed');
                 $document->addLine(

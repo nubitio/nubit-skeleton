@@ -45,7 +45,11 @@ final class OrganizationTenantResolver implements TenantResolverInterface
                 return null;
             }
 
-            return new ResolvedTenant($organization->getId(), $organization->getSlug(), $organization->getPrimaryDomain());
+            return new ResolvedTenant(
+                $organization->getId(),
+                $organization->getSlug(),
+                $organization->getPrimaryDomain(),
+            );
         }
 
         ksort($memberships, SORT_NUMERIC);

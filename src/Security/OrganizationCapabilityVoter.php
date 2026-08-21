@@ -10,9 +10,9 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 final class OrganizationCapabilityVoter extends Voter
 {
-    public function __construct(private readonly OrganizationAuthorization $authorization)
-    {
-    }
+    public function __construct(
+        private readonly OrganizationAuthorization $authorization,
+    ) {}
 
     protected function supports(string $attribute, mixed $subject): bool
     {

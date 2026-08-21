@@ -13,6 +13,7 @@ class OrganizationMembership
 {
     public const ROLE_ADMIN = 'admin';
     public const ROLE_MEMBER = 'member';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -32,15 +33,62 @@ class OrganizationMembership
     #[ORM\Column(length: 16)]
     private string $role = self::ROLE_MEMBER;
 
-    public function getId(): ?int { return $this->id; }
-    public function getOrganization(): ?Organization { return $this->organization; }
-    public function setOrganization(Organization $organization): static { $this->organization = $organization; return $this; }
-    public function getUser(): ?User { return $this->user; }
-    public function setUser(User $user): static { $this->user = $user; return $this; }
-    public function isActive(): bool { return 'active' === $this->status; }
-    public function getStatus(): string { return $this->status; }
-    public function setStatus(string $status): static { $this->status = $status; return $this; }
-    public function getRole(): string { return $this->role; }
-    public function setRole(string $role): static { $this->role = $role; return $this; }
-    public function isAdmin(): bool { return self::ROLE_ADMIN === $this->role; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getOrganization(): ?Organization
+    {
+        return $this->organization;
+    }
+
+    public function setOrganization(Organization $organization): static
+    {
+        $this->organization = $organization;
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(User $user): static
+    {
+        $this->user = $user;
+        return $this;
+    }
+
+    public function isActive(): bool
+    {
+        return 'active' === $this->status;
+    }
+
+    public function getStatus(): string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): static
+    {
+        $this->status = $status;
+        return $this;
+    }
+
+    public function getRole(): string
+    {
+        return $this->role;
+    }
+
+    public function setRole(string $role): static
+    {
+        $this->role = $role;
+        return $this;
+    }
+
+    public function isAdmin(): bool
+    {
+        return self::ROLE_ADMIN === $this->role;
+    }
 }

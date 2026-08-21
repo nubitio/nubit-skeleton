@@ -23,23 +23,17 @@ use Symfony\Component\Validator\Constraints as Assert;
  * infer formDetail line fields from x-crud hints (no manual frontend fields).
  * #[EmbeddedLines] registers the reload endpoint used by the drawer form.
  */
-#[EmbeddedLines(
-    parentProperty: 'document',
-    route: '/api/sales_document_lines',
-    normalizationGroups: ['document:read'],
-)]
-#[ApiResource(
-    operations: [
-        new GetCollection(security: "is_granted('APP_SALES_DOCUMENT_LINE_READ')"),
-        new Get(security: "is_granted('APP_SALES_DOCUMENT_LINE_READ')"),
-    ],
-    normalizationContext: ['groups' => ['document:read']],
-)]
+#[EmbeddedLines(parentProperty: 'document', route: '/api/sales_document_lines', normalizationGroups: ['document:read'])]
+#[ApiResource(operations: [
+    new GetCollection(security: "is_granted('APP_SALES_DOCUMENT_LINE_READ')"),
+    new Get(security: "is_granted('APP_SALES_DOCUMENT_LINE_READ')"),
+], normalizationContext: ['groups' => ['document:read']])]
 #[ORM\Entity]
 #[ORM\Table(name: 'sales_document_line')]
 class SalesDocumentLine implements TenantOwnedInterface
 {
     use TenantOwnedTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
