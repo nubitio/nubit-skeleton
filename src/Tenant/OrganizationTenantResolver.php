@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tenant;
 
+use App\Entity\Organization;
 use App\Entity\OrganizationMembership;
 use Nubit\TenantBundle\Resolver\ResolvedTenant;
 use Nubit\TenantBundle\Resolver\TenantResolverInterface;
@@ -23,38 +24,51 @@ final class OrganizationTenantResolver implements TenantResolverInterface
             return null;
         }
 
-        $memberships = [];
-        foreach ($user->getOrganizationMemberships() as $membership) {
-            if (!$membership instanceof OrganizationMembership || !$membership->isActive()) {
-                continue;
-            }
-
-            $organization = $membership->getOrganization();
-            if (null !== $organization && null !== $organization->getId()) {
-                $memberships[$organization->getId()] = $organization;
-            }
-        }
+        $memberships = $this->collectActiveOrganizations($user);
 
         if ($memberships === []) {
             return null;
         }
 
         if (null !== $requestedId) {
-            $organization = $memberships[(int) $requestedId] ?? null;
+            $organizationId = (int) $requestedId;
+            $organization = $memberships[$organizationId] ?? null;
             if (null === $organization) {
                 return null;
             }
 
-            return new ResolvedTenant(
-                $organization->getId(),
-                $organization->getSlug(),
-                $organization->getPrimaryDomain(),
-            );
+            return new ResolvedTenant($organizationId, $organization->getSlug(), $organization->getPrimaryDomain());
         }
 
         ksort($memberships, SORT_NUMERIC);
-        $organization = reset($memberships);
+        // Keys are the non-null organization ids collected above; the array is non-empty here.
+        $organizationId = (int) array_key_first($memberships);
+        $organization = $memberships[$organizationId];
 
-        return new ResolvedTenant($organization->getId(), $organization->getSlug(), $organization->getPrimaryDomain());
+        return new ResolvedTenant($organizationId, $organization->getSlug(), $organization->getPrimaryDomain());
+    }
+
+    /**
+     * Active organizations the user belongs to, keyed by their non-null id.
+     *
+     * @return array<int, Organization>
+     */
+    private function collectActiveOrganizations(OrganizationMembershipUserInterface $user): array
+    {
+        $organizations = [];
+
+        foreach ($user->getOrganizationMemberships() as $membership) {
+            if (!$membership instanceof OrganizationMembership || !$membership->isActive()) {
+                continue;
+            }
+
+            $organization = $membership->getOrganization();
+            $organizationId = $organization?->getId();
+            if (null !== $organization && null !== $organizationId) {
+                $organizations[$organizationId] = $organization;
+            }
+        }
+
+        return $organizations;
     }
 }

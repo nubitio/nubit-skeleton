@@ -25,12 +25,6 @@ message = "Consider using early continue pattern to reduce nesting."
 count = 1
 
 [[issues]]
-file = "src/Command/SeedCommand.php"
-code = "semantics"
-message = "Direct method call on `new` expressions without parentheses is only available in PHP 8.4 and above."
-count = 4
-
-[[issues]]
 file = "src/Entity/Invoice.php"
 code = "literal-named-argument"
 message = "Literal argument `''` should be passed as a named argument for clarity."
