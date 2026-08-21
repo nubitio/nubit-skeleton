@@ -23,6 +23,12 @@ final class SaasTenantContractTest extends TestCase
         $this->projectDir = dirname(__DIR__);
     }
 
+    /**
+     * Every tenant-owned entity the template ships. Add yours here: the two
+     * checks below are what keep a new resource from leaking across tenants.
+     */
+    private const array TENANT_OWNED_ENTITIES = ['Product'];
+
     public function testSaasTenantBundleAndColumnIsolationAreConfigured(): void
     {
         $admin = Yaml::parseFile($this->projectDir . '/config/packages/nubit_admin.yaml');
@@ -38,7 +44,7 @@ final class SaasTenantContractTest extends TestCase
 
     public function testBusinessEntitiesUseServerStampedTenantOwnership(): void
     {
-        foreach (['Product', 'Customer', 'SalesDocument', 'SalesDocumentLine', 'Invoice', 'InvoiceLine'] as $entity) {
+        foreach (self::TENANT_OWNED_ENTITIES as $entity) {
             $source = (string) file_get_contents($this->projectDir . '/src/Entity/' . $entity . '.php');
             self::assertStringContainsString('implements TenantOwnedInterface', $source, $entity);
             self::assertStringContainsString('use TenantOwnedTrait;', $source, $entity);
@@ -102,7 +108,7 @@ final class SaasTenantContractTest extends TestCase
 
     public function testTenantResourcesDeclareOperationSecurity(): void
     {
-        foreach (['Product', 'Customer', 'SalesDocument', 'SalesDocumentLine', 'Invoice', 'InvoiceLine'] as $entity) {
+        foreach (self::TENANT_OWNED_ENTITIES as $entity) {
             $source = (string) file_get_contents($this->projectDir . '/src/Entity/' . $entity . '.php');
             self::assertStringContainsString("security: \"is_granted('APP_", $source, $entity);
             self::assertStringNotContainsString("is_granted('ROLE_ADMIN')", $source, $entity);

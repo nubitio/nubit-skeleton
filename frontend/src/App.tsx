@@ -4,38 +4,19 @@ import { createNubitApp } from '@nubitio/react-admin';
 const ProductsPage = lazy(() =>
   import('./pages/ProductsPage').then((module) => ({ default: module.ProductsPage })),
 );
-const SalesModule = lazy(() =>
-  import('./pages/SalesModule').then((module) => ({ default: module.SalesModule })),
-);
 
+/** Routes are lazy chunks so a page is only fetched when it is first visited. */
 const deferred = (element: ReactNode) => (
   <Suspense fallback={<div className="nb-route-loading">Loading…</div>}>{element}</Suspense>
 );
 
-const profile = import.meta.env.VITE_NUBIT_PROFILE === 'minimal' ? 'minimal' : 'showcase';
-const showcaseMenu =
-  profile === 'showcase'
-    ? [{ text: 'Sales', icon: 'ph ph-receipt', path: '/sales' }]
-    : [];
-const showcaseRoutes =
-  profile === 'showcase'
-    ? [{ path: '/sales/*', element: deferred(<SalesModule />) }]
-    : [];
-
 const { App } = createNubitApp({
   title: 'Nubit Admin',
   homePath: '/products',
-  menu: [
-    { text: 'Products', icon: 'ph ph-package', path: '/products' },
-    // Module entry: points to the base path; FeatureHubLayout redirects to the
-    // default tab (/sales/invoices) automatically.
-    ...showcaseMenu,
-  ],
-  routes: [
-    { path: '/products', element: deferred(<ProductsPage />) },
-    // Wildcard path is required — FeatureHubLayout's nested Routes handle the rest.
-    ...showcaseRoutes,
-  ],
+  // One entry per screen. A grouped module uses FeatureHubLayout and a
+  // wildcard route (`/sales/*`) whose nested Routes render each tab.
+  menu: [{ text: 'Products', icon: 'ph ph-package', path: '/products' }],
+  routes: [{ path: '/products', element: deferred(<ProductsPage />) }],
   login: {
     defaultUsername: 'admin@example.com',
     hint: 'Demo credentials: admin@example.com / admin1234',

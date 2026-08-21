@@ -34,14 +34,20 @@ URLs: app/API http://localhost:8000 · React http://localhost:5173 · Mercure ht
 | `src/Entity/Product.php` | Reference entity — copy its pattern for new resources |
 | `src/Command/SeedCommand.php` | Demo data |
 | `config/packages/security.yaml` | Firewall + access control (JWT authenticator from the bundle) |
-| `config/packages/nubit_admin.yaml` | `app_profile`, auth TTLs, cookie flags, docs locale |
+| `config/packages/nubit_admin.yaml` | `app_profile`, auth TTLs, cookie flags — and every optional module, all off |
 | `frontend/src/App.tsx` | `createNubitApp()` — menú/rutas declarativos; DevTools panel on localhost |
 | `nubit-react/docs/architecture/` | Pipeline, field rules, tiers, breakpoints (symlink or sibling repo) |
 | `docs/platform-rollout.md` | Phased privacy, telemetry, analytics and feature-flag adoption |
-| `frontend/src/pages/ProductsPage.tsx` | Reference page — `defineResource` + `SchemaCrudPage` + audit trail |
-| `frontend/src/pages/SalesDocumentsPage.tsx` | Master-detail — inferred `formDetail`, drawer, `canEditRow` |
-| `frontend/src/pages/InvoicesPage.tsx` | ERP document — sequence, workflow, audit, inferred lines |
-| `src/Entity/SalesDocument.php` | Embedded lines collection + processor totals |
+| `frontend/src/pages/ProductsPage.tsx` | The reference page — `defineResource` + `SchemaCrudPage` |
+
+## This template is a blank canvas
+
+It ships one resource (`Product`) and every optional module off — media, audit,
+export, notifications, backups, analytics, OIDC. Do not enable one to
+demonstrate it; enable it when the product needs it, and add the migration it
+requires. Master-detail, sequences, workflows and audit trails all work here,
+they are just not switched on: the nubit-stack skill has a worked example of
+each.
 
 ## Conventions
 

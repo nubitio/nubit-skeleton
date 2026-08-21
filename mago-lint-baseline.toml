@@ -8,98 +8,14 @@ count = 2
 
 [[issues]]
 file = "src/Command/SeedCommand.php"
-code = "halstead"
-message = "Method has a high halstead volume and effort"
-count = 1
-
-[[issues]]
-file = "src/Command/SeedCommand.php"
 code = "no-else-clause"
 message = "Avoid `else` clauses."
-count = 5
+count = 3
 
 [[issues]]
 file = "src/Command/SeedCommand.php"
 code = "prefer-early-continue"
 message = "Consider using early continue pattern to reduce nesting."
-count = 1
-
-[[issues]]
-file = "src/Entity/Invoice.php"
-code = "literal-named-argument"
-message = "Literal argument `''` should be passed as a named argument for clarity."
-count = 3
-
-[[issues]]
-file = "src/Entity/Invoice.php"
-code = "literal-named-argument"
-message = "Literal argument `'.'` should be passed as a named argument for clarity."
-count = 3
-
-[[issues]]
-file = "src/Entity/Invoice.php"
-code = "literal-named-argument"
-message = "Literal argument `2` should be passed as a named argument for clarity."
-count = 3
-
-[[issues]]
-file = "src/Entity/Invoice.php"
-code = "too-many-properties"
-message = "Class has too many properties."
-count = 1
-
-[[issues]]
-file = "src/Entity/InvoiceLine.php"
-code = "literal-named-argument"
-message = "Literal argument `''` should be passed as a named argument for clarity."
-count = 1
-
-[[issues]]
-file = "src/Entity/InvoiceLine.php"
-code = "literal-named-argument"
-message = "Literal argument `'.'` should be passed as a named argument for clarity."
-count = 1
-
-[[issues]]
-file = "src/Entity/InvoiceLine.php"
-code = "literal-named-argument"
-message = "Literal argument `2` should be passed as a named argument for clarity."
-count = 1
-
-[[issues]]
-file = "src/Entity/SalesDocument.php"
-code = "literal-named-argument"
-message = "Literal argument `''` should be passed as a named argument for clarity."
-count = 1
-
-[[issues]]
-file = "src/Entity/SalesDocument.php"
-code = "literal-named-argument"
-message = "Literal argument `'.'` should be passed as a named argument for clarity."
-count = 1
-
-[[issues]]
-file = "src/Entity/SalesDocument.php"
-code = "literal-named-argument"
-message = "Literal argument `2` should be passed as a named argument for clarity."
-count = 1
-
-[[issues]]
-file = "src/Entity/SalesDocumentLine.php"
-code = "literal-named-argument"
-message = "Literal argument `''` should be passed as a named argument for clarity."
-count = 1
-
-[[issues]]
-file = "src/Entity/SalesDocumentLine.php"
-code = "literal-named-argument"
-message = "Literal argument `'.'` should be passed as a named argument for clarity."
-count = 1
-
-[[issues]]
-file = "src/Entity/SalesDocumentLine.php"
-code = "literal-named-argument"
-message = "Literal argument `2` should be passed as a named argument for clarity."
 count = 1
 
 [[issues]]

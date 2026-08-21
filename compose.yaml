@@ -67,7 +67,6 @@ services:
     environment:
       API_PROXY_TARGET: http://app
       MERCURE_PROXY_TARGET: http://mercure
-      VITE_NUBIT_PROFILE: ${NUBIT_PROFILE:-showcase}
     volumes:
       - .:/app
 

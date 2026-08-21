@@ -19,17 +19,12 @@ services:
     App\:
         resource: '../src/'
 
-    App\State\SalesDocumentProcessor:
-        arguments:
-            $persistProcessor: '@api_platform.doctrine.orm.state.persist_processor'
-
-    App\State\InvoiceProcessor:
-        arguments:
-            $persistProcessor: '@api_platform.doctrine.orm.state.persist_processor'
-
-    App\Security\InvoiceWorkflowGuard:
-        tags:
-            - { name: 'nubit.workflow_guard', class: 'App\Security\InvoiceWorkflowGuard' }
+    # An API Platform state processor that runs your own logic before persisting
+    # (recalculating totals, allocating a sequence) is wired like this:
+    #
+    #     App\State\YourProcessor:
+    #         arguments:
+    #             $persistProcessor: '@api_platform.doctrine.orm.state.persist_processor'
 
     # Granular permissions on /api/me — decorates the default builder.
     # Add new 'module.action' keys in AppMeResponseBuilder::resolvePermissions().

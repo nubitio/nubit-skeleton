@@ -7,9 +7,13 @@ delete, virtual columns, extra JWT claims…).
 
 ## ERP document pattern — Sequence + Workflow + Auditable + lines
 
-The reference implementation is `src/Entity/Invoice.php` + `InvoiceLine.php` +
-`src/State/InvoiceProcessor.php` + `frontend/src/pages/InvoicesPage.tsx`.
-Copy this for every document type (purchase orders, receipts, credit notes…).
+The template ships none of this — it is a blank canvas with one flat resource.
+The snippets below are the shape to write; a working implementation of the
+whole pattern lives in the `nubitio/nubit-inmobiliaria` application.
+Copy it for every document type (purchase orders, receipts, credit notes…).
+
+Each piece needs its module turned on in `config/packages/nubit_admin.yaml`
+first — `audit` for the trail, `export` for spreadsheets — plus a migration.
 For the embedded-lines mechanics referenced below, see
 `references/detail-views-and-media.md`.
 

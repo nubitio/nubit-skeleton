@@ -25,9 +25,11 @@ docker compose exec app php bin/console app:seed
 
 Open **http://localhost:5173** and sign in with `admin@example.com` / `admin1234`.
 
-For the minimal Product-only navigation, start with
-`NUBIT_PROFILE=minimal docker compose up -d --build`. The default `showcase`
-profile also exposes the ERP examples; see [`docs/profiles.md`](docs/profiles.md).
+The template ships one resource — `Product` — and every optional module off.
+That is deliberate: anything enabled here becomes schema, endpoints and config
+your project inherits and then has to remove. Turn on what you need, one at a
+time; [`config/packages/nubit_admin.yaml`](config/packages/nubit_admin.yaml)
+lists each module and what it adds.
 
 | Service | URL |
 | --- | --- |
@@ -38,11 +40,8 @@ profile also exposes the ERP examples; see [`docs/profiles.md`](docs/profiles.md
 
 OpenTelemetry is available as an opt-in Compose profile. See
 [`docs/observability.md`](docs/observability.md) for the local Collector smoke
-test and production guidance.
-
-Transactional, privacy-safe analytics is enabled in the application and its
-delivery processes are opt-in. See [`docs/analytics.md`](docs/analytics.md) for
-provider configuration, operations and failure recovery.
+test and production guidance. Analytics is off; [`docs/analytics.md`](docs/analytics.md)
+covers provider configuration, operations and failure recovery once you enable it.
 
 > Before anything real: change `APP_SECRET` in `.env` (≥ 32 bytes — it signs the auth JWTs) and the database/Mercure passwords in `compose.yaml`.
 
@@ -75,7 +74,11 @@ export const CustomersPage = () => <SchemaCrudPage resource={customers} />;
 
 4. Register the route + menu item in [`frontend/src/App.tsx`](frontend/src/App.tsx). Done — full CRUD.
 
-See [`frontend/src/pages/SalesDocumentsPage.tsx`](frontend/src/pages/SalesDocumentsPage.tsx) for a **master-detail** example (line fields inferred from the API doc, drawer view mode, row locking by status). For the full ERP pattern (sequence + workflow + audit), see [`InvoicesPage.tsx`](frontend/src/pages/InvoicesPage.tsx).
+Master-detail documents, sequences, workflows, audit trails and spreadsheet
+export are all supported and all off here. The **nubit-stack skill**
+(`.claude/skills/nubit-stack/`) has a worked example of each, and
+[nubit-inmobiliaria](https://github.com/nubitio/nubit-inmobiliaria) is a real
+application built on them.
 
 ## Auth
 

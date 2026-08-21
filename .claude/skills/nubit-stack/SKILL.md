@@ -176,7 +176,8 @@ heuristic when that fetch fails. Consequences:
   (grid toolbar, "History" button, validation messages) call `initCoreI18n()` from
   `@nubitio/react-admin` once at startup — without it those stay in whatever locale
   the bundled default is, regardless of `lng`.
-- **Master-detail demo**: `SalesDocumentsPage.tsx` + `SalesDocument` entity.
+- **Master-detail**: see `references/detail-views-and-media.md`. This template
+  ships no example of it — it ships one flat resource and nothing else.
 
 ## Beyond flat CRUD
 

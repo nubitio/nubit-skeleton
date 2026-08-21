@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace App\Command;
 
-use App\Entity\Customer;
 use App\Entity\Organization;
 use App\Entity\OrganizationMembership;
 use App\Entity\Product;
-use App\Entity\SalesDocument;
-use App\Entity\SalesDocumentLine;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Nubit\Platform\Tenant\Context\TenantContext;
@@ -114,57 +111,6 @@ final class SeedCommand extends Command
             $io->success('5 sample products created.');
         } else {
             $io->note('Products already seeded.');
-        }
-
-        $customerRepo = $this->entityManager->getRepository(Customer::class);
-        if (0 === $customerRepo->count(['tenantId' => $organizationId])) {
-            $products = $productRepo->findBy(['tenantId' => $organizationId], ['id' => 'ASC'], 2);
-            $preferred = $products[0] ?? null;
-            $samples = [
-                ['Acme Retail',             'retail@acme.example',            'retail'],
-                ['Global Wholesale Co.',    'sales@globalwholesale.example',  'wholesale'],
-                ['Enterprise Systems Ltd.', 'procurement@enterprise.example', 'enterprise'],
-            ];
-            foreach ($samples as [$name, $email, $segment]) {
-                $customer = (new Customer())
-                    ->setName($name)
-                    ->setEmail($email)
-                    ->setSegment($segment);
-                if ($preferred) {
-                    $customer->setPreferredProduct($preferred);
-                }
-                $this->entityManager->persist($customer);
-            }
-            $io->success('3 sample customers created.');
-        } else {
-            $io->note('Customers already seeded.');
-        }
-
-        $salesRepo = $this->entityManager->getRepository(SalesDocument::class);
-        if (0 === $salesRepo->count(['tenantId' => $organizationId])) {
-            $products = $productRepo->findBy(['tenantId' => $organizationId], ['id' => 'ASC'], 2);
-            if (\count($products) >= 2) {
-                $document = (new SalesDocument())
-                    ->setNumber('SD-0001')
-                    ->setStatus('confirmed');
-                $document->addLine(
-                    (new SalesDocumentLine())
-                        ->setProduct($products[0])
-                        ->setQuantity('2.00')
-                        ->setUnitPrice($products[0]->getPrice()),
-                );
-                $document->addLine(
-                    (new SalesDocumentLine())
-                        ->setProduct($products[1])
-                        ->setQuantity('1.00')
-                        ->setUnitPrice($products[1]->getPrice()),
-                );
-                $document->recalculateTotal();
-                $this->entityManager->persist($document);
-                $io->success('Sample sales document SD-0001 created.');
-            }
-        } else {
-            $io->note('Sales documents already seeded.');
         }
 
         $this->entityManager->flush();

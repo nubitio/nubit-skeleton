@@ -1,30 +1,6 @@
 variant = "loose"
 
 [[issues]]
-file = "src/Entity/Invoice.php"
-code = "invalid-type-cast"
-message = "Non numeric string of type `string` implicitly cast to `float`."
-count = 3
-
-[[issues]]
-file = "src/Entity/InvoiceLine.php"
-code = "invalid-type-cast"
-message = "Non numeric string of type `string` implicitly cast to `float`."
-count = 3
-
-[[issues]]
-file = "src/Entity/SalesDocument.php"
-code = "invalid-type-cast"
-message = "Non numeric string of type `string` implicitly cast to `float`."
-count = 1
-
-[[issues]]
-file = "src/Entity/SalesDocumentLine.php"
-code = "invalid-type-cast"
-message = "Non numeric string of type `string` implicitly cast to `float`."
-count = 2
-
-[[issues]]
 file = "src/Entity/User.php"
 code = "invalid-return-statement"
 message = 'Invalid return type for function `App\Entity\User::getUserIdentifier`: expected `non-empty-string`, but found `string`.'
@@ -40,12 +16,6 @@ count = 1
 file = "src/Security/OrganizationCapabilityVoter.php"
 code = "missing-template-parameter"
 message = 'Too few template arguments for `Symfony\Component\Security\Core\Authorization\Voter\Voter`: expected at least 2, but found 0.'
-count = 1
-
-[[issues]]
-file = "src/State/SalesDocumentProcessor.php"
-code = "invalid-template-parameter"
-message = 'Template argument for `Nubit\AdminBundle\State\AbstractEmbeddedLinesProcessor` is not compatible with its constraint.'
 count = 1
 
 [[issues]]

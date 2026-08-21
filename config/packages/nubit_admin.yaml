@@ -1,3 +1,11 @@
+# Every optional module below ships off. This template is a starting point,
+# not a demonstration: anything enabled here becomes schema, endpoints and
+# configuration that every project generated from it inherits and has to
+# remove. Turn on what your product needs, one at a time.
+#
+# What each module adds — and what it requires — is documented in the
+# admin-bundle README:
+# https://github.com/nubitio/nubit-symfony/tree/main/packages/admin-bundle
 nubit_admin:
     app_profile: saas
     auth:
@@ -7,27 +15,28 @@ nubit_admin:
         # Secure cookies require HTTPS. The local docker stack runs plain HTTP,
         # so dev disables the flag below — keep it true in production.
         cookie_secure: true
-    # Mercure subscriber cookie: the React grids (mercure: true resources)
-    # receive live updates through the hub in compose.yaml.
+    # Mercure subscriber cookie: `mercure: true` resources push live updates to
+    # the grids through the hub in compose.yaml.
     mercure:
         enabled: true
         secret: '%env(MERCURE_JWT_SECRET)%'
-    # Media library: POST /api/media multipart uploads, local storage in
-    # var/uploads by default. Pair with x-crud format:'image'|'file' hints
-    # (see Product::$photo). Swap to S3 via media.storage.filesystem.
-    media:
-        enabled: true
-    # Audit trail: #[Auditable] entities get field-level before/after diffs
-    # served at /api/audit-trail/{resource}/{id} (see Product + ProductsPage).
-    audit:
-        enabled: true
-    # Privacy-safe product analytics. Requests only write to the local
-    # transactional outbox; delivery happens asynchronously.
-    analytics:
-        enabled: '%env(bool:ANALYTICS_ENABLED)%'
-        redaction_hmac_key: '%env(ANALYTICS_REDACTION_HMAC_KEY)%'
-        delivery_endpoint: '%env(ANALYTICS_DELIVERY_ENDPOINT)%'
-        delivery_token: '%env(ANALYTICS_DELIVERY_TOKEN)%'
+
+    # ── Off by default ────────────────────────────────────────────────────
+    # media:        POST /api/media uploads + the nubit_media table. Pair with
+    #               x-crud format:'image'|'file' on the property.
+    # audit:        field-level diffs for #[Auditable] entities, served at
+    #               /api/audit-trail/{resource}/{id}, in nubit_audit_log.
+    # export:       xlsx for resources marked #[Exportable]. Needs
+    #               phpoffice/phpspreadsheet with ext-zip and ext-gd.
+    # notification: in-app and email notifications + the nubit_notification
+    #               table. Dispatch inside a tenant context or the tenant
+    #               filter hides the result from its own recipient.
+    # backup:       per-tenant pg_dump archives. Needs pg_dump on PATH.
+    # analytics:    privacy-safe product analytics through a local outbox.
+    # oidc:         authorization-code + PKCE SSO.
+    #
+    # Each one needs a migration once enabled:
+    #   bin/console doctrine:migrations:diff
 
 when@dev:
     nubit_admin:

@@ -14,19 +14,20 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Nubit\AdminBundle\Media\Entity\Media;
-use Nubit\ApiPlatform\Attribute\Auditable;
 use Nubit\ApiPlatform\Doctrine\Filter\DataGridFilter;
 use Nubit\TenantBundle\Contract\TenantOwnedInterface;
 use Nubit\TenantBundle\Entity\TenantOwnedTrait;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Example CRUD resource: the `x-crud` hints drive the React datagrid/form
- * that @nubitio/react-admin generates from /api/docs.jsonld — no frontend
- * field definitions needed.
+ * The template's one reference resource: the `x-crud` hints drive the React
+ * datagrid and form that @nubitio/react-admin generates from
+ * /api/docs.jsonld — no frontend field definitions needed.
+ *
+ * Copy this shape for your own entities. Optional modules (media uploads,
+ * audit trails, workflows, sequences) are off in this template; see the
+ * admin-bundle README for what each one adds and how to turn it on.
  */
-#[Auditable]
 #[ORM\Entity]
 #[ApiResource(
     operations: [
@@ -84,18 +85,6 @@ class Product implements TenantOwnedInterface
     ]])]
     private bool $active = true;
 
-    // Instant upload: the form POSTs the file to /api/media on selection and
-    // submits only the resulting IRI here. format:'image' renders the upload
-    // control automatically (use 'file' for non-image attachments).
-    #[ORM\ManyToOne(targetEntity: Media::class)]
-    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
-    #[ApiProperty(readableLink: true, description: 'Photo', openapiContext: ['x-crud' => [
-        'order' => 4,
-        'format' => 'image',
-        'hideInGrid' => true,
-    ]])]
-    private ?Media $photo = null;
-
     public function getId(): ?int
     {
         return $this->id;
@@ -133,18 +122,6 @@ class Product implements TenantOwnedInterface
     public function setPrice(string $price): static
     {
         $this->price = $price;
-
-        return $this;
-    }
-
-    public function getPhoto(): ?Media
-    {
-        return $this->photo;
-    }
-
-    public function setPhoto(?Media $photo): static
-    {
-        $this->photo = $photo;
 
         return $this;
     }
