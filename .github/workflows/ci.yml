@@ -47,6 +47,9 @@ jobs:
       - name: PHP lint (no new issues)
         run: composer lint
 
+      - name: PHP format check
+        run: vendor/bin/mago fmt --dry-run
+
       - name: Lint YAML config
         run: php bin/console lint:yaml config --parse-tags
 
