@@ -126,6 +126,13 @@ compose.yaml          FrankenPHP app + PostgreSQL + Mercure + frontend dev serve
 - Set `cookie_secure: true` (default outside dev), real secrets, and a persistent `MERCURE_JWT_SECRET`.
 - Follow the phased [privacy, telemetry, analytics and feature-flag rollout](docs/platform-rollout.md) before enabling external providers.
 
+## Security
+
+Report vulnerabilities privately through the repository's **Security** tab; see
+[`SECURITY.md`](SECURITY.md). Note that the placeholder secrets in `.env` are
+deliberate and are not a finding — `App\Security\ProductionReadiness` refuses
+them outside dev.
+
 ## License
 
 MIT
