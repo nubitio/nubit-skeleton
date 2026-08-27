@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1dcde73c60a303ec3eec6abcfb2a045d",
+    "content-hash": "dc2dd90494fc44879b089b795a10f08c",
     "packages": [
         {
             "name": "api-platform/core",
@@ -2247,7 +2247,7 @@
         },
         {
             "name": "nubitio/admin-bundle",
-            "version": "v1.0.0-rc.1",
+            "version": "v1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nubitio/admin-bundle.git",
@@ -2341,7 +2341,7 @@
         },
         {
             "name": "nubitio/api-platform",
-            "version": "v1.0.0-rc.1",
+            "version": "v1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nubitio/api-platform.git",
@@ -2400,7 +2400,7 @@
         },
         {
             "name": "nubitio/platform",
-            "version": "v1.0.0-rc.1",
+            "version": "v1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nubitio/platform.git",
@@ -2474,7 +2474,7 @@
         },
         {
             "name": "nubitio/tenant-bundle",
-            "version": "v1.0.0-rc.1",
+            "version": "v1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nubitio/tenant-bundle.git",
@@ -10891,10 +10891,8 @@
         }
     ],
     "aliases": [],
-    "minimum-stability": "RC",
-    "stability-flags": {
-        "nubitio/admin-bundle": 5
-    },
+    "minimum-stability": "stable",
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
