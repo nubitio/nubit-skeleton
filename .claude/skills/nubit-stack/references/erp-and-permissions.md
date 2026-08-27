@@ -184,9 +184,10 @@ tab without removing its route (e.g. behind a feature flag or role check).
 
 The frontend can't read HttpOnly cookies so it can't inspect the JWT.
 `GET /api/me` is the single source of truth for UX gating. `useSession()`
-returns `{ session, refresh, logout, roles, username }` — `roles` is a plain
-`string[]`. There is **no `permissions` map on the session** — don't invent
-one. Use `roles` directly in `defineResource` permission callables and menu
+returns `{ session, refresh, logout, roles, username }`. When authorization
+is on, `session.profile.permissions` / `limits` are published and
+`createNubitApp()` feeds them to the CRUD toolbar. Menu items still use
+`roles`. Use `roles` directly in `defineResource` permission callables and menu
 `roles` arrays:
 
 ```tsx

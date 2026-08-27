@@ -58,7 +58,7 @@ the nubit-stack skill has a worked example of each.
 
 ## Conventions
 
-- PHP ≥ 8.5, `declare(strict_types=1)`, fluent setters (`setX(): static`).
+- PHP ≥ 8.3, `declare(strict_types=1)`, fluent setters (`setX(): static`).
 - Entities expose `#[ApiResource]` + `#[ApiFilter(DataGridFilter::class)]` +
   `x-crud` hints per property; validation via `#[Assert\*]`.
 - Frontend styling uses the `@nubitio/ui` CSS tokens (`var(--surface-1)`,
