@@ -12,7 +12,14 @@ const frontend = await readJson(resolve(root, 'frontend/package.json'));
 const checkSourceContracts = process.env.NUBIT_SKIP_SOURCE_CONTRACTS !== '1';
 
 const failures = [];
-const lineOf = (range) => String(range).replace(/^[^0-9]*/, '').split('.').slice(0, 2).join('.');
+// Composer stability flags ("^1.0@RC") name the same line as "^1.0".
+const lineOf = (range) =>
+  String(range)
+    .replace(/^[^0-9]*/, '')
+    .replace(/@.*$/, '')
+    .split('.')
+    .slice(0, 2)
+    .join('.');
 
 for (const name of compatibility.backend.packages) {
   const range = backend.require[name];

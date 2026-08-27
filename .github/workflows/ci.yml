@@ -107,10 +107,14 @@ jobs:
 
       - name: Wait for the app
         run: |
+          # /api/docs needs a session, so 401 is the healthy answer here: it
+          # proves PHP, routing and security are all serving. Anything 5xx or
+          # no answer at all means the stack is still coming up.
           for i in $(seq 1 60); do
-            if curl -fs -o /dev/null http://localhost:8000/api/docs.jsonld; then
-              echo "app is up"; exit 0
-            fi
+            code=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8000/api/docs.jsonld || true)
+            case "$code" in
+              2* | 401) echo "app is up ($code)"; exit 0 ;;
+            esac
             sleep 3
           done
           echo "app never became ready" >&2
@@ -167,10 +171,14 @@ jobs:
 
       - name: Wait for the app
         run: |
+          # /api/docs needs a session, so 401 is the healthy answer here: it
+          # proves PHP, routing and security are all serving. Anything 5xx or
+          # no answer at all means the stack is still coming up.
           for i in $(seq 1 60); do
-            if curl -fs -o /dev/null http://localhost:8000/api/docs.jsonld; then
-              echo "app is up"; exit 0
-            fi
+            code=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8000/api/docs.jsonld || true)
+            case "$code" in
+              2* | 401) echo "app is up ($code)"; exit 0 ;;
+            esac
             sleep 3
           done
           echo "app never became ready" >&2
