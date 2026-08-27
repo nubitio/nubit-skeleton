@@ -16,7 +16,7 @@
         "doctrine/doctrine-migrations-bundle": "^4.0",
         "doctrine/orm": "^3.6",
         "nelmio/cors-bundle": "^2.6",
-        "nubitio/admin-bundle": "^1.0",
+        "nubitio/admin-bundle": "^1.0@RC",
         "open-telemetry/exporter-otlp": "^1.4",
         "open-telemetry/sdk": "^1.0",
         "php-http/guzzle7-adapter": "^1.0",
