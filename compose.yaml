@@ -2,7 +2,8 @@ services:
   app:
     build: .
     ports:
-      - '8000:80'
+      # Override with APP_PORT if 8000 is taken on your machine.
+      - '${APP_PORT:-8000}:80'
     volumes:
       - .:/app
       - caddy_data:/data
