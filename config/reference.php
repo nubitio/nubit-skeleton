@@ -1238,6 +1238,10 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         refresh_token_ttl?: int|Param, // Default: 1209600
  *         cookie_secure?: bool|Param, // Default: true
  *     },
+ *     time?: array{ // Storage is UTC; this configures how instants are presented.
+ *         default_timezone?: scalar|Param|null, // IANA identifier used when neither the user nor the tenant states one. Reported by GET /api/me so the frontend formats the same way. // Default: "UTC"
+ *         enforce_utc?: bool|Param, // Override Doctrine datetime_immutable so timestamps are written and read as UTC regardless of the server locale. Turn off only if the application already handles this itself. // Default: true
+ *     },
  *     api?: array{
  *         translated_docs?: bool|Param, // Decorate the Hydra docs normalizer to translate labels and forward x-crud hints. // Default: true
  *         docs_locale?: scalar|Param|null, // Locale used when translating API docs. Reads APP_API_LOCALE, falling back to "en". // Default: "%env(default:nubit_admin.api.default_docs_locale:APP_API_LOCALE)%"
@@ -1292,6 +1296,45 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         max_size?: int|Param, // Maximum upload size in bytes. 0 means no limit. // Default: 10485760
  *         allowed_mimes?: list<scalar|Param|null>,
  *     },
+ *     identity?: array{ // Second factor, password recovery, invitations, API keys and active sessions.
+ *         enabled?: bool|Param, // Default: false
+ *         issuer?: scalar|Param|null, // Name shown in the authenticator app. // Default: "Nubit"
+ *         user_class?: scalar|Param|null, // FQCN of the application User entity. Required for password reset and invitations, which have to write to it. Alias IdentityUserGatewayInterface instead for anything the default gateway cannot express. // Default: null
+ *         user_identifier_property?: scalar|Param|null, // Default: "email"
+ *         totp?: array{
+ *             required_for_all?: bool|Param, // Default: false
+ *             required_for_roles?: list<scalar|Param|null>,
+ *         },
+ *         password_reset?: array{
+ *             lifetime_minutes?: int|Param, // Default: 30
+ *             max_attempts?: int|Param, // Requests per window, counted per identity and per IP. 0 disables the limit. // Default: 5
+ *             window_seconds?: int|Param, // Default: 900
+ *         },
+ *         invitations?: array{
+ *             lifetime_days?: int|Param, // Default: 7
+ *         },
+ *     },
+ *     authorization?: array{
+ *         enabled?: bool|Param, // Granular resource.action permissions: the Role entity, a voter, row scoping and permissions in GET /api/me. // Default: false
+ *         enforce_by_default?: bool|Param, // Give every operation without an explicit security: expression the permission it implies. Turning this off leaves the catalogue advisory — the operations stay reachable by any authenticated user. // Default: true
+ *         super_roles?: list<scalar|Param|null>,
+ *         exempt_resources?: list<scalar|Param|null>,
+ *     },
+ *     documents?: array{
+ *         enabled?: bool|Param, // Issue PDF documents for #[Printable] resources: POST /api/documents/{resource}/{id}, the nubit_issued_document table and a download route. Needs WeasyPrint on PATH. // Default: false
+ *         async?: bool|Param, // Render through Messenger instead of inline. The issue call returns a pending document and the download route answers 202 until the worker finishes. Route RenderDocument to a transport. // Default: false
+ *         directory?: scalar|Param|null, // Sub-directory inside the storage where issued documents land. // Default: "documents"
+ *         weasyprint_binary?: scalar|Param|null, // Path to the WeasyPrint executable. // Default: "weasyprint"
+ *         storage?: array{
+ *             filesystem?: scalar|Param|null, // Service id of a League\Flysystem FilesystemOperator. Overrides local_directory. Issued documents are records — point this at storage with a retention policy. // Default: null
+ *             local_directory?: scalar|Param|null, // Default: "%kernel.project_dir%/var/documents"
+ *         },
+ *     },
+ *     imports?: array{
+ *         enabled?: bool|Param, // Expose spreadsheet import for #[Importable] resources: POST /api/imports/{resource} (upload + dry run), PATCH to correct the mapping, POST /confirm to apply. Adds the nubit_import_session table. // Default: false
+ *         directory?: scalar|Param|null, // Where uploaded files are kept while a session is open. They are the evidence of what was imported — set a retention policy. // Default: "%kernel.project_dir%/var/imports"
+ *         default_currency?: scalar|Param|null, // Currency assumed for money columns whose cells carry no currency code. // Default: "EUR"
+ *     },
  *     notification?: array{
  *         enabled?: bool|Param, // Register NotificationDispatcherInterface (dispatched through Messenger) and an email channel (symfony/mailer). Domain code (e.g. a workflow transition listener) calls dispatch(); app services tagged nubit.admin.notification_channel add more channels. // Default: false
  *         from_address?: scalar|Param|null, // "From" address for the built-in email channel. // Default: ""
@@ -1308,8 +1351,16 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         pg_dump_binary?: scalar|Param|null, // Default: "pg_dump"
  *         timeout_seconds?: int|Param, // Default: 300
  *     },
+ *     grid?: array{ // How large grids are read. See #[GridScale] for the per-resource decision.
+ *         approximate_count?: bool|Param, // Answer an unfiltered total from the PostgreSQL planner statistics instead of COUNT(*). Wrong by a few percent between vacuums, which matters far less than the full scan it replaces. // Default: false
+ *         approximate_count_threshold?: int|Param, // Only estimate above this many rows; below it an exact count is cheap. // Default: 100000
+ *     },
  *     export?: array{
  *         enabled?: bool|Param, // Enable the "xlsx" export format. Resources opt in individually with #[Exportable]: their GET endpoints then answer /resource.xlsx or Accept: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet with a spreadsheet of every row matching the query, pagination removed. Resources without the attribute answer 406 and do not advertise the format. Requires phpoffice/phpspreadsheet with ext-zip and ext-gd. Pairs with the frontend toolbar button, gated separately by permissions.canExport. // Default: false
+ *         queued?: bool|Param, // Queue exports above the inline limit instead of streaming them in the request. Adds the nubit_export_job table and CSV output — PhpSpreadsheet builds a workbook in memory, so a very large XLSX is the failure queueing exists to avoid. Route RunExport to a transport. // Default: false
+ *         directory?: scalar|Param|null, // Where queued export files are written. // Default: "%kernel.project_dir%/var/exports"
+ *         inline_limit?: int|Param, // Rows above which an export is queued. Overridden per resource by #[GridScale]. // Default: 5000
+ *         queued_format?: "xlsx"|"csv"|Param, // Format for queued exports. "xlsx" streams through openspout/openspout — PhpSpreadsheet cannot, it builds the whole workbook in memory first. "csv" needs no dependency. // Default: "xlsx"
  *     },
  *     runtime_config?: bool|Param, // Expose GET /api/runtime-config (opt-in; payload from RuntimeConfigProviderInterface). // Default: false
  *     soft_delete?: bool|Param, // Register the Doctrine filter hiding #[SoftDeletable] rows. // Default: true
