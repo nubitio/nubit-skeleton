@@ -28,7 +28,13 @@ Run backend commands inside the container: `docker compose exec app php bin/cons
 // src/Entity/Customer.php — follow src/Entity/Product.php
 #[ORM\Entity]
 #[ApiResource(
-    operations: [new GetCollection(), new Post(), new Get(), new Patch(), new Delete()],
+    operations: [
+        new GetCollection(security: "is_granted('ROLE_USER')"),
+        new Post(security: "is_granted('ROLE_ADMIN')"),
+        new Get(security: "is_granted('ROLE_USER')"),
+        new Patch(security: "is_granted('ROLE_ADMIN')"),
+        new Delete(security: "is_granted('ROLE_ADMIN')"),
+    ],
     mercure: true,                        // optional: live grid refresh
     paginationClientItemsPerPage: true,
 )]
@@ -162,10 +168,11 @@ heuristic when that fetch fails. Consequences:
   `defineResource` (default `true`) opts a single resource out of the subscription.
 - **Toasts**: `useAppRuntime()` + `ToastHost` feed `CoreProvider.runtime.notify`.
 - **Session**: `GET /api/me` on boot; logout calls `POST /api/auth/logout`.
-  `useSession()` returns `{ session, refresh, logout, roles, username }` — there is
-  **no `session.profile.permissions`**; role checks read `roles` (array of strings),
-  not a permissions map. `session.profile` also carries `appProfile`, `tenant`, and
-  `features` (see feature flags below).
+  `useSession()` returns `{ session, refresh, logout, roles, username }`. When
+  `nubit_admin.authorization` is on, `session.profile.permissions` and
+  `limits` are published and `createNubitApp()` feeds them to the CRUD
+  toolbar. `roles` still gates the menu. `session.profile` also carries
+  `appProfile`, `tenant`, `features` and `timeZone`.
 - **Runtime config**: `RuntimeConfigProviderInterface` on the backend (behind
   `nubit_admin.runtime_config: true`, off by default in this skeleton) serves
   `GET /api/runtime-config`. On the frontend it's **not** a `createNubitApp` option —
@@ -201,7 +208,7 @@ that matches what's being built — don't load them all up front.
   `saas`/`hybrid` behavior or one of these specific features.
 
 Sections carry a "since" note when a capability arrived after the initial
-0.x line. This skeleton pins `nubitio/*` 0.14 and `@nubitio/*` 0.11 (see
+0.x line. This skeleton pins `nubitio/*` 1.0 and `@nubitio/*` 1.0 (see
 `nubit-compatibility.json`); `composer show nubitio/admin-bundle` and
 `frontend/package.json` are the ground truth for what's actually installed.
 

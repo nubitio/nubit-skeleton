@@ -1,13 +1,13 @@
 {
   "$schema": "./docs/nubit-compatibility.schema.json",
   "backend": {
-    "line": "0.15",
+    "line": "1.0",
     "packages": [
       "nubitio/admin-bundle"
     ]
   },
   "frontend": {
-    "line": "0.11",
+    "line": "1.0",
     "packages": [
       "@nubitio/admin",
       "@nubitio/core",

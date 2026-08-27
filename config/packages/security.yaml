@@ -20,12 +20,19 @@ security:
             stateless: true
             provider: app_users
             custom_authenticator: Nubit\AdminBundle\Auth\JWTAuthenticator
+            # When nubit_admin.identity.enabled, also add:
+            # custom_authenticators:
+            #   - Nubit\AdminBundle\Auth\JWTAuthenticator
+            #   - Nubit\AdminBundle\Identity\ApiKeyAuthenticator
             login_throttling:
                 max_attempts: 5
                 interval: '15 minutes'
 
     access_control:
-        - { path: ^/api/auth/(login|refresh), roles: PUBLIC_ACCESS }
+        - { path: ^/api/auth/(login|refresh|password), roles: PUBLIC_ACCESS }
+        - { path: ^/api/auth/oidc, roles: PUBLIC_ACCESS }
+        - { path: ^/api/invitations/[^/]+$, roles: PUBLIC_ACCESS }
+        - { path: ^/api/invitations/[^/]+/accept$, roles: PUBLIC_ACCESS }
         - { path: ^/api, roles: ROLE_USER }
 
 when@test:

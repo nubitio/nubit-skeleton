@@ -66,7 +66,16 @@ strict checks fail while any known template secret or password is active.
 1. Create an entity with the grid filter and `x-crud` hints (see [`src/Entity/Product.php`](src/Entity/Product.php)):
 
 ```php
-#[ApiResource(operations: [new GetCollection(), new Post(), new Get(), new Patch(), new Delete()], mercure: true)]
+#[ApiResource(
+    operations: [
+        new GetCollection(security: "is_granted('ROLE_USER')"),
+        new Post(security: "is_granted('ROLE_ADMIN')"),
+        new Get(security: "is_granted('ROLE_USER')"),
+        new Patch(security: "is_granted('ROLE_ADMIN')"),
+        new Delete(security: "is_granted('ROLE_ADMIN')"),
+    ],
+    mercure: true,
+)]
 #[ApiFilter(DataGridFilter::class)]
 class Customer
 {
