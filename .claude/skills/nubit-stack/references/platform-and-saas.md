@@ -195,19 +195,44 @@ A separate package mirroring `defineResource`'s ergonomics for
 metrics/BI screens:
 
 ```tsx
-import { defineDashboard, DashboardPage } from '@nubitio/dashboard';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import {
+  defineDashboard, DashboardPage, statWidget, areaChartWidget, donutChartWidget,
+} from '@nubitio/dashboard';
+import '@nubitio/dashboard/style.css';
 
-const salesDashboard = defineDashboard({
-  title: 'Sales overview',
-  widgets: [/* built with the package's widget builders */],
+// createNubitApp provides no QueryClient; DashboardPage's data hook needs one.
+const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+
+const overview = defineDashboard({
+  id: 'overview',
+  title: 'Overview',
+  dataUrl: '/api/dashboard/overview',   // one GET → one JSON payload
+  sections: [
+    { layout: 'stats', widgets: [
+      statWidget({ id: 'mrr', title: 'MRR', valuePath: 'stats.mrr', format: 'currency' }),
+    ]},
+    { layout: 'grid', columns: 2, widgets: [
+      areaChartWidget({ id: 'rev', title: 'Revenue', dataPath: 'series.revenueByMonth', xKey: 'month', series: [{ key: 'revenue', valueFormat: 'currency' }] }),
+      donutChartWidget({ id: 'svc', title: 'By status', dataPath: 'breakdowns.serviceStatus', labelKey: 'label', valueKey: 'value', valueFormat: 'number' }),
+    ]},
+  ],
 });
-export const SalesDashboardPage = () => <DashboardPage dashboard={salesDashboard} />;
+
+export const OverviewPage = () => (
+  <QueryClientProvider client={qc}><DashboardPage config={overview} /></QueryClientProvider>
+);
 ```
 
-Also available: `DashboardPeriodFilter`, `DashboardLayoutControls`, and the
-`useDashboardData` / `useWidgetQuery` hooks for custom widgets. Reach for
-this instead of hand-building charts + grids when the ask is "an overview
-page with KPIs and charts."
+Widgets read the shared payload by dot-path (`valuePath` / `dataPath`), so the
+backend is one `#[IsGranted('ROLE_ADMIN')]` controller returning nested JSON —
+raw aggregate SQL beats six repositories. Builders: `statWidget`,
+`lineChartWidget`, `areaChartWidget`, `barChartWidget`, `donutChartWidget`,
+`progressWidget`, `tableWidget`. Also `DashboardPeriodFilter`,
+`DashboardLayoutControls`, `useDashboardData` / `useWidgetQuery`. Route it at
+its own path — not `/` (see gotcha 11). Reach for this instead of
+hand-building charts + grids when the ask is "an overview page with KPIs and
+charts."
 
 ## Privacy, observability, analytics (backend)
 

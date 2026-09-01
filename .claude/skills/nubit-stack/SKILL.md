@@ -62,7 +62,10 @@ class Customer
 | `hideInGrid: true` | drop the column from the grid, keep the field in the form |
 | `showInForm: false` | drop the field from the form, keep the column — computed/server-set fields |
 | `readonly: true` | render in the form but not editable |
-| `format` | `'currency'` (decimal as money: right-aligned, locale-aware separators, 2 decimals — see `price` in `src/Entity/Product.php`) · `'image'` / `'file'` (media upload dropzone — see `references/detail-views-and-media.md`) |
+| `format` | `'money'` (property is `{amount, currency, scale}`, never a JS number — the form field for a `Money` value) · `'currency'` (older decimal-as-string form) · `'image'` / `'file'` (media upload dropzone — see `references/detail-views-and-media.md`) |
+| `currency` / `scale` | `format: 'money'` only — the ISO currency and decimals the form assumes on an **empty** create form (a value with its own currency always wins). Without it the field uses `configureCore({ currency })`, then `'EUR'` |
+| `presentation: 'badge'` + `toneByValue` | render an enum column as a tone-coded badge. `toneByValue: {active: 'success', suspended: 'warning', …}` — variants: `primary secondary success danger warning info light dark`. Pair with `enum` if the form should also be a select |
+| `summable: true` + `summaryType` | server-side grid-footer aggregate (`sum`/`count`/`avg`/`min`/`max`). Also mark the resource: `#[ApiResource(extraProperties: ['x-crud' => ['summary' => true]])]`. **Plain numeric mapped columns only** — `SUM(e.<prop>)` in DQL, so it does *not* work on a `Money` embeddable / getter |
 
 ⚠️ `hidden` and `visibleOnForm` are the **deprecated** spellings of
 `hideInGrid` and `showInForm`. They still work, and both are still all over
@@ -72,7 +75,11 @@ editing that property.
 
 Closed value sets: add `'enum' => ['draft', 'sent', 'paid']` to the
 `openapiContext` and the form renders a select with humanized labels
-('credit_note' → "Credit Note") instead of free text.
+('credit_note' → "Credit Note") instead of free text. This is the way — do
+**not** reach for a frontend `fieldContract` / `defineFields` to tweak one
+field: an `augment` contract that references a key the validator does not
+know can silently render the **whole grid empty** at runtime (it still
+type-checks). Per-field changes belong in `x-crud` on the entity.
 
 Column labels: humanized from the property name (`firstName` → "First Name").
 For custom/translated labels set `description: 'app.customer.name'` (an i18n
@@ -91,6 +98,13 @@ select** (loads options from the related resource; shows its `name`/`title`/
 docker compose exec app php bin/console doctrine:migrations:diff --no-interaction
 docker compose exec app php bin/console doctrine:migrations:migrate --no-interaction
 ```
+
+Read the generated migration before running it. If the project already has
+schema drift (a stray sequence, a stale index name, an outdated column
+comment), `diff` folds all of it into your migration. Hand-trim it down to
+the change you actually made — a `CREATE TABLE`, an `ADD COLUMN`, plus any
+backfill/`INSERT` you write yourself — then migrate up **and** down **and**
+up again to confirm it round-trips.
 
 ### 3. Frontend page (3 lines) + route + menu
 
@@ -245,6 +259,20 @@ anything with more than a handful of fields.
 10. `formDetail.inferFields` is legacy — inference from the backend's
     `x-embedded-lines` metadata is automatic now. Only set `inferFields: false`
     if you deliberately want to suppress it and hand-write `fields`.
+11. `createNubitApp` owns `/`. A `routes: [{ path: '/', … }]` entry silently
+    never mounts — the shell renders with no content and no error. Give any
+    home screen its own path (`/dashboard`, `/overview`) and point
+    `homePath` at it.
+12. Money fields: without `configureCore({ currency })` at startup **and** a
+    `currency` in `x-crud`, a fresh create form shows `EUR`. Set the app
+    currency once in `frontend/src/main.tsx`:
+    `configureCore({ locale: 'es-PE', timezone: 'America/Lima', currency: 'PEN' })`.
+    Stored values still carry whatever the form submitted, so also normalise
+    server-side if the currency must be fixed.
+13. `@nubitio/dashboard` and per-widget `query` configs use react-query, but
+    `createNubitApp` provides no `QueryClientProvider`. Wrap a `<DashboardPage>`
+    (or any component using `useWidgetQuery`) in your own
+    `<QueryClientProvider client={new QueryClient()}>`.
 
 ## Library source (for deeper digging)
 

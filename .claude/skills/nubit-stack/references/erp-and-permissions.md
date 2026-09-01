@@ -44,10 +44,15 @@ class Invoice { /* lines collection, header fields, recalculateTotals() */ }
 
 - `#[Sequence]` fills `$number` on first persist; skip if field already set.
   Register any `scope: ['customer']` paths to scope counters per dimension.
-- `#[Workflow]` auto-registers `POST /api/invoices/{id}/transition/{name}`
-  (override the inferred collection path with `routePrefix: '...'`).
-  `SchemaCrudPage` reads `x-workflow` from `/api/docs.jsonld` and builds row
-  action buttons automatically — no frontend code needed.
+- `#[Workflow]` exposes `POST /api/invoices/{id}/transition/{name}` and
+  `SchemaCrudPage` reads `x-workflow` from `/api/docs.jsonld` to build row
+  action buttons automatically — no frontend code needed. Two setup steps
+  the Flex recipe does **not** do for you: (1) create
+  `config/routes/nubit_workflow.yaml` with `nubit_workflow: { resource: '.', type: nubit_workflow }`
+  or the transition routes never register (silent 404); (2) pass
+  `routePrefix: '/api/invoices'` explicitly — the inferred prefix currently
+  keeps a literal `{._format}` segment, so `/api/invoices/1/transition/x`
+  404s until you set it. Verify with `bin/console debug:router | grep transition`.
   `guard` goes **inside a transition entry**, not as a sibling of `field`/
   `transitions` — it names a class implementing `WorkflowGuardInterface`:
   `canTransition(object $entity, string $transitionName): bool` and
