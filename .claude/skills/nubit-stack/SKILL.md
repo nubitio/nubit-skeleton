@@ -146,7 +146,7 @@ by session role; `filterMenu` adds app-specific rules (tenant features, runtime 
 curl -s http://localhost:8000/api/docs.jsonld | grep -o 'customers' | head -1
 # login + grid round-trip
 curl -s -c /tmp/cj -X POST http://localhost:8000/api/auth/login \
-  -H 'Content-Type: application/json' -d '{"username":"admin@example.com","password":"admin1234"}'
+  -H 'Content-Type: application/json' -d '{"username":"<admin-email>","password":"<admin-password>"}'
 curl -s -b /tmp/cj 'http://localhost:8000/api/customers?filter%5B0%5D%5B0%5D=name&filter%5B0%5D%5B1%5D=contains&filter%5B0%5D%5B2%5D=foo' -D - -o /dev/null | grep -i x-total-count
 ```
 

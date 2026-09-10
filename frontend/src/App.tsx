@@ -17,10 +17,6 @@ const { App } = createNubitApp({
   // wildcard route (`/sales/*`) whose nested Routes render each tab.
   menu: [{ text: 'Products', icon: 'ph ph-package', path: '/products' }],
   routes: [{ path: '/products', element: deferred(<ProductsPage />) }],
-  login: {
-    defaultUsername: 'admin@example.com',
-    hint: 'Demo credentials: admin@example.com / admin1234',
-  },
 });
 
 export { App };

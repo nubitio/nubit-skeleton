@@ -76,4 +76,6 @@ Explicitly **not** vulnerabilities:
   path where they are *accepted* in production is a real finding.
 - `APP_ENV=dev` in `.env`, and the development-only settings that follow from
   it.
-- The seeded demo user created by `bin/console app:seed`.
+- The sample products created by `bin/console app:seed`. Administrator creation
+  requires explicit credentials and never has a default account or password.
+- Anonymous Mercure subscriptions are disabled by the template.

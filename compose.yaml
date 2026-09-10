@@ -109,7 +109,6 @@ services:
       MERCURE_SUBSCRIBER_JWT_KEY: '!ChangeThisMercureHubJWTSecretKey!'
       MERCURE_EXTRA_DIRECTIVES: |
         cors_origins http://localhost:5173 http://localhost:8000
-        anonymous
     ports:
       # Override with MERCURE_PORT if 3000 is taken on your machine.
       - '${MERCURE_PORT:-3000}:80'
