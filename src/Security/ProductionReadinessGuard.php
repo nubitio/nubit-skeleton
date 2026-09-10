@@ -11,10 +11,13 @@ final class ProductionReadinessGuard
     public function __construct(
         private readonly ProductionReadiness $readiness,
         #[Autowire('%env(resolve:APP_SECRET)%')]
+        #[\SensitiveParameter]
         private readonly string $appSecret,
         #[Autowire('%env(resolve:DATABASE_URL)%')]
+        #[\SensitiveParameter]
         private readonly string $databaseUrl,
         #[Autowire('%env(resolve:MERCURE_JWT_SECRET)%')]
+        #[\SensitiveParameter]
         private readonly string $mercureSecret,
     ) {
     }
