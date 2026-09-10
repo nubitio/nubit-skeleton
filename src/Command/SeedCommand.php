@@ -62,6 +62,10 @@ final class SeedCommand extends Command
         }
 
         if (null !== $adminEmail) {
+            if (null === $adminPassword) {
+                return Command::INVALID;
+            }
+
             $userRepo = $this->entityManager->getRepository(User::class);
             $user = $userRepo->findOneBy(['email' => $adminEmail]);
             if (!$user instanceof User) {

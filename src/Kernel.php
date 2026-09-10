@@ -16,10 +16,6 @@ class Kernel extends BaseKernel
 
         if ('prod' === $this->environment) {
             $container = $this->getContainer();
-            if (null === $container) {
-                throw new \LogicException('The production service container is unavailable.');
-            }
-
             /** @var ProductionReadinessGuard $guard */
             $guard = $container->get(ProductionReadinessGuard::class);
             $guard->assertReady();
