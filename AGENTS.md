@@ -16,7 +16,7 @@ docs** — adding a feature means defining a PHP entity, not building UI.
 docker compose up -d --build                                  # full stack
 docker compose exec app php bin/console doctrine:migrations:diff --no-interaction
 docker compose exec app php bin/console doctrine:migrations:migrate --no-interaction
-docker compose exec app php bin/console app:seed              # admin@example.com / admin1234
+docker compose exec app php bin/console app:seed --admin-email=you@example.com --admin-password='unique-password-16-bytes-minimum'
 docker compose exec app php bin/console cache:clear
 docker compose exec app php bin/console nubit:discover          # list resources, routes, workflows
 docker compose exec app php bin/console app:doctor --strict     # reject template secrets before deployment

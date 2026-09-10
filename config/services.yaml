@@ -19,6 +19,10 @@ services:
     App\:
         resource: '../src/'
 
+    # The kernel invokes this guard before serving a production application.
+    App\Security\ProductionReadinessGuard:
+        public: true
+
     # An API Platform state processor that runs your own logic before persisting
     # (recalculating totals, allocating a sequence) is wired like this:
     #

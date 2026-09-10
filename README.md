@@ -20,10 +20,12 @@ Then boot it:
 ```bash
 docker compose up -d --build
 docker compose exec app php bin/console doctrine:migrations:migrate --no-interaction
-docker compose exec app php bin/console app:seed
+docker compose exec app php bin/console app:seed \
+  --admin-email=you@example.com \
+  --admin-password='use-a-unique-password-of-at-least-16-bytes'
 ```
 
-Open **http://localhost:5173** and sign in with `admin@example.com` / `admin1234`.
+Open **http://localhost:5173** and sign in with the administrator credentials you supplied.
 
 The template ships one resource — `Product` — single-tenant, with every
 optional module off. That is deliberate: anything enabled here becomes schema,
@@ -59,7 +61,8 @@ covers provider configuration, operations and failure recovery once you enable i
 > Before anything real: change `APP_SECRET` in `.env` (≥ 32 bytes — it signs the auth JWTs) and the database/Mercure passwords in `compose.yaml`.
 
 Before deployment, run `php bin/console app:doctor --strict`. Production and
-strict checks fail while any known template secret or password is active.
+strict checks fail while any known template secret or password is active, and
+the production kernel refuses to boot until those values are replaced.
 
 ## Add your own resource
 
@@ -133,6 +136,7 @@ compose.yaml          FrankenPHP app + PostgreSQL + Mercure + frontend dev serve
 
 - `frontend && pnpm build` produces a static SPA (`frontend/dist`) — serve it from any static host or from FrankenPHP, with `/api` proxied to the Symfony app.
 - Set `cookie_secure: true` (default outside dev), real secrets, and a persistent `MERCURE_JWT_SECRET`.
+- Mercure subscriptions require JWT authorization; anonymous subscriptions are not enabled by the template.
 - Follow the phased [privacy, telemetry, analytics and feature-flag rollout](docs/platform-rollout.md) before enabling external providers.
 
 ## Security
