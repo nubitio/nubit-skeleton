@@ -15,7 +15,14 @@ class Kernel extends BaseKernel
         parent::boot();
 
         if ('prod' === $this->environment) {
-            $this->getContainer()->get(ProductionReadinessGuard::class)->assertReady();
+            $container = $this->getContainer();
+            if (null === $container) {
+                throw new \LogicException('The production service container is unavailable.');
+            }
+
+            /** @var ProductionReadinessGuard $guard */
+            $guard = $container->get(ProductionReadinessGuard::class);
+            $guard->assertReady();
         }
     }
 }

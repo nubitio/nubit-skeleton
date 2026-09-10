@@ -2,8 +2,8 @@ import { expect, test, type Page } from '@playwright/test';
 import fs from 'node:fs';
 import path from 'node:path';
 
-const ADMIN_EMAIL = 'admin@example.com';
-const ADMIN_PASSWORD = 'admin1234';
+const ADMIN_EMAIL = 'ci@example.com';
+const ADMIN_PASSWORD = 'ci-only-password-16';
 const SCREENSHOT_DIR = path.join(import.meta.dirname, 'screenshots');
 
 /**

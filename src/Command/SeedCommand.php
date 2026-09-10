@@ -36,8 +36,15 @@ final class SeedCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $adminEmail = $input->getOption('admin-email');
-        $adminPassword = $input->getOption('admin-password');
+        $adminEmailOption = $input->getOption('admin-email');
+        $adminPasswordOption = $input->getOption('admin-password');
+        if ((null !== $adminEmailOption && !is_string($adminEmailOption)) || (null !== $adminPasswordOption && !is_string($adminPasswordOption))) {
+            $io->error('Administrator credentials must be strings.');
+
+            return Command::INVALID;
+        }
+        $adminEmail = $adminEmailOption;
+        $adminPassword = $adminPasswordOption;
         if (null !== $adminEmail xor null !== $adminPassword) {
             $io->error('Both --admin-email and --admin-password are required to create an administrator.');
 
