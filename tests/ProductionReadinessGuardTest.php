@@ -34,10 +34,13 @@ final class ProductionReadinessGuardTest extends TestCase
         );
 
         $guard->assertReady();
-        self::assertSame([], (new ProductionReadiness())->inspect(
-            str_repeat('a', 64),
-            'postgresql://app:a-random-password@database/app',
-            str_repeat('b', 64),
-        ));
+        self::assertSame(
+            [],
+            (new ProductionReadiness())->inspect(
+                str_repeat('a', 64),
+                'postgresql://app:a-random-password@database/app',
+                str_repeat('b', 64),
+            ),
+        );
     }
 }

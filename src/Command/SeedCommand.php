@@ -27,9 +27,12 @@ final class SeedCommand extends Command
 
     protected function configure(): void
     {
-        $this
-            ->addOption('admin-email', null, InputOption::VALUE_REQUIRED, 'Email for a new administrator.')
-            ->addOption('admin-password', null, InputOption::VALUE_REQUIRED, 'Password for a new administrator.');
+        $this->addOption('admin-email', null, InputOption::VALUE_REQUIRED, 'Email for a new administrator.')->addOption(
+            'admin-password',
+            null,
+            InputOption::VALUE_REQUIRED,
+            'Password for a new administrator.',
+        );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -38,7 +41,10 @@ final class SeedCommand extends Command
 
         $adminEmailOption = $input->getOption('admin-email');
         $adminPasswordOption = $input->getOption('admin-password');
-        if ((null !== $adminEmailOption && !is_string($adminEmailOption)) || (null !== $adminPasswordOption && !is_string($adminPasswordOption))) {
+        if (
+            null !== $adminEmailOption && !is_string($adminEmailOption)
+            || null !== $adminPasswordOption && !is_string($adminPasswordOption)
+        ) {
             $io->error('Administrator credentials must be strings.');
 
             return Command::INVALID;

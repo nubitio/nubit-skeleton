@@ -19,17 +19,13 @@ final class ProductionReadinessGuard
         #[Autowire('%env(resolve:MERCURE_JWT_SECRET)%')]
         #[\SensitiveParameter]
         private readonly string $mercureSecret,
-    ) {
-    }
+    ) {}
 
     public function assertReady(): void
     {
         $issues = $this->readiness->inspect($this->appSecret, $this->databaseUrl, $this->mercureSecret);
         if ([] !== $issues) {
-            throw new \LogicException(sprintf(
-                "Unsafe production configuration:\n- %s",
-                implode("\n- ", $issues),
-            ));
+            throw new \LogicException(sprintf("Unsafe production configuration:\n- %s", implode("\n- ", $issues)));
         }
     }
 }
