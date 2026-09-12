@@ -77,4 +77,21 @@ test.describe('Golden path', () => {
 
     await expect(page.getByRole('button', { name: 'Sign in' })).toBeVisible({ timeout: 15_000 });
   });
+
+  /**
+   * The one authentication failure path nothing else here exercises: every
+   * other test in this file logs in with a credential CI actually seeded.
+   * Wrong credentials must fail closed — no grid, no session — not merely
+   * "eventually" reject on some later request.
+   */
+  test('signing in with the wrong password does not reach the grid', async ({ page }) => {
+    await page.goto('/');
+    await page.getByPlaceholder('Email').fill(ADMIN_EMAIL);
+    await page.getByPlaceholder('Password').fill(`not-${ADMIN_PASSWORD}`);
+    await page.getByRole('button', { name: 'Sign in' }).click();
+
+    await expect(page.getByText('Espresso Machine')).not.toBeVisible();
+    // Still on the login screen, not silently redirected anywhere else.
+    await expect(page.getByRole('button', { name: 'Sign in' })).toBeVisible({ timeout: 10_000 });
+  });
 });

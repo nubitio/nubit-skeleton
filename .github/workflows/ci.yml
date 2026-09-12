@@ -125,6 +125,16 @@ jobs:
           docker compose exec -T app php bin/console doctrine:migrations:migrate --no-interaction
           docker compose exec -T app php bin/console app:seed --admin-email=ci@example.com --admin-password='ci-only-password-16'
 
+      # Catches the composition regression a migration diff alone does not:
+      # entity mapping that has drifted from what was actually migrated
+      # (a forgotten `doctrine:migrations:diff`, or a mapping change that
+      # never got one at all). "Upgrading" this template *is* generating and
+      # applying a fresh migration, so this is the closest thing to an
+      # upgrade-path check available without a second, older release to
+      # migrate from.
+      - name: Verify the migrated schema matches the current mapping
+        run: docker compose exec -T app php bin/console doctrine:schema:validate
+
       - name: Login + CRUD round-trip
         run: |
           set -euo pipefail
