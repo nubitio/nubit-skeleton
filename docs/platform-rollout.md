@@ -80,6 +80,10 @@ The Skeleton will demonstrate:
 
 ## Operational checklist before production
 
+See [`deployment-operations-proposal.md`](deployment-operations-proposal.md)
+for the concrete deploy/backup/SLO options this checklist's items below wait
+on a provider decision for.
+
 - choose telemetry/analytics/flag providers and data regions;
 - document purposes, retention and subprocessors;
 - configure sampling and cost budgets;

@@ -143,6 +143,7 @@ compose.yaml          FrankenPHP app + PostgreSQL + Mercure + frontend dev serve
 - Set `cookie_secure: true` (default outside dev), real secrets, and a persistent `MERCURE_JWT_SECRET`.
 - Mercure subscriptions require JWT authorization; anonymous subscriptions are not enabled by the template.
 - Follow the phased [privacy, telemetry, analytics and feature-flag rollout](docs/platform-rollout.md) before enabling external providers.
+- Deploy workflow, encrypted backups and SLOs/runbooks are not shipped yet — see [`docs/deployment-operations-proposal.md`](docs/deployment-operations-proposal.md) for the concrete options and the decisions they wait on.
 
 ## Security
 
