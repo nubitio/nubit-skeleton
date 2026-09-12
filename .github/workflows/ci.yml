@@ -96,12 +96,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # The app service bind-mounts the checkout, so vendor/ must exist on
-      # the host before the container boots. --ignore-platform-reqs: the
-      # composer image runs an older PHP than the app (8.5).
-      - name: Install backend dependencies
-        run: docker run --rm -v "$PWD":/app -w /app composer:2 composer install --no-interaction --no-progress --no-scripts --ignore-platform-reqs
-
+      # No separate host-side "composer install" needed: the app service's
+      # entrypoint installs its own vendor/ on first start (docker/entrypoint.sh),
+      # the same way `frontend` already installs its own node_modules. This
+      # is also what proves that entrypoint reproducibly works, not just what
+      # a human happens to do before running it locally.
       - name: Start the stack
         run: docker compose up -d --build app database mercure
 
@@ -163,9 +162,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install backend dependencies
-        run: docker run --rm -v "$PWD":/app -w /app composer:2 composer install --no-interaction --no-progress --no-scripts --ignore-platform-reqs
-
+      # No separate host-side "composer install" needed — see the smoke job.
       - name: Start the API stack
         run: docker compose up -d --build app database mercure
 

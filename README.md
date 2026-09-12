@@ -25,6 +25,11 @@ docker compose exec app php bin/console app:seed \
   --admin-password='use-a-unique-password-of-at-least-16-bytes'
 ```
 
+No local PHP or Composer needed: the `app` service installs its own
+dependencies on first start (the same way `frontend` already installs its own
+`node_modules`), so the very first boot takes a little longer while Composer
+resolves — `docker compose logs -f app` shows progress if you're waiting on it.
+
 Open **http://localhost:5173** and sign in with the administrator credentials you supplied.
 
 The template ships one resource — `Product` — single-tenant, with every
