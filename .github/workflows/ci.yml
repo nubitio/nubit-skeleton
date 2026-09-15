@@ -11,7 +11,7 @@ concurrency:
 
 jobs:
   compatibility:
-    name: Composed compatibility gate
+    name: Compatibility declaration
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
