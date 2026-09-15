@@ -26,6 +26,7 @@ security:
                 interval: '15 minutes'
 
     access_control:
+        - { path: ^/api/ready$, roles: PUBLIC_ACCESS }
         - { path: ^/api/auth/(login|refresh|password), roles: PUBLIC_ACCESS }
         - { path: ^/api/auth/oidc, roles: PUBLIC_ACCESS }
         - { path: ^/api/invitations/[^/]+$, roles: PUBLIC_ACCESS }
