@@ -10,6 +10,7 @@ services:
       - caddy_config:/config
     environment:
       DATABASE_URL: postgresql://app:!ChangeMe!@database:5432/app?serverVersion=16&charset=utf8
+      NUBIT_ACCESS_TOKEN_TTL: ${NUBIT_ACCESS_TOKEN_TTL:-3600}
       DEFAULT_URI: http://localhost:8000
       MERCURE_URL: http://mercure/.well-known/mercure
       MERCURE_PUBLIC_URL: http://localhost:${MERCURE_PORT:-3000}/.well-known/mercure

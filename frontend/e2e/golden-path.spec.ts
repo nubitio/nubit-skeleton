@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type APIResponse, type Locator, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -38,25 +38,59 @@ async function expectAccessible(page: Page) {
   expect(results.violations).toEqual([]);
 }
 
-async function tabTo(page: Page, target: ReturnType<Page['locator']>, limit = 30) {
+async function deleteCreatedProduct(page: Page, response: APIResponse) {
+  const product = (await response.json()) as { '@id'?: string; id?: number };
+  const productPath = product['@id'] ?? `/api/products/${product.id}`;
+  expect(productPath).not.toContain('undefined');
+  const deleteResponse = await page.request.delete(productPath);
+  expect(deleteResponse.status()).toBe(204);
+}
+
+async function tabTo(
+  page: Page,
+  target: Locator,
+  control: string,
+  limit = 30,
+  key: 'Tab' | 'Shift+Tab' = 'Tab',
+) {
   for (let index = 0; index < limit; index += 1) {
-    await page.keyboard.press('Tab');
+    await page.keyboard.press(key);
     if (await target.evaluate((element) => element === document.activeElement)) {
       await expect(target).toBeFocused();
       return;
     }
   }
 
-  throw new Error(`Keyboard focus did not reach ${await target.getAttribute('aria-label') ?? 'target'}`);
+  throw new Error(`Keyboard focus did not reach "${control}" on ${new URL(page.url()).pathname}`);
 }
 
-async function expectVisibleFocus(target: ReturnType<Page['locator']>) {
-  await expect(target).toBeFocused();
-  const hasVisibleFocus = await target.evaluate((element) => {
+async function expectVisibleFocus(
+  page: Page,
+  target: Locator,
+  control: string,
+  key: 'Tab' | 'Shift+Tab' = 'Tab',
+) {
+  const unfocusedStyle = await target.evaluate((element) => {
     const style = getComputedStyle(element);
-    return style.outlineStyle !== 'none' || style.boxShadow !== 'none';
+    return `${style.outlineStyle}|${style.outlineWidth}|${style.outlineColor}|${style.boxShadow}`;
   });
-  expect(hasVisibleFocus).toBe(true);
+
+  await tabTo(page, target, control, 30, key);
+  await expect(target).toBeFocused();
+  const focusedStyle = await target.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return {
+      serialized: `${style.outlineStyle}|${style.outlineWidth}|${style.outlineColor}|${style.boxShadow}`,
+      visible:
+        (style.outlineStyle !== 'none' &&
+          Number.parseFloat(style.outlineWidth) > 0 &&
+          style.outlineColor !== 'transparent' &&
+          style.outlineColor !== 'rgba(0, 0, 0, 0)') ||
+        style.boxShadow !== 'none',
+    };
+  });
+  expect(focusedStyle.serialized, `${control} focus style must change`).not.toBe(unfocusedStyle);
+  expect(focusedStyle.visible, `${control} must have a visible focus indicator`).toBe(true);
 }
 
 test.describe.configure({ timeout: 60_000 });
@@ -89,45 +123,73 @@ test.describe('Golden path', () => {
     await page.getByRole('button', { name: /new/i }).click();
     await expect(page.getByLabel('Name', { exact: true })).toBeVisible();
     await expectAccessible(page);
+
+    await page.getByLabel('Name', { exact: true }).fill('Invalid Product');
+    await page.getByLabel('Price', { exact: true }).fill('-1');
+    await page.getByRole('button', { name: /save/i }).click();
+    await expect(page.locator('.nb-form__error').first()).toBeVisible();
+    await expectAccessible(page);
+
+    await page.getByLabel('Name', { exact: true }).fill(`Accessible Product ${Date.now()}`);
+    await page.getByLabel('Sku', { exact: true }).fill('ACCESSIBLE-1');
+    await page.getByLabel('Price', { exact: true }).fill('12.34');
+    await expectAccessible(page);
+    const createResponse = page.waitForResponse(
+      (response) => response.request().method() === 'POST' && response.url().includes('/api/products'),
+    );
+    await page.getByRole('button', { name: /save/i }).click();
+    const response = await createResponse;
+    await expect(page.getByLabel('Name', { exact: true })).not.toBeVisible();
+    await expectAccessible(page);
+    await deleteCreatedProduct(page, response);
   });
 
   test('the primary CRUD flow is keyboard operable with visible focus', async ({ page }) => {
     await page.goto('/');
 
     const email = page.getByPlaceholder('Email');
-    await tabTo(page, email);
-    await expectVisibleFocus(email);
+    await expectVisibleFocus(page, email, 'Email');
     await page.keyboard.type(ADMIN_EMAIL);
 
     const password = page.getByPlaceholder('Password');
-    await tabTo(page, password);
+    await tabTo(page, password, 'Password');
     await page.keyboard.type(ADMIN_PASSWORD);
 
     const signIn = page.getByRole('button', { name: 'Sign in' });
-    await tabTo(page, signIn);
-    await expectVisibleFocus(signIn);
+    await expectVisibleFocus(page, signIn, 'Sign in');
     await page.keyboard.press('Enter');
     await expect(page.getByText('Espresso Machine')).toBeVisible({ timeout: 20_000 });
 
+    const filter = page.locator('table thead input').first();
+    await expectVisibleFocus(page, filter, 'Filter Name');
+    await page.keyboard.type('Espresso');
+    await expect(page.getByText('Coffee Grinder')).toBeHidden({ timeout: 10_000 });
+    await page.keyboard.press('ControlOrMeta+A');
+    await page.keyboard.press('Backspace');
+    await expect(page.getByText('Coffee Grinder')).toBeVisible({ timeout: 10_000 });
+
     const create = page.getByRole('button', { name: /new/i });
-    await tabTo(page, create);
-    await expectVisibleFocus(create);
+    await expectVisibleFocus(page, create, 'New', 'Shift+Tab');
     await page.keyboard.press('Enter');
 
     const name = `Keyboard Product ${Date.now()}`;
     const nameInput = page.getByLabel('Name', { exact: true });
-    await tabTo(page, nameInput);
+    await tabTo(page, nameInput, 'Name');
     await page.keyboard.type(name);
-    await tabTo(page, page.getByLabel('Sku', { exact: true }));
+    await tabTo(page, page.getByLabel('Sku', { exact: true }), 'Sku');
     await page.keyboard.type('KEYBOARD-1');
-    await tabTo(page, page.getByLabel('Price', { exact: true }));
+    await tabTo(page, page.getByLabel('Price', { exact: true }), 'Price');
     await page.keyboard.type('12.34');
 
     const save = page.getByRole('button', { name: /save/i });
-    await tabTo(page, save);
-    await expectVisibleFocus(save);
+    await expectVisibleFocus(page, save, 'Save');
+    const createResponse = page.waitForResponse(
+      (response) => response.request().method() === 'POST' && response.url().includes('/api/products'),
+    );
     await page.keyboard.press('Enter');
-    await expect(page.getByText(name)).toBeVisible({ timeout: 15_000 });
+    const response = await createResponse;
+    expect(response.ok()).toBe(true);
+    await deleteCreatedProduct(page, response);
   });
 
   test('the filter row narrows the result set through the API', async ({ page }) => {
@@ -152,9 +214,13 @@ test.describe('Golden path', () => {
     await page.getByLabel('Sku', { exact: true }).fill('E2E-1');
     await page.getByLabel('Price', { exact: true }).fill('12.34');
     await shot(page, 'products-form');
+    const createResponse = page.waitForResponse(
+      (response) => response.request().method() === 'POST' && response.url().includes('/api/products'),
+    );
     await page.getByRole('button', { name: /save/i }).click();
-
-    await expect(page.getByText(name)).toBeVisible({ timeout: 15_000 });
+    const response = await createResponse;
+    expect(response.ok()).toBe(true);
+    await deleteCreatedProduct(page, response);
   });
 
   test('a deep link while signed out shows the login screen', async ({ page }) => {
@@ -180,16 +246,23 @@ test.describe('Golden path', () => {
     await expect(page.getByRole('button', { name: 'Sign in' })).toBeVisible({ timeout: 10_000 });
   });
 
-  test('logout, session expiry, and re-authentication fail closed', async ({ page, context }) => {
+  test('logout, session expiry, and re-authentication fail closed', async ({ page, request }) => {
     await login(page);
+    const authenticatedCookies = await page.context().cookies();
+    const refreshCookie = authenticatedCookies.find(({ name }) => name === 'REFRESH_TOKEN');
+    expect(refreshCookie).toBeDefined();
 
     await page.getByRole('button', { name: 'User menu' }).click();
     await page.getByRole('button', { name: 'Sign out' }).click();
     await expect(page.getByRole('button', { name: 'Sign in' })).toBeVisible({ timeout: 10_000 });
     await expect(page.getByText('Espresso Machine')).not.toBeVisible();
+    const refreshAfterLogout = await request.post('/api/auth/refresh', {
+      headers: { cookie: `REFRESH_TOKEN=${refreshCookie?.value}` },
+    });
+    expect(refreshAfterLogout.status()).toBe(401);
 
     await login(page);
-    await context.clearCookies();
+    await page.waitForTimeout(15_500);
     await page.reload();
     await expect(page.getByRole('button', { name: 'Sign in' })).toBeVisible({ timeout: 10_000 });
     await expect(page.getByText('Espresso Machine')).not.toBeVisible();

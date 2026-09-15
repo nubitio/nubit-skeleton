@@ -10,7 +10,7 @@ nubit_admin:
     app_profile: internal
     auth:
         secret: '%env(APP_SECRET)%' # >= 32 bytes
-        access_token_ttl: 3600
+        access_token_ttl: '%env(int:NUBIT_ACCESS_TOKEN_TTL)%'
         refresh_token_ttl: 1209600
         # Secure cookies require HTTPS. The local docker stack runs plain HTTP,
         # so dev disables the flag below — keep it true in production.
