@@ -181,6 +181,9 @@ jobs:
 
           echo "smoke OK (create $id, filter, delete)"
 
+      - name: Dependency failure paths
+        run: bash scripts/check-failure-paths.sh
+
       - name: Dump logs on failure
         if: failure()
         run: docker compose logs --tail 100
