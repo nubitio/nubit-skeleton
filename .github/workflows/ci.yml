@@ -15,9 +15,28 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Validate declared package lines
-        env:
-          NUBIT_SKIP_SOURCE_CONTRACTS: '1'
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          coverage: none
+
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: frontend/package.json
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+
+      - name: Install locked dependencies
+        run: |
+          composer install --no-interaction --no-progress
+          pnpm --dir frontend install --frozen-lockfile
+
+      - name: Execute backend and frontend contract fixtures
         run: node scripts/check-compatibility.mjs
 
   backend:
