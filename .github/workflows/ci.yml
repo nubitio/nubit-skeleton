@@ -44,9 +44,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      # 8.3 is what Dockerfile.prod ships; 8.5 is the forward line.
+      # 8.4 is the floor the locked dependencies require and what the runtime images use.
       matrix:
-        php-version: ['8.3', '8.5']
+        php-version: ['8.4', '8.5']
     steps:
       - uses: actions/checkout@v4
 

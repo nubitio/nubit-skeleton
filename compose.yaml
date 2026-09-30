@@ -102,7 +102,7 @@ services:
 
 ###> symfony/mercure-bundle ###
   mercure:
-    image: dunglas/mercure
+    image: dunglas/mercure:v0.24.2
     restart: unless-stopped
     environment:
       SERVER_NAME: ':80'
