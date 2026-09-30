@@ -264,7 +264,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         formats?: array<string, Param|string|list<scalar|Param|null>>,
  *     },
  *     assets?: bool|array{ // Assets configuration
- *         enabled?: bool|Param, // Default: false
+ *         enabled?: bool|Param, // Default: true
  *         strict_mode?: bool|Param, // Throw an exception if an entry is missing from the manifest.json. // Default: false
  *         version_strategy?: scalar|Param|null, // Default: null
  *         version?: scalar|Param|null, // Default: null
@@ -680,10 +680,10 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         message_bus?: scalar|Param|null, // The message bus to use. // Default: "messenger.default_bus"
  *         routing?: array<string, array{ // Default: []
  *             service?: scalar|Param|null,
- *             secret?: scalar|Param|null, // Default: ""
+ *             secret?: scalar|Param|null, // The secret used to verify incoming request signatures. It must be set in production: with an empty value, depending on the parser, requests from any sender are accepted or every request is rejected. // Default: ""
  *         }>,
  *     },
- *     remote-event?: bool|array{ // RemoteEvent configuration
+ *     remote_event?: bool|array{ // RemoteEvent configuration
  *         enabled?: bool|Param, // Default: false
  *     },
  *     json_streamer?: bool|array{ // JSON streamer configuration
@@ -944,10 +944,10 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     inflector?: scalar|Param|null, // Specify an inflector to use. // Default: "api_platform.metadata.inflector"
  *     validator?: array{
  *         serialize_payload_fields?: mixed, // Set to null to serialize all payload fields when a validation error is thrown, or set the fields you want to include explicitly. // Default: []
- *         query_parameter_validation?: bool|Param, // Deprecated: Will be removed in API Platform 5.0. // Default: true
+ *         query_parameter_validation?: bool|Param, // Deprecated: The "query_parameter_validation" configuration is deprecated and will be removed in API Platform 5.0. // Default: true
  *     },
  *     jsonapi?: array{
- *         use_iri_as_id?: bool|Param, // Set to false to use entity identifiers instead of IRIs as the "id" field in JSON:API responses. // Default: true
+ *         use_iri_as_id?: bool|Param|null, // Set to false to use entity identifiers instead of IRIs as the "id" field in JSON:API responses. Defaults to true; this default will change to false in API Platform 5.0. // Default: null
  *         allow_client_generated_id?: bool|Param, // Allow client-generated IDs on JSON:API POST per https://jsonapi.org/format/#crud-creating-client-ids. Off by default to prevent id spoofing on public endpoints. // Default: false
  *     },
  *     eager_loading?: bool|array{
@@ -964,9 +964,10 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     enable_scalar?: bool|Param, // Enable Scalar API Reference // Default: false
  *     enable_entrypoint?: bool|Param, // Enable the entrypoint // Default: true
  *     enable_docs?: bool|Param, // Enable the docs // Default: true
+ *     enable_head_request_optimization?: bool|Param, // Skip response body construction on HEAD requests so collections are not iterated. Disable to process HEAD identically to GET. // Default: true
  *     enable_profiler?: bool|Param, // Enable the data collector and the WebProfilerBundle integration. // Default: true
  *     enable_phpdoc_parser?: bool|Param, // Enable resource metadata collector using PHPStan PhpDocParser. // Default: true
- *     enable_link_security?: bool|Param, // Deprecated: This option is always enabled and will be removed in API Platform 5.0. // Enable security for Links (sub resources). // Default: true
+ *     enable_link_security?: bool|Param, // Deprecated: The "enable_link_security" configuration is deprecated, this option is always enabled and will be removed in API Platform 5.0. // Enable security for Links (sub resources). // Default: true
  *     collection?: array{
  *         exists_parameter_name?: scalar|Param|null, // The name of the query parameter to filter on nullable field values. // Default: "exists"
  *         order?: scalar|Param|null, // The default order of results. // Default: "ASC"
@@ -1029,6 +1030,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     },
  *     swagger?: array{
  *         persist_authorization?: bool|Param, // Persist the SwaggerUI Authorization in the localStorage. // Default: false
+ *         with_credentials?: bool|Param, // Send credentials (cookies, authorization headers) on Swagger UI cross-origin requests (e.g. when running behind Cloudflare Access). // Default: false
  *         versions?: list<scalar|Param|null>,
  *         api_keys?: array<string, array{ // Default: []
  *             name?: scalar|Param|null, // The name of the header or query parameter containing the api key.
@@ -1145,6 +1147,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         denormalization_context?: mixed,
  *         collect_denormalization_errors?: mixed,
  *         hydra_context?: mixed,
+ *         jsonld_context?: mixed,
  *         openapi?: mixed,
  *         validation_context?: mixed,
  *         filters?: mixed,
@@ -1184,6 +1187,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         policy?: mixed,
  *         middleware?: mixed,
  *         parameters?: array<string, array{ // Default: []
+ *             class?: scalar|Param|null, // The parameter class for a named global parameter entry.
  *             key?: mixed,
  *             schema?: mixed,
  *             open_api?: mixed,
@@ -1211,6 +1215,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         strict_query_parameter_validation?: mixed,
  *         hide_hydra_operation?: mixed,
  *         json_stream?: mixed,
+ *         throw_on_not_found?: mixed,
  *         extra_properties?: mixed,
  *         map?: mixed,
  *         mcp?: mixed,
@@ -1237,6 +1242,9 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         access_token_ttl?: int|Param, // Default: 3600
  *         refresh_token_ttl?: int|Param, // Default: 1209600
  *         cookie_secure?: bool|Param, // Default: true
+ *         cookie_domain?: scalar|Param|null, // Domain attribute for the auth/CSRF cookies. Unset (the default) makes a host-only cookie. Set to a shared parent domain (e.g. ".example.com") only when the frontend and API are deliberately split across subdomains of the same site and must share the cookies — doing so also widens which origins can read the CSRF cookie, so pair it with trusted_origins. // Default: null
+ *         csrf_protection?: bool|Param, // Require a X-CSRF-Token header matching the CSRF_TOKEN cookie on POST/PUT/PATCH/DELETE requests authenticated via the AUTH_TOKEN/REFRESH_TOKEN cookie (double-submit policy). Bearer-token and X-Api-Key clients are never subject to it — only turn this off if CSRF is enforced some other way (e.g. at a reverse proxy). // Default: true
+ *         trusted_origins?: list<scalar|Param|null>,
  *     },
  *     time?: array{ // Storage is UTC; this configures how instants are presented.
  *         default_timezone?: scalar|Param|null, // IANA identifier used when neither the user nor the tenant states one. Reported by GET /api/me so the frontend formats the same way. // Default: "UTC"
@@ -1464,7 +1472,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             limiter?: scalar|Param|null, // A service id implementing "Symfony\Component\HttpFoundation\RateLimiter\RequestRateLimiterInterface".
  *             max_attempts?: int|Param, // Default: 5
  *             interval?: scalar|Param|null, // Default: "1 minute"
- *             lock_factory?: scalar|Param|null, // The service ID of the lock factory used by the login rate limiter (or null to disable locking). // Default: null
+ *             lock_factory?: scalar|Param|null, // The service ID of the lock factory used by the login rate limiter ("auto" to use the default one when the Lock component is configured, or null to disable locking). // Default: "auto"
  *             cache_pool?: string|Param, // The cache pool to use for storing the limiter state // Default: "cache.rate_limiter"
  *             storage_service?: string|Param, // The service ID of a custom storage implementation, this precedes any configured "cache_pool" // Default: null
  *         },
@@ -1655,9 +1663,9 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             lifetime?: int|Param, // Default: 31536000
  *             path?: scalar|Param|null, // Default: "/"
  *             domain?: scalar|Param|null, // Default: null
- *             secure?: true|false|"auto"|Param, // Default: false
+ *             secure?: true|false|"auto"|Param, // Defaults to the value of "framework.session.cookie_secure", or to "auto".
  *             httponly?: bool|Param, // Default: true
- *             samesite?: null|"lax"|"strict"|"none"|Param, // Default: null
+ *             samesite?: null|"lax"|"strict"|"none"|Param, // Defaults to the value of "framework.session.cookie_samesite", or to "lax".
  *             always_remember_me?: bool|Param, // Default: false
  *             remember_me_parameter?: scalar|Param|null, // Default: "_remember_me"
  *         },
@@ -1698,24 +1706,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     default_cookie_lifetime?: int|Param, // Default lifetime of the cookie containing the JWT, in seconds. Defaults to the value of "framework.session.cookie_lifetime". // Default: null
  *     enable_profiler?: bool|Param, // Deprecated: The child node "enable_profiler" at path "mercure.enable_profiler" is deprecated. // Enable Symfony Web Profiler integration.
  * }
- * @psalm-type NubitTenantConfig = array{
- *     enabled?: bool|Param, // Enable tenant resolution, Doctrine filter, and registry wiring. // Default: false
- *     isolation?: "column"|"database"|"schema"|"hybrid"|Param, // Default: "column"
- *     tenant_connection?: scalar|Param|null, // Doctrine connection name switched in database isolation mode. // Default: "default"
- *     control_plane_connection?: scalar|Param|null, // Doctrine connection for tenant registry lookups in database isolation mode. // Default: "default"
- *     schema_prefix?: scalar|Param|null, // Lowercase PostgreSQL identifier prefix used with the resolved positive tenant ID. // Default: "tenant_"
- *     base_schemas?: list<scalar|Param|null>,
- *     quotas_enabled?: bool|Param, // Enforce plan limits via FeatureChecker entitlements and QuotaUsageProvider implementations. // Default: false
- *     resolution?: list<scalar|Param|null>,
- *     tenant_entity?: scalar|Param|null, // FQCN of the tenant root entity used by the registry and self-filter. // Default: "Nubit\\TenantBundle\\Entity\\Tenant"
- *     unscoped_entities?: list<scalar|Param|null>,
- *     jwt_secret?: scalar|Param|null, // Secret for jwt_claim resolution. Defaults to %env(APP_SECRET)%. // Default: "%env(APP_SECRET)%"
- *     jwt_id_claim?: scalar|Param|null, // Default: "tenantId"
- *     jwt_name_claim?: scalar|Param|null, // Default: "tenantName"
- *     tenant_header?: scalar|Param|null, // Default: "X-Tenant-Id"
- *     base_domain?: scalar|Param|null, // Base domain for subdomain resolution (e.g. example.com). // Default: null
- *     rls_enabled?: bool|Param, // Set PostgreSQL app.tenant_id per request (requires RLS policies). // Default: false
- * }
  * @psalm-type ConfigType = array{
  *     imports?: ImportsConfig,
  *     parameters?: ParametersConfig,
@@ -1728,7 +1718,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     nubit_admin?: NubitAdminConfig,
  *     security?: SecurityConfig,
  *     mercure?: MercureConfig,
- *     nubit_tenant?: NubitTenantConfig,
  *     "when@dev"?: array{
  *         imports?: ImportsConfig,
  *         parameters?: ParametersConfig,
@@ -1741,7 +1730,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         nubit_admin?: NubitAdminConfig,
  *         security?: SecurityConfig,
  *         mercure?: MercureConfig,
- *         nubit_tenant?: NubitTenantConfig,
  *     },
  *     "when@prod"?: array{
  *         imports?: ImportsConfig,
@@ -1755,7 +1743,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         nubit_admin?: NubitAdminConfig,
  *         security?: SecurityConfig,
  *         mercure?: MercureConfig,
- *         nubit_tenant?: NubitTenantConfig,
  *     },
  *     "when@test"?: array{
  *         imports?: ImportsConfig,
@@ -1769,7 +1756,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         nubit_admin?: NubitAdminConfig,
  *         security?: SecurityConfig,
  *         mercure?: MercureConfig,
- *         nubit_tenant?: NubitTenantConfig,
  *     },
  *     ...<string, ExtensionType|array{ // extra keys must follow the when@%env% pattern or match an extension alias
  *         imports?: ImportsConfig,
