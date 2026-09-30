@@ -40,14 +40,19 @@ jobs:
         run: node scripts/check-compatibility.mjs
 
   backend:
-    name: Backend (PHP 8.5)
+    name: Backend (PHP ${{ matrix.php-version }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      # 8.3 is what Dockerfile.prod ships; 8.5 is the forward line.
+      matrix:
+        php-version: ['8.3', '8.5']
     steps:
       - uses: actions/checkout@v4
 
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.5'
+          php-version: ${{ matrix.php-version }}
           extensions: intl, pdo_pgsql
           coverage: none
 
