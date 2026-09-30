@@ -63,7 +63,7 @@ services:
   frontend:
     image: node:22-alpine
     working_dir: /app/frontend
-    command: sh -c "corepack enable && pnpm install --no-frozen-lockfile && pnpm dev --host"
+    command: sh -c "corepack enable && pnpm install --frozen-lockfile && pnpm dev --host"
     ports:
       - '${FRONTEND_PORT:-5173}:5173'
     environment:
@@ -102,7 +102,7 @@ services:
 
 ###> symfony/mercure-bundle ###
   mercure:
-    image: dunglas/mercure
+    image: dunglas/mercure:v0.24.2
     restart: unless-stopped
     environment:
       SERVER_NAME: ':80'
