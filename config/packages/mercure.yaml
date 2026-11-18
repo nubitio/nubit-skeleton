@@ -3,6 +3,11 @@ mercure:
         default:
             url: '%env(default::MERCURE_URL)%'
             public_url: '%env(default::MERCURE_PUBLIC_URL)%'
+            protocol_version: '1.0'
             jwt:
                 secret: '%env(MERCURE_JWT_SECRET)%'
                 publish: '*'
+                claims:
+                    iss: '%env(MERCURE_ISSUER)%'
+                    sub: '%env(MERCURE_ISSUER)%'
+                    client_id: nubit-skeleton

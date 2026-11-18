@@ -19,6 +19,14 @@ services:
     App\:
         resource: '../src/'
 
+    # Keep the Mercure 1.0 RFC 9068 subscriber-token issuer aligned with the
+    # trusted issuer configured for the hub in compose.yaml.
+    Nubit\AdminBundle\Auth\MercureSubscriberTokenService:
+        arguments:
+            $mercureJwtSecret: '%env(MERCURE_JWT_SECRET)%'
+            $tokenTtl: '%env(int:NUBIT_ACCESS_TOKEN_TTL)%'
+            $issuer: '%env(MERCURE_ISSUER)%'
+
     # The kernel invokes this guard before serving a production application.
     App\Security\ProductionReadinessGuard:
         public: true

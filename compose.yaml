@@ -15,6 +15,7 @@ services:
       MERCURE_URL: http://mercure/.well-known/mercure
       MERCURE_PUBLIC_URL: http://localhost:${MERCURE_PORT:-3000}/.well-known/mercure
       MERCURE_JWT_SECRET: '!ChangeThisMercureHubJWTSecretKey!'
+      MERCURE_ISSUER: ${MERCURE_ISSUER:-https://localhost}
       OTEL_PHP_AUTOLOAD_ENABLED: ${OTEL_PHP_AUTOLOAD_ENABLED:-false}
       OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME:-nubit-skeleton}
       OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-http://otel-collector:4318}
@@ -102,14 +103,16 @@ services:
 
 ###> symfony/mercure-bundle ###
   mercure:
-    image: dunglas/mercure:v0.24.2
+    image: dunglas/mercure:v1.1.6
     restart: unless-stopped
     environment:
       SERVER_NAME: ':80'
       MERCURE_PUBLISHER_JWT_KEY: '!ChangeThisMercureHubJWTSecretKey!'
       MERCURE_SUBSCRIBER_JWT_KEY: '!ChangeThisMercureHubJWTSecretKey!'
+      MERCURE_TRUSTED_ISSUERS: ${MERCURE_ISSUER:-https://localhost}
       MERCURE_EXTRA_DIRECTIVES: |
-        cors_origins http://localhost:5173 http://localhost:8000
+        cookie_name mercureAuthorization
+        cors_origins ${MERCURE_CORS_ORIGINS:-http://localhost:5173 http://localhost:5174 http://localhost:8000}
     ports:
       # Override with MERCURE_PORT if 3000 is taken on your machine.
       - '${MERCURE_PORT:-3000}:80'

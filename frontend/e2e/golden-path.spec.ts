@@ -112,6 +112,18 @@ test.describe('Golden path', () => {
     await shot(page, 'products-grid');
   });
 
+  test('authenticated sessions connect to the Mercure update stream', async ({ page }) => {
+    const subscription = page.waitForResponse(
+      (response) =>
+        new URL(response.url()).pathname === '/.well-known/mercure' && response.status() === 200,
+    );
+
+    await login(page);
+
+    const response = await subscription;
+    expect(response.headers()['content-type']).toContain('text/event-stream');
+  });
+
   test('login, navigation, grid, and form have no automated accessibility violations', async ({
     page,
   }) => {

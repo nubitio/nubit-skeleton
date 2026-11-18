@@ -67,9 +67,6 @@
     "nubitio/admin-bundle": {
         "version": "v0.2.0"
     },
-    "nubitio/tenant-bundle": {
-        "version": "v0.10.13"
-    },
     "php-http/discovery": {
         "version": "1.20",
         "recipe": {
