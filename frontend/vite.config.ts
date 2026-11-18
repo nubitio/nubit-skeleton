@@ -33,6 +33,24 @@ export default defineConfig({
     // compressed regression separately instead of treating Rollup's 500 kB
     // uncompressed default as the product budget.
     chunkSizeWarningLimit: 1100,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes('/node_modules/')) return;
+
+          if (id.includes('/@tiptap/') || id.includes('/prosemirror-')) {
+            return 'rich-text-editor';
+          }
+
+          const nubitPackage = id.match(/\/node_modules\/@nubitio\/([^/]+)/)?.[1];
+          if (nubitPackage) return `nubit-${nubitPackage}`;
+
+          if (/\/node_modules\/(react|react-dom|scheduler)\//.test(id)) {
+            return 'react-vendor';
+          }
+        },
+      },
+    },
   },
   server: {
     proxy: {
