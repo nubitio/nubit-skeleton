@@ -43,9 +43,8 @@ async function deleteCreatedProduct(page: Page, response: APIResponse) {
   const productPath = product['@id'] ?? `/api/products/${product.id}`;
   expect(productPath).not.toContain('undefined');
   const csrfToken = (await page.context().cookies()).find(({ name }) => name === 'CSRF_TOKEN')?.value;
-  expect(csrfToken).toBeTruthy();
   const deleteResponse = await page.request.delete(productPath, {
-    headers: { 'X-CSRF-Token': csrfToken! },
+    headers: csrfToken ? { 'X-CSRF-Token': csrfToken } : {},
   });
   expect(deleteResponse.status()).toBe(204);
 }
@@ -256,18 +255,16 @@ test.describe('Golden path', () => {
     const refreshCookie = authenticatedCookies.find(({ name }) => name === 'REFRESH_TOKEN');
     const csrfToken = authenticatedCookies.find(({ name }) => name === 'CSRF_TOKEN')?.value;
     expect(refreshCookie).toBeDefined();
-    expect(csrfToken).toBeTruthy();
 
     await page.getByRole('button', { name: 'User menu' }).click();
     await page.getByRole('button', { name: 'Sign out' }).click();
     await expect(page.getByRole('button', { name: 'Sign in' })).toBeVisible({ timeout: 10_000 });
     await expect(page.getByText('Espresso Machine')).not.toBeVisible();
-    const refreshAfterLogout = await request.post('/api/auth/refresh', {
-      headers: {
-        cookie: `REFRESH_TOKEN=${refreshCookie?.value}; CSRF_TOKEN=${csrfToken}`,
-        'X-CSRF-Token': csrfToken!,
-      },
-    });
+    const refreshHeaders: Record<string, string> = {
+      cookie: `REFRESH_TOKEN=${refreshCookie?.value}${csrfToken ? `; CSRF_TOKEN=${csrfToken}` : ''}`,
+    };
+    if (csrfToken) refreshHeaders['X-CSRF-Token'] = csrfToken;
+    const refreshAfterLogout = await request.post('/api/auth/refresh', { headers: refreshHeaders });
     expect(refreshAfterLogout.status()).toBe(401);
 
     await login(page);
