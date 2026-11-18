@@ -14,7 +14,7 @@ jobs:
     name: Compatibility declaration
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: shivammathur/setup-php@v2
         with:
@@ -48,7 +48,7 @@ jobs:
       matrix:
         php-version: ['8.4', '8.5']
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: shivammathur/setup-php@v2
         with:
@@ -95,7 +95,7 @@ jobs:
       run:
         working-directory: frontend
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: pnpm/action-setup@v4
         # version comes from frontend/package.json "packageManager"
@@ -118,7 +118,7 @@ jobs:
     name: Compose smoke (login + CRUD round-trip)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # No separate host-side "composer install" needed: the app service's
       # entrypoint installs its own vendor/ on first start (docker/entrypoint.sh),
@@ -201,7 +201,7 @@ jobs:
     name: Playwright E2E
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # No separate host-side "composer install" needed — see the smoke job.
       - name: Start the API stack
