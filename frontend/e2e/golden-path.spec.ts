@@ -42,7 +42,11 @@ async function deleteCreatedProduct(page: Page, response: APIResponse) {
   const product = (await response.json()) as { '@id'?: string; id?: number };
   const productPath = product['@id'] ?? `/api/products/${product.id}`;
   expect(productPath).not.toContain('undefined');
-  const deleteResponse = await page.request.delete(productPath);
+  const csrfToken = (await page.context().cookies()).find(({ name }) => name === 'CSRF_TOKEN')?.value;
+  expect(csrfToken).toBeTruthy();
+  const deleteResponse = await page.request.delete(productPath, {
+    headers: { 'X-CSRF-Token': csrfToken! },
+  });
   expect(deleteResponse.status()).toBe(204);
 }
 
@@ -160,7 +164,7 @@ test.describe('Golden path', () => {
     await page.keyboard.press('Enter');
     await expect(page.getByText('Espresso Machine')).toBeVisible({ timeout: 20_000 });
 
-    const filter = page.locator('table thead input').first();
+    const filter = page.getByRole('textbox', { name: 'Filter Name' });
     await expectVisibleFocus(page, filter, 'Filter Name');
     await page.keyboard.type('Espresso');
     await expect(page.getByText('Coffee Grinder')).toBeHidden({ timeout: 10_000 });
@@ -195,7 +199,7 @@ test.describe('Golden path', () => {
   test('the filter row narrows the result set through the API', async ({ page }) => {
     await login(page);
 
-    const filter = page.locator('table thead input').first();
+    const filter = page.getByRole('textbox', { name: 'Filter Name' });
     await filter.fill('Espresso');
     await expect(page.getByText('Coffee Grinder')).toBeHidden({ timeout: 10_000 });
     await expect(page.getByText('Espresso Machine')).toBeVisible();
@@ -250,14 +254,19 @@ test.describe('Golden path', () => {
     await login(page);
     const authenticatedCookies = await page.context().cookies();
     const refreshCookie = authenticatedCookies.find(({ name }) => name === 'REFRESH_TOKEN');
+    const csrfToken = authenticatedCookies.find(({ name }) => name === 'CSRF_TOKEN')?.value;
     expect(refreshCookie).toBeDefined();
+    expect(csrfToken).toBeTruthy();
 
     await page.getByRole('button', { name: 'User menu' }).click();
     await page.getByRole('button', { name: 'Sign out' }).click();
     await expect(page.getByRole('button', { name: 'Sign in' })).toBeVisible({ timeout: 10_000 });
     await expect(page.getByText('Espresso Machine')).not.toBeVisible();
     const refreshAfterLogout = await request.post('/api/auth/refresh', {
-      headers: { cookie: `REFRESH_TOKEN=${refreshCookie?.value}` },
+      headers: {
+        cookie: `REFRESH_TOKEN=${refreshCookie?.value}; CSRF_TOKEN=${csrfToken}`,
+        'X-CSRF-Token': csrfToken!,
+      },
     });
     expect(refreshAfterLogout.status()).toBe(401);
 
