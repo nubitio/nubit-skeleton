@@ -167,10 +167,13 @@ jobs:
             -H 'Content-Type: application/json' \
             -d '{"username":"ci@example.com","password":"ci-only-password-16"}')
           [ "$status" = "200" ] || { echo "login: $status"; cat /tmp/login.json; exit 1; }
+          csrf=$(awk '$6 == "CSRF_TOKEN" { print $7 }' /tmp/cj)
+          [ -n "$csrf" ] || { echo "login did not set CSRF_TOKEN"; cat /tmp/cj; exit 1; }
 
           status=$(curl -s -b /tmp/cj -o /tmp/create.json -w '%{http_code}' \
             -X POST http://localhost:8000/api/products \
             -H 'Content-Type: application/json' \
+            -H "X-CSRF-Token: $csrf" \
             -d '{"name":"CI Smoke","sku":"CI-1","price":"9.99","active":true}')
           [ "$status" = "201" ] || { echo "create: $status"; cat /tmp/create.json; exit 1; }
           id=$(python3 -c "import json;print(json.load(open('/tmp/create.json'))['id'])")
@@ -181,7 +184,8 @@ jobs:
           grep -qi 'x-total-count: 1' /tmp/headers.txt || { echo "grid filter did not find the row"; cat /tmp/headers.txt; exit 1; }
 
           status=$(curl -s -b /tmp/cj -o /dev/null -w '%{http_code}' \
-            -X DELETE "http://localhost:8000/api/products/$id")
+            -X DELETE "http://localhost:8000/api/products/$id" \
+            -H "X-CSRF-Token: $csrf")
           [ "$status" = "204" ] || { echo "delete: $status"; exit 1; }
 
           echo "smoke OK (create $id, filter, delete)"

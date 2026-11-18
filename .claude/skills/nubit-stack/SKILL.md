@@ -175,6 +175,9 @@ heuristic when that fetch fails. Consequences:
 
 - **Mercure**: `createNubitApp()` registers `MercureProvider` by default (`hydra: true`).
   Hub URL `/.well-known/mercure` (Vite proxies to the hub in dev — see `vite.config.ts`).
+  This template speaks Mercure protocol 1.0 (RFC 9068): `MERCURE_ISSUER` must match
+  the hub's trusted `issuer` directive; publisher/subscriber JWT audiences are
+  derived from the configured internal/public hub URLs.
   SSE topic matching is controlled by `CoreConfigProvider`'s `mercureTopicOrigin` prop
   (not an env var nubit-react reads itself) — point it at the API's public origin
   (`http://localhost:8000` in Docker) so topics match API Platform `@id` IRIs; the
@@ -222,7 +225,7 @@ that matches what's being built — don't load them all up front.
   `saas`/`hybrid` behavior or one of these specific features.
 
 Sections carry a "since" note when a capability arrived after the initial
-0.x line. This skeleton pins `nubitio/*` 1.0 and `@nubitio/*` 1.0 (see
+0.x line. This skeleton pins `nubitio/*` 1.0 and `@nubitio/*` 1.3 (see
 `nubit-compatibility.json`); `composer show nubitio/admin-bundle` and
 `frontend/package.json` are the ground truth for what's actually installed.
 

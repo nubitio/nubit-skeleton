@@ -63,7 +63,7 @@ OpenTelemetry is available as an opt-in Compose profile. See
 test and production guidance. Analytics is off; [`docs/analytics.md`](docs/analytics.md)
 covers provider configuration, operations and failure recovery once you enable it.
 
-> Before anything real: change `APP_SECRET` in `.env` (≥ 32 bytes — it signs the auth JWTs) and the database/Mercure passwords in `compose.yaml`.
+> Before anything real: change `APP_SECRET` in `.env` (≥ 32 bytes — it signs the auth JWTs) and the database/Mercure passwords in `compose.yaml`. Set `MERCURE_ISSUER` to the app's stable public issuer URL; it must match the Mercure hub's trusted `issuer` directive.
 
 Before deployment, run `php bin/console app:doctor --strict`. Production and
 strict checks fail while any known template secret or password is active, and

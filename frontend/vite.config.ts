@@ -55,13 +55,13 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': { target: apiTarget, changeOrigin: false },
-      '/.well-known/mercure': { target: mercureTarget, changeOrigin: true },
+      '/.well-known/mercure': { target: mercureTarget, changeOrigin: false },
     },
   },
   preview: {
     proxy: {
       '/api': { target: apiTarget, changeOrigin: false },
-      '/.well-known/mercure': { target: mercureTarget, changeOrigin: true },
+      '/.well-known/mercure': { target: mercureTarget, changeOrigin: false },
     },
   },
 });
